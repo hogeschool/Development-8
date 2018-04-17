@@ -1,0 +1,8 @@
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\obj\Debug\netcoreapp2.0\Unit2.fsprojResolveAssemblyReference.cache
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\bin\Debug\netcoreapp2.0\Unit2.deps.json
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\bin\Debug\netcoreapp2.0\Unit2.runtimeconfig.json
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\bin\Debug\netcoreapp2.0\Unit2.runtimeconfig.dev.json
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\bin\Debug\netcoreapp2.0\Unit2.dll
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\bin\Debug\netcoreapp2.0\Unit2.pdb
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\obj\Debug\netcoreapp2.0\Unit2.dll
+C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit2\Unit2\obj\Debug\netcoreapp2.0\Unit2.pdb
