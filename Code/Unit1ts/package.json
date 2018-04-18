@@ -1,0 +1,18 @@
+{
+  "name": "unit1ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc -w --pretty",
+    "execute": "node build/Unit1.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "npm": "^5.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1"
+  }
+}

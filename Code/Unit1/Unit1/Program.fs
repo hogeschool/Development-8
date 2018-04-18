@@ -25,7 +25,7 @@ let rec allNumbersRange =
 
 let rec allEvenRange =
   fun min max ->
-    if max <= min then
+    if max = min then
       if max % 2 = 0 then
         (string max)
       else
@@ -45,7 +45,7 @@ let rec asteriskLine =
 let rec asteriskSymbol =
   fun length symbol ->
     if length = 0 then
-      symbol
+      ""
     else
       symbol + (asteriskSymbol (length - 1) symbol)
 
