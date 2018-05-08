@@ -1,0 +1,99 @@
+\section*{Structure of exam \modulecode}
+
+The general shape of a theoretical exam for \texttt{DEV 3} is made up of only two, highly structured open questions.
+
+\paragraph{Question 1: } \ \\
+
+\textbf{General shape of the question:} \textit{Given the following lambda program, and a series of delta rules, show the beta reductions for this program.}
+
+\textbf{Concrete example of question:}
+
+\textbf{Program:}
+\lstset{numbers=left,basicstyle=\ttfamily\small}\lstset{language=[Sharp]C}\begin{lstlisting}
+(((TRUE $\wedge$ TRUE) T) F)
+\end{lstlisting}
+
+\textbf{Delta rules:}
+\lstset{numbers=left,basicstyle=\ttfamily\small}\lstset{language=[Sharp]C}\begin{lstlisting}
+TRUE $\equiv$ $\lambda$t$\rightarrow$f$\rightarrow$t
+FALSE $\equiv$ $\lambda$t$\rightarrow$f$\rightarrow$f
+$\wedge$ $\equiv$ $\lambda$p$\rightarrow$q$\rightarrow$((p q) p)
+\end{lstlisting}
+
+\textbf{Concrete example of answer:}
+
+\lstset{basicstyle=\ttfamily\small}\lstset{numbers=none}\lstset{language=ML}\begin{lstlisting}
+(((TRUE $\wedge$ TRUE) T) F)
+
+(((( (*@\underline{$\wedge$}@*) TRUE) TRUE) T) F)
+
+((((($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) TRUE) TRUE) T) F)
+
+((((($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) (*@\underline{TRUE}@*)) TRUE) T) F)
+
+((((($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) ($\lambda$t$\rightarrow$f$\rightarrow$t)) TRUE) T) F)
+
+((((($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) ($\lambda$t$\rightarrow$f$\rightarrow$t)) (*@\underline{TRUE}@*)) T) F)
+
+((((($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) ($\lambda$t$\rightarrow$f$\rightarrow$t)) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+((((*@\underline{(($\lambda$p$\rightarrow$q$\rightarrow$((p q) p)) ($\lambda$t$\rightarrow$f$\rightarrow$t))}@*) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+(((($\lambda$q$\rightarrow$((($\lambda$t$\rightarrow$f$\rightarrow$t) q) ($\lambda$t$\rightarrow$f$\rightarrow$t))) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+(((*@\underline{(($\lambda$q$\rightarrow$((($\lambda$t$\rightarrow$f$\rightarrow$t) q) ($\lambda$t$\rightarrow$f$\rightarrow$t))) ($\lambda$t$\rightarrow$f$\rightarrow$t))}@*) T) F)
+
+((((($\lambda$t$\rightarrow$f$\rightarrow$t) ($\lambda$t$\rightarrow$f$\rightarrow$t)) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+((((*@\underline{(($\lambda$t$\rightarrow$f$\rightarrow$t) ($\lambda$t$\rightarrow$f$\rightarrow$t))}@*) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+(((($\lambda$f$\rightarrow$t$\rightarrow$f$\rightarrow$t) ($\lambda$t$\rightarrow$f$\rightarrow$t)) T) F)
+
+(((*@\underline{(($\lambda$f$\rightarrow$t$\rightarrow$f$\rightarrow$t) ($\lambda$t$\rightarrow$f$\rightarrow$t))}@*) T) F)
+
+((($\lambda$t$\rightarrow$f$\rightarrow$t) T) F)
+
+((($\lambda$t$\rightarrow$f$\rightarrow$t) T) F)
+
+((*@\underline{(($\lambda$t$\rightarrow$f$\rightarrow$t) T)}@*) F)
+
+(($\lambda$f$\rightarrow$T) F)
+
+(*@\underline{(($\lambda$f$\rightarrow$T) F)}@*)
+
+T
+\end{lstlisting}
+	
+
+\textbf{Points:} \textit{4 (50\% of total).}
+
+\textbf{Grading:} \textit{Full points for all correct steps and result. -1 for each wrong step. Zero points with 4 or more errors.}
+
+\textbf{Associated learning objective:} \glsfirst{red}
+
+\ \\ 
+
+\paragraph{Question 2: } \ \\
+
+\textbf{General shape of question:} \textit{Given a lambda calculus program, and a series of typing rules, give the full typing derivation for the program.}
+
+\begin{comment}
+\textbf{Concrete example of question:} 
+
+\lstset{numbers=left,basicstyle=\ttfamily\small}\lstset{language=[Sharp]C}
+
+
+\textbf{Concrete example of answer:} \textit{}
+
+\begin{lstlisting}
+TODO
+\end{lstlisting}
+\end{comment}
+
+\textbf{Points:} \textit{4 (50\% of total).}
+
+\textbf{Grading:} \textit{Full points for all correct steps and result. -1 for each wrong step. Zero points with 4 or more errors.}
+
+\textbf{Associated learning objective:} \glsfirst{typ}
+
+\ \\
