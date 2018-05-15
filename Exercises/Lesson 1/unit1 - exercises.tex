@@ -1,0 +1,84 @@
+\documentclass[]{article}
+
+\usepackage{enumitem}
+\usepackage{geometry}[top = 1cm, bottom = 2cm, left = 1.5cm, right = 1.5cm]
+
+%opening
+\title{Development 8 - Exercises\\Unit 1}
+\author{}
+\date{}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function\\\\
+   \texttt{let #1 = #2}\\\\ #3
+}
+
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}\\\\ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\begin{document}
+\maketitle
+
+\exercise{
+  \functionEx{allNumber}{(n: number): string}{
+    that returns a string containing all numbers from 0 to \texttt{n}. Separate the numbers with a white space.
+  }
+}\\
+
+\exercise{
+  \functionEx{allNumberRev}{(n: number): string}{
+      that returns a string containing all numbers from \texttt{n} to 0. Separate the numbers with a white space.
+    }
+}\\
+
+\exercise{
+  \functionEx{allNumberRev}{(lower: number) => (upper: number): string}{
+      that returns a string containing all numbers between \texttt{lower} and \texttt{upper}. Separate the numbers with a white space.
+    }
+}\\
+
+\exercise{
+  \functionEx{allNumberRev}{(lower: number) => (upper: number): string}{
+      that returns a string containing all numbers between \texttt{lower} and \texttt{upper}. Separate the numbers with a white space.
+    }
+}\\
+
+\exercise{
+  \functionEx{allEvenRange}{(lower: number) => (upper: number): string}{
+      that returns a string containing all even numbers between \texttt{lower} and \texttt{upper}. Separate the numbers with a white space.
+    }
+}\\
+
+\exercise{
+  \functionEx{drawLine}{(length: number): string}{
+      that returns a string containing \texttt{length} asterisks.
+    }
+}\\
+
+\exercise{
+  \functionEx{drawSymbols}{(symbol: string) => (length: number): string}{
+      that returns a string containing \texttt{length} repetitions of \texttt{symbol}.
+    }
+}\\
+
+\exercise{
+  \functionEx{toBinary}{(n: number): string}{
+      that returns a string containing the binary representation of the input number (it must be positive). The binary representation is obtained using the following procedure:
+      
+      \begin{enumerate}[noitemsep]
+      \item Add to the end of the string the remainder of the division between the current number and 2.
+      \item Repeat the previous step until the number is 0. In this case simply don't add anything.
+      \end{enumerate}
+    }
+}
+
+\exercise{
+  \functionEx{toBinary}{(n: number) => (base: number): string}{
+      that returns a string containing the representation of the input number in an arbitrary base (the number must be positive). The algorithm is the same as above except you must take the remainder of \texttt{n} divided by \texttt{base}.
+    }
+}
+
+\end{document}

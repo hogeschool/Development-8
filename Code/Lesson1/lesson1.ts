@@ -1,14 +1,22 @@
-let add = (x : number) => (y : number) => { 
-  let five = 5 // x > 0 ? 5 : x + 1
-  if (x + y > 3) {
-    return x + y - five
-  } else{
-  return x + y + five}}
+let incr = (x: number): number => x + 1
+let add = (x : number) => (y : number): number => x + y
+/*
 
-  /* int x = 0;
-  while (x < 5) {
-    x += 1;
-  }
+gamma,x: number |- \t : (number -> number)
+-----------------------------------------------------------
+gamma |- lambda x : number -> (labda (y: number) -> x + y) -> number -> (number -> number)
+
+gamma := { x, number }
+
+gamma := {x, number  }, { y, number }
+
+gamma,y: number |- t: number
+-------------------------------------------
+gamma |- (y: number) -> x + y : (number -> number)
 
 
-console.log((add(3))(5)) //add(3) := ((y : number) => 3 + y)(5) := 3 + 5 := 8
+number -> (number -> number)
+*/
+
+add(3)
+console.log((add(3))(5)) //(add 3) 5

@@ -1,0 +1,102 @@
+\documentclass[]{article}
+
+\usepackage{enumitem}
+\usepackage{geometry}[top = 1cm, bottom = 2cm, left = 1.5cm, right = 1.5cm]
+\usepackage{listings}
+
+%opening
+\title{Development 8 - Exercises\\Unit 2}
+\author{}
+\date{}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function\\\\
+   \texttt{let #1 = #2}\\\\ #3
+}
+
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}\\\\ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\lstset{
+  breaklines = true,
+  basicstyle = \ttfamily,
+  tabsize = 2
+}
+
+\begin{document}
+\maketitle
+
+\noindent
+For these exercises use the data structure \texttt{List<T>} defined in the library \texttt{immutable.js}. To add the library to your typescript project type
+
+\begin{lstlisting}
+yarn add -D immutable
+\end{lstlisting}
+
+\noindent
+in the shell. Then add on top of your source code
+
+\begin{lstlisting}
+import * as Immutable from "immutable"
+\end{lstlisting}
+
+\noindent
+Do not use functions from that library that immediately solve the exercises. Try to implement everything from scratch and just use lists as a data structure.\\
+
+\exercise{
+  \functionEx{last}{<a>(l: Immutable.List<a>): a}{
+    that returns the last element of a list.
+  }
+}\\
+
+\exercise{
+  \functionEx{rev}{<a>(l: Immutable.List<a>): Immutable.List<a>}{
+    that creates a list with the elements of \texttt{l} in reverse order.
+  }
+}\\
+
+\exercise{
+  \functionEx{append}{<a>(l1: Immutable.List<a>) => (l2: Immutable.List<a>):\\  Immutable.List<a>}{
+    that adds all the elements of \texttt{l2} after those in \texttt{l1}.
+  }
+}\\
+
+\exercise{
+  \functionEx{nth}{<a>(n: number) => (l: Immutable.List<a>): a}{
+    that returns the element in position \texttt{n} in \texttt{l}.
+  }
+}\\
+
+\exercise{
+  \functionEx{palindrome}{<a>(l: Immutable.List<a>): boolean}{
+    that checks if a list is palindrome. A list is palindrome if it is equal to its inverse.
+  }
+}\\
+
+\exercise{
+  \functionEx{palindrome}{<a>(l: Immutable.List<a>): boolean}{
+    that checks if a list is palindrome. A list is palindrome if it is equal to its inverse.
+  }
+}\\
+
+\exercise{
+  \functionEx{compress}{<a>(l: Immutable.List<a>): Immutable.List<a>}{
+    that removes consecutive occurrences of the same element in the list. For example \texttt{compress [a;a;a;a;b;b;c;c;b] = [a;b;c;b]}.
+  }
+}\\
+
+\exercise{
+  \functionEx{caesarCypher}{(l: Immutable.List<string>) => (shift: number):\\ Immutable.List<string>}{
+    The Caesar's cypher take a text, represented as a list of characters (note that Typescript does not support the type \texttt{char} so you can use a list of \texttt{string} with only one character), and shifts all the letters (so only if the character is an alphabetical character) in it up by the number of position specified by \texttt{shift}. If the letter goes past \texttt{z} it restarts from \texttt{a}. You can assume that all the text is in lower-case letter. For instance:\\\\    
+    \texttt{shift("c")(5) = h}\\
+    \texttt{shift("y")(5) = d}\\\\
+    The ASCII code for a specific character in a \texttt{string} can be obtained by using the method \texttt{charCodeAt} that takes as input the position of the character of the string you want to get the ASCII code of. For instance:\\\\
+    \texttt{"Caesar".charCodeAt(2) = 101}\\\\
+    \textbf{Advanced: } Try to support also upper-case letters in the text.
+  }
+}\\
+
+\end{document}
