@@ -1,0 +1,93 @@
+\documentclass[]{article}
+
+\usepackage{enumitem}
+\usepackage{geometry}[top = 1cm, bottom = 2cm, left = 1.5cm, right = 1.5cm]
+\usepackage{listings}
+
+%opening
+\title{Development 8 - Exercises\\Unit 3}
+\author{}
+\date{}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function\\\\
+   \texttt{let #1 = #2}\\\\ #3
+}
+
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}\\\\ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\lstset{
+  breaklines = true,
+  basicstyle = \ttfamily,
+  tabsize = 2
+}
+
+\begin{document}
+\maketitle
+
+\noindent
+For these exercises you might need to use \texttt{Tuple<a, b>} seen in class:
+
+\begin{lstlisting}
+interface Tuple<a, b> {
+  fst: a
+  snd: b
+}
+\end{lstlisting}
+
+\exercise{
+  \functionEx{splitAt}{<a>(i: number) => (l: List<a>): Tuple<List<a>, List<a>>}{
+    that splits the list into two lists, the first one containing all the elements of \texttt{l} from position 0 to position \texttt{i} included, and the second one containing all the remaining elements. The two resulting lists are returned in a tuple. For example \texttt{split 3 [3;5;4;-1;2;2] = { fst: [3;5;4;-1], snd: [2;2] }}.
+}}\\
+
+\exercise{
+  \functionEx{merge}{<a>(l1: List<a>) => (l2: List<a>): List<a>}{
+   that merges together two \textbf{sorted} lists into a single sorted list.
+}}\\
+
+\exercise{
+  \functionEx{mergeSort}{<a>(l: List<a>): List<a>}{
+  implement the Merge Sort algorithm. The Merge Sort returns the list itself when the list has only one element. Otherwise it splits \texttt{l} in two lists, one containing the elements between position 0 and \texttt{l.length / 2} (Typescript does the floating point division so use \texttt{Math.floor} on the result to convert it to the result of the integer division), the other containing the elements from \texttt{l.length / 2 + 1} until the end. Merge Sort is called recursively on the two lists. After this step use the function \texttt{merge} above to merge the two sorted lists.
+}}\\
+
+\exercise{
+  \functionEx{mergeSort}{<a>(l: List<a>): List<a>}{
+  The Merge Sort returns the list itself when the list has only one element. Otherwise it splits \texttt{l} in two lists, one containing the elements between position 0 and \texttt{l.length / 2} (Typescript does the floating point division so use \texttt{Math.floor} on the result to convert it to the result of the integer division), the other containing the elements from \texttt{l.length / 2 + 1} until the end. Merge Sort is called recursively on the two lists. After this step use the function \texttt{merge} above to merge the two sorted lists.
+}}\\
+
+\exercise{
+  \functionEx{eval}{(expr1: Expr): Expr}{
+  The function allows to evaluate arithmetic expressions. An arithmetic expression is defined as a discriminated union with the following cases:
+  
+  \begin{itemize}[noitemsep]
+  \item An atomic value. This is just a number
+  \item The sum of two expressions.
+  \item The difference of two expressions.
+  \item The product of two expressions.
+  \item The division of two expressions.
+  \end{itemize}
+  
+ The function \texttt{eval} for an atomic value simply returns the atomic value. For the other cases it simply evaluates recursively the arguments of the operator and then combine the two results together. For example, evaluating the sum of two expressions \texttt{expr1 + expr2} recursively evaluates \texttt{expr1} and \texttt{expr2} and then sum ups the two atomic values together. The other operators behave analogously.
+}}\\
+
+\exercise{
+  \functionEx{eval}{(expr1: Expr) => (stack: List<string, number>): Expr}{
+  Extend the previous version of the function \texttt{eval} by supporting also variables. Variables are another case of the union. Evaluating a variable means looking it up in the \texttt{stack}. A \texttt{stack} is a list of tuple mapping a variable name to its value. If the lookup is successful \texttt{eval} returns the value of the variable, otherwise it throws an error.
+}}\\
+
+\exercise{
+  \functionEx{run}{(program: List<Satement>) => (stack: List<Tuple<string, number>>)}{
+  The function interprets a program from a small imperative language that can consists of the following statements, expressed as a discriminated union.
+  
+  \begin{itemize}[noitemsep]
+  \item Variable assignment. A variable assignment contains two arguments: the name of the variable, and an expression that is used to assign a value to it. First the expression must be evaluated and then, if the variable already exists in \texttt{stack}, its value is updated, otherwise we add the variable name and the value in \texttt{stack}.
+  \item Print to output. This data structure contains an expresion, which is evaluated and then prints the value on the console.
+  \end{itemize}
+  
+  The evaluation stops when the list of statements is empty.
+}}\\
+\end{document}

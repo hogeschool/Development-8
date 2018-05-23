@@ -30,66 +30,56 @@
 \maketitle
 
 \noindent
-For these exercises use the data structure \texttt{List<T>} defined in the library \texttt{immutable.js}. To add the library to your typescript project type
+For these exercises use the polymorphic definition of \texttt{List<a>} using discriminated unions seen in class:
 
 \begin{lstlisting}
-yarn add -D immutable
+type List<a> = {
+  kind: "empty"
+} | {
+  kind: "cons"
+  head: a
+  tail: List<a>
+}
 \end{lstlisting}
-
-\noindent
-in the shell. Then add on top of your source code
-
-\begin{lstlisting}
-import * as Immutable from "immutable"
-\end{lstlisting}
-
-\noindent
-Do not use functions from that library that immediately solve the exercises. Try to implement everything from scratch and just use lists as a data structure.\\
 
 \exercise{
-  \functionEx{last}{<a>(l: Immutable.List<a>): a}{
+  \functionEx{last}{<a>(l: List<a>): a}{
     that returns the last element of a list.
   }
 }\\
 
 \exercise{
-  \functionEx{rev}{<a>(l: Immutable.List<a>): Immutable.List<a>}{
+  \functionEx{rev}{<a>(l: List<a>): List<a>}{
     that creates a list with the elements of \texttt{l} in reverse order.
   }
 }\\
 
 \exercise{
-  \functionEx{append}{<a>(l1: Immutable.List<a>) => (l2: Immutable.List<a>):\\  Immutable.List<a>}{
+  \functionEx{append}{<a>(l1: List<a>) => (l2: List<a>):\\  List<a>}{
     that adds all the elements of \texttt{l2} after those in \texttt{l1}.
   }
 }\\
 
 \exercise{
-  \functionEx{nth}{<a>(n: number) => (l: Immutable.List<a>): a}{
+  \functionEx{nth}{<a>(n: number) => (l: List<a>): a}{
     that returns the element in position \texttt{n} in \texttt{l}.
   }
 }\\
 
 \exercise{
-  \functionEx{palindrome}{<a>(l: Immutable.List<a>): boolean}{
+  \functionEx{palindrome}{<a>(l: List<a>): boolean}{
     that checks if a list is palindrome. A list is palindrome if it is equal to its inverse.
   }
 }\\
 
 \exercise{
-  \functionEx{palindrome}{<a>(l: Immutable.List<a>): boolean}{
-    that checks if a list is palindrome. A list is palindrome if it is equal to its inverse.
-  }
-}\\
-
-\exercise{
-  \functionEx{compress}{<a>(l: Immutable.List<a>): Immutable.List<a>}{
+  \functionEx{compress}{<a>(l: List<a>): List<a>}{
     that removes consecutive occurrences of the same element in the list. For example \texttt{compress [a;a;a;a;b;b;c;c;b] = [a;b;c;b]}.
   }
 }\\
 
 \exercise{
-  \functionEx{caesarCypher}{(l: Immutable.List<string>) => (shift: number):\\ Immutable.List<string>}{
+  \functionEx{caesarCypher}{(l: List<string>) => (shift: number):\\ Immutable.List<string>}{
     The Caesar's cypher take a text, represented as a list of characters (note that Typescript does not support the type \texttt{char} so you can use a list of \texttt{string} with only one character), and shifts all the letters (so only if the character is an alphabetical character) in it up by the number of position specified by \texttt{shift}. If the letter goes past \texttt{z} it restarts from \texttt{a}. You can assume that all the text is in lower-case letter. For instance:\\\\    
     \texttt{shift("c")(5) = h}\\
     \texttt{shift("y")(5) = d}\\\\

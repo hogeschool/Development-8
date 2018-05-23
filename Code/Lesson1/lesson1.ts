@@ -1,22 +1,28 @@
-let incr = (x: number): number => x + 1
-let add = (x : number) => (y : number): number => x + y
-/*
+import * as Immutable from "immutable"
+import { aaa } from "./library1"
 
-gamma,x: number |- \t : (number -> number)
------------------------------------------------------------
-gamma |- lambda x : number -> (labda (y: number) -> x + y) -> number -> (number -> number)
+let numbers = (n: number): string => {
+  if (n < 0) {
+    throw "What r u doing?"
+  } else if (n == 0) {
+    return "0 "
+  } else {
+    return (numbers(n - 1)) + n + " "
+  } 
+}
 
-gamma := { x, number }
+let head = <a>(l: Immutable.List<a>): a => {
+  return l.first()
+}
 
-gamma := {x, number  }, { y, number }
+let tail = <a>(l: Immutable.List<a>): Immutable.List<a> => {
+  return l.takeLast(l.count() - 1).toList()
+}
 
-gamma,y: number |- t: number
--------------------------------------------
-gamma |- (y: number) -> x + y : (number -> number)
+// let length = <a>(l: Immutable.List<a>): number => {
+//   let counter = 0
+// }
 
-
-number -> (number -> number)
-*/
-
-add(3)
-console.log((add(3))(5)) //(add 3) 5
+let l = Immutable.List<number>([1,2,3,4,5])
+console.log(head(l))
+console.log("Done!")   

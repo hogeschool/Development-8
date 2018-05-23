@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "immutable": "^3.8.2",
     "typescript": "^2.8.3"
   }
 }

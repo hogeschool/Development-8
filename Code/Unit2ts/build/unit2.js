@@ -1,101 +1,92 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var Cons = function (x, xs) {
+    return {
+        kind: "cons",
+        head: x,
+        tail: xs
+    };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var Immutable = __importStar(require("immutable"));
-var head = function (l) {
-    return l.first();
+var Empty = function () {
+    return { kind: "empty" };
 };
-var tail = function (l) {
-    if (l.count() == 0) {
-        throw "The given list is empty";
+var len = function (l) {
+    if (l.kind == "empty") {
+        return 0;
     }
     else {
-        return l.takeLast(l.count() - 1).toList();
+        return 1 + len(l.tail);
     }
 };
-var merge = function (l1) { return function (l2) {
-    if (l1.count() == 0 && l2.count() == 0) {
-        return Immutable.List();
+var sum = function (l) {
+    if (l.kind == "empty") {
+        return 0;
     }
-    else if (l1.count() == 0) {
+    else {
+        return l.head + sum(l.tail);
+    }
+};
+var evens = function (l) {
+    if (l.kind == "empty") {
+        return Empty();
+    }
+    else {
+        if (l.head % 2 == 0) {
+            return Cons(l.head, evens(l.tail));
+        }
+        else {
+            return evens(l.tail);
+        }
+    }
+};
+var concat = function (l1) { return function (l2) {
+    if (l1.kind == "empty") {
         return l2;
     }
-    else if (l2.count() == 0) {
-        return l1;
-    }
     else {
-        var x = head(l1);
-        var y = head(l2);
-        var xs = tail(l1);
-        var ys = tail(l2);
-        if (x <= y) {
-            return Immutable.List([x]).concat(merge(xs)(l2)).toList();
-        }
-        else {
-            return Immutable.List([y]).concat(merge(l1)(ys)).toList();
-        }
+        return Cons(l1.head, concat(l1.tail)(l2));
     }
 }; };
-var splitAt = function (l) { return function (n) {
-    if (l.count() == 0) {
-        throw "Out of bound";
-    }
-    else if (n == 0) {
-        return [Immutable.List(), l];
+var listString = function (l) {
+    if (l.kind == "empty") {
+        return "";
     }
     else {
-        var x = head(l);
-        var xs = tail(l);
-        var _a = splitAt(xs)(n - 1), xs1 = _a[0], xs2 = _a[1];
-        return [Immutable.List([x]).concat(xs1).toList(), xs2];
-    }
-}; };
-var mergeSort = function (l) {
-    if (l.count() == 1) {
-        return l;
-    }
-    else {
-        var middle = Math.floor(l.count() / 2);
-        var _a = splitAt(l)(middle), left = _a[0], right = _a[1];
-        var sortedLeft = mergeSort(left);
-        var sortedRight = mergeSort(right);
-        return merge(sortedLeft)(sortedRight);
+        return l.head + " " + (listString(l.tail));
     }
 };
-var filter = function (predicate) { return function (l) {
-    if (l.count() == 0) {
-        return l;
+var Tuple = function (x, y) {
+    return {
+        fst: x,
+        snd: y
+    };
+};
+var splitAt = function (i) { return function (l) {
+    if (l.kind == "empty") {
+        throw "I cannot split an empty list";
+    }
+    else if (i == 0) {
+        var leftPart = Cons(l.head, Empty());
+        var rightPart = l.tail;
+        return Tuple(leftPart, rightPart);
     }
     else {
-        var x = head(l);
-        var xs = tail(l);
-        if (predicate(x)) {
-            return Immutable.List([x]).concat(filter(predicate)(xs)).toList();
-        }
-        else {
-            return filter(predicate)(xs);
-        }
+        //split 1 [3;4;5;6;7] -> ([3;4];[5;6;7])
+        //split 0 [4;5;6;7] -> ([4],[5;6;7])
+        var t_1 = splitAt(i - 1)(l.tail);
+        var leftPart = t_1.fst;
+        var rightPart = t_1.snd;
+        return Tuple(Cons(l.head, leftPart), rightPart);
     }
 }; };
-var quickSort = function (l) {
-    if (l.count() == 0) {
-        return l;
-    }
-    else {
-        var pivot_1 = head(l);
-        var smaller = filter(function (x) { return x < pivot_1; })(l);
-        var greater = filter(function (x) { return x > pivot_1; })(l);
-        return (quickSort(smaller)).concat(Immutable.List([pivot_1])).concat(quickSort(greater)).toList();
-    }
-};
-var l1 = Immutable.List([-5, 0, 3, 15, 21]);
-var l2 = Immutable.List([-15, -6, -3, 10, 11]);
-var unsortedList = Immutable.List([0, -15, 3, 1, 6, 7, 22, -40, 9]);
-console.log(mergeSort(unsortedList));
+//concat [4;5;6] [1;2;3] 
+//concat [] [1;2;3] --> [1;2;3]
+//concat [6] [1;2;3] --> [6;1;2;3]
+//concat [5;6] -> [1;2;3] -> [5;6;1;2;3]
+//concat [4;5;6] -> [1;2;3] -> [4;5;6;1;2;3]
+var myList = Cons(5, Cons(3, Cons(4, Empty())));
+var myListTwice = concat(myList)(myList);
+// console.log(listString(myListTwice))
+var t = splitAt(3)(myListTwice);
+console.log(listString(t.fst));
+console.log(listString(t.snd));
 //# sourceMappingURL=unit2.js.map

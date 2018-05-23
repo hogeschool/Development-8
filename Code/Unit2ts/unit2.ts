@@ -1,97 +1,110 @@
-import * as Immutable from "immutable"
-
-let head = <a>(l : Immutable.List<a>): a => {
-  return l.first()
+type List<a> = {
+  kind: "empty"
+} | {
+  kind: "cons",
+  head: a,
+  tail: List<a>
 }
 
-let tail = <a>(l : Immutable.List<a>): Immutable.List<a> => {
-  if (l.count() == 0) {
-    throw "The given list is empty"
-  }
-  else {
-    return l.takeLast(l.count() - 1).toList()
+let Cons = <a>(x: a, xs: List<a>): List<a> => {
+  return {
+    kind: "cons",
+    head: x,
+    tail: xs
   }
 }
 
-let merge = <a>(l1: Immutable.List<a>) => (l2: Immutable.List<a>): Immutable.List<a> => {
-  if (l1.count() == 0 && l2.count() == 0) {
-    return Immutable.List<a>()
+let Empty = <a>(): List<a> => {
+  return { kind: "empty" }
+}
+
+
+let len = <a>(l: List<a>): number => {
+  if (l.kind == "empty") {
+    return 0
+  } else {
+    return 1 + len(l.tail)
   }
-  else if (l1.count() == 0) {
+}
+
+let sum = (l: List<number>): number => {
+  if (l.kind == "empty") {
+    return 0
+  } else {
+    return l.head + sum(l.tail)
+  }
+}
+
+let evens = (l: List<number>): List<number> => {
+  if (l.kind == "empty") {
+    return Empty<number>()
+  } else {
+    if (l.head % 2 == 0) {
+      return Cons<number>(l.head, evens(l.tail))
+    }
+    else {
+      return evens(l.tail)
+    }
+  }
+}
+
+let concat = <a>(l1: List<a>) => (l2: List<a>): List<a> => {
+  if (l1.kind == "empty") {
     return l2
   }
-  else if (l2.count() == 0) {
-    return l1
-  }
   else {
-    let x = head(l1)
-    let y = head(l2)
-    let xs = tail(l1)
-    let ys = tail(l2)
-    if (x <= y) {
-      return Immutable.List<a>([x]).concat(merge(xs)(l2)).toList()
-    }
-    else {
-      return Immutable.List<a>([y]).concat(merge(l1)(ys)).toList()
-    }
+    return Cons<a>(l1.head, concat(l1.tail)(l2))
   }
 }
 
-let splitAt = <a>(l : Immutable.List<a>) => (n: number): [Immutable.List<a>,Immutable.List<a>] => {
-  if (l.count() == 0) {
-    throw "Out of bound"
-  }
-  else if (n == 0) {
-    return [Immutable.List<a>(), l]
-  }
-  else {
-    let x = head(l)
-    let xs = tail(l)
-    let [xs1,xs2] = splitAt(xs)(n - 1)
-    return [Immutable.List<a>([x]).concat(xs1).toList(),xs2]
-  }
-}
-
-let mergeSort = <a>(l : Immutable.List<a>): Immutable.List<a> => {
-  if (l.count() == 1) {
-    return l
+let listString = <a>(l: List<a>): string => {
+  if (l.kind == "empty") {
+    return ""
   } else {
-    let middle = Math.floor(l.count() / 2)
-    let [left,right] = splitAt(l)(middle)
-    let sortedLeft = mergeSort(left)
-    let sortedRight = mergeSort(right)
-    return merge(sortedLeft)(sortedRight)
+    return l.head + " " + (listString(l.tail))
   }
 }
 
-let filter = <a>(predicate: (_: a) => boolean) => (l: Immutable.List<a>): Immutable.List<a> => {
-  if (l.count() == 0) {
-    return l
-  } else {
-    let x = head(l)
-    let xs = tail(l)
-    if (predicate(x)) {
-      return Immutable.List<a>([x]).concat(filter(predicate)(xs)).toList()
-    }
-    else {
-      return filter(predicate)(xs)
-    }
+interface Tuple<a, b> {
+  fst: a,
+  snd: b
+}
+
+let Tuple = <a, b>(x: a, y: b): Tuple<a, b> => {
+  return {
+    fst: x,
+    snd: y
   }
 }
 
-let quickSort = <a>(l: Immutable.List<a>): Immutable.List<a> => {
-  if (l.count() == 0) {
-    return l
+let splitAt = <a>(i: number) => (l: List<a>): Tuple<List<a>, List<a>> => {
+  if (l.kind == "empty") {
+    throw "I cannot split an empty list"
+  }
+  else if (i == 0) {
+    let leftPart = Cons<a>(l.head, Empty<a>())
+    let rightPart = l.tail
+    return Tuple<List<a>, List<a>>(leftPart, rightPart)
   }
   else {
-    let pivot = head(l)
-    let smaller = filter((x: a) => x < pivot)(l)
-    let greater = filter((x: a) => x > pivot)(l)
-    return (quickSort(smaller)).concat(Immutable.List<a>([pivot])).concat(quickSort(greater)).toList()
+    //split 1 [3;4;5;6;7] -> ([3;4];[5;6;7])
+    //split 0 [4;5;6;7] -> ([4],[5;6;7])
+    let t = splitAt<a>(i - 1)(l.tail)
+    let leftPart = t.fst
+    let rightPart = t.snd
+    return Tuple<List<a>, List<a>>(Cons<a>(l.head, leftPart), rightPart)
   }
-}
+} 
 
-let l1 = Immutable.List([-5,0,3,15,21])
-let l2 = Immutable.List([-15,-6,-3,10,11])
-let unsortedList = Immutable.List([0,-15,3,1,6,7,22,-40,9])
-console.log(mergeSort(unsortedList))
+//concat [4;5;6] [1;2;3] 
+//concat [] [1;2;3] --> [1;2;3]
+//concat [6] [1;2;3] --> [6;1;2;3]
+//concat [5;6] -> [1;2;3] -> [5;6;1;2;3]
+//concat [4;5;6] -> [1;2;3] -> [4;5;6;1;2;3]
+
+let myList = Cons<number>(5, Cons(3, Cons(4, Empty())))
+let myListTwice = concat(myList)(myList)
+// console.log(listString(myListTwice))
+let t = splitAt(3)(myListTwice)
+console.log(listString(t.fst))
+console.log(listString(t.snd))
