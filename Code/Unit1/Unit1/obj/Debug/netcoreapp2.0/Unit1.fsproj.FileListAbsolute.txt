@@ -1,8 +1,0 @@
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\bin\Debug\netcoreapp2.0\Unit1.deps.json
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\bin\Debug\netcoreapp2.0\Unit1.runtimeconfig.json
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\bin\Debug\netcoreapp2.0\Unit1.runtimeconfig.dev.json
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\bin\Debug\netcoreapp2.0\Unit1.dll
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\bin\Debug\netcoreapp2.0\Unit1.pdb
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\obj\Debug\netcoreapp2.0\Unit1.dll
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\obj\Debug\netcoreapp2.0\Unit1.pdb
-C:\Users\fdigi\Documents\GitHub\Development-8\Code\Unit1\Unit1\obj\Debug\netcoreapp2.0\Unit1.fsprojResolveAssemblyReference.cache

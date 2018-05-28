@@ -75,17 +75,17 @@ interface Tuple<a, b> {
 }}\\
 
 \exercise{
-  \functionEx{eval}{(expr1: Expr) => (stack: List<string, number>): Expr}{
+  \functionEx{eval}{(expr1: Expr) => (stack: List<Tuple<string, number>>): Expr}{
   Extend the previous version of the function \texttt{eval} by supporting also variables. Variables are another case of the union. Evaluating a variable means looking it up in the \texttt{stack}. A \texttt{stack} is a list of tuple mapping a variable name to its value. If the lookup is successful \texttt{eval} returns the value of the variable, otherwise it throws an error.
 }}\\
 
 \exercise{
-  \functionEx{run}{(program: List<Satement>) => (stack: List<Tuple<string, number>>)}{
+  \functionEx{run}{(program: List<Statement>) =>\\ (stack: List<Tuple<string, number>>): List<Tuple<string, number>>}{
   The function interprets a program from a small imperative language that can consists of the following statements, expressed as a discriminated union.
   
   \begin{itemize}[noitemsep]
   \item Variable assignment. A variable assignment contains two arguments: the name of the variable, and an expression that is used to assign a value to it. First the expression must be evaluated and then, if the variable already exists in \texttt{stack}, its value is updated, otherwise we add the variable name and the value in \texttt{stack}.
-  \item Print to output. This data structure contains an expresion, which is evaluated and then prints the value on the console.
+  \item Print to output. This data structure contains an expression, which is evaluated and then prints the value on the console.
   \end{itemize}
   
   The evaluation stops when the list of statements is empty.
