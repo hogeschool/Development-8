@@ -1,0 +1,70 @@
+\documentclass[]{article}
+
+\usepackage{enumitem}
+\usepackage{geometry}[top = 1cm, bottom = 2cm, left = 1.5cm, right = 1.5cm]
+\usepackage{listings}
+
+%opening
+\title{Development 8 - Exercises\\Unit 4}
+\author{}
+\date{}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function\\\\
+   \texttt{let #1 = #2}\\\\ #3
+}
+
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}\\\\ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\lstset{
+  breaklines = true,
+  basicstyle = \ttfamily,
+  tabsize = 2
+}
+
+\begin{document}
+\maketitle
+
+\noindent
+
+
+\exercise{
+  \functionEx{filter}{<a>(predicate: (x: a) => boolean) => (l: List<a>): List<a>}{
+    that inserts in the output list only the elements for which \texttt{predicate} returns true
+}}\\
+
+\exercise{
+  \functionEx{map}{<a, b>(f: (x: a) => b) => (l: List<a>): List<b>}{
+    that applies the function \texttt{f} to all the elements of \texttt{l} and returns a list containing the results.
+}}\\
+
+\exercise{
+  \functionEx{fold}{<s, a>(f: (state: s) => (x: a) => s) => (init: s) => (l: List<a>): s}{
+    that applies the function \texttt{f} that updates an accumulator of type \texttt{s} with each element of \texttt{l}, the accumulator itself, and a list \texttt{l}, and returns the final value of the accumulator.
+}}\\
+
+\exercise{
+  \functionEx{apply}{<a, b>(f: (x: a) => b) => (x: a): b}{
+    that applies function `f` to element `x`.
+}}\\
+
+\exercise{
+  \functionEx{carry}{<a, b>(f: (x: a, y: b) => b) => (x: a): b}{
+    that applies function `f` to element `x`.
+}}\\
+
+\exercise{
+  \functionEx{mapFold}{<a, b>(f: (x: a) => b) => (l: List<a>): List<b>}{
+    that implements \texttt{map} only using \texttt{fold}
+}}\\
+
+\exercise{
+  \functionEx{filterFold}{<a>(predicate: (x: a) => boolean) => (l: List<a>): List<a>}{
+    that implements \texttt{filter} only using \texttt{fold}
+}}\\
+
+\end{document}

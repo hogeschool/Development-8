@@ -82,12 +82,15 @@ export let concat = <a>(l1: List<a>) => (l2: List<a>): List<a> => {
 }
 
 export let listToString = <a>(l: List<a>): string => {
-  if (l.kind == "empty") {
-    return ""
+  let lts = <a>(l: List<a>): string => {
+    if (l.kind == "empty") {
+      return ""
+    }
+    else {
+      return l.head + " " + lts(l.tail)
+    }
   }
-  else {
-    return l.head + " " + listToString(l.tail)
-  }
+  return `[ ${lts(l)}]`
 }
 
 export let rev = <a>(l: List<a>): List<a> => {
