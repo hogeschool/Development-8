@@ -79,7 +79,7 @@ type List<a> = {
 }\\
 
 \exercise{
-  \functionEx{caesarCypher}{(l: List<string>) => (shift: number):\\ Immutable.List<string>}{
+  \functionEx{caesarCypher}{(l: List<string>) => (shift: number):\\ List<string>}{
     The Caesar's cypher take a text, represented as a list of characters (note that Typescript does not support the type \texttt{char} so you can use a list of \texttt{string} with only one character), and shifts all the letters (so only if the character is an alphabetical character) in it up by the number of position specified by \texttt{shift}. If the letter goes past \texttt{z} it restarts from \texttt{a}. You can assume that all the text is in lower-case letter. For instance:\\\\    
     \texttt{shift("c")(5) = h}\\
     \texttt{shift("y")(5) = d}\\\\

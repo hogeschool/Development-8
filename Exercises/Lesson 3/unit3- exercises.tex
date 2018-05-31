@@ -55,11 +55,6 @@ interface Tuple<a, b> {
 }}\\
 
 \exercise{
-  \functionEx{mergeSort}{<a>(l: List<a>): List<a>}{
-  The Merge Sort returns the list itself when the list has only one element. Otherwise it splits \texttt{l} in two lists, one containing the elements between position 0 and \texttt{l.length / 2} (Typescript does the floating point division so use \texttt{Math.floor} on the result to convert it to the result of the integer division), the other containing the elements from \texttt{l.length / 2 + 1} until the end. Merge Sort is called recursively on the two lists. After this step use the function \texttt{merge} above to merge the two sorted lists.
-}}\\
-
-\exercise{
   \functionEx{eval}{(expr1: Expr): Expr}{
   The function allows to evaluate arithmetic expressions. An arithmetic expression is defined as a discriminated union with the following cases:
   

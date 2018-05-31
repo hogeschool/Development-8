@@ -44,7 +44,7 @@
 
 \exercise{
   \functionEx{fold}{<s, a>(f: (state: s) => (x: a) => s) => (init: s) => (l: List<a>): s}{
-    that applies the function \texttt{f} that updates an accumulator of type \texttt{s} with each element of \texttt{l}, the accumulator itself, and a list \texttt{l}, and returns the final value of the accumulator.
+    that applies a function \texttt{f} to elements in the same position from \texttt{l}, threading an accumulator argument of type \texttt{s} through the computation.
 }}\\
 
 \exercise{
@@ -67,4 +67,32 @@
     that implements \texttt{filter} only using \texttt{fold}
 }}\\
 
+\exercise{
+  \functionEx{flatten}{<a>(l: List<List<a>>): List<a>}{
+    that takes a list of lists and places all their elements it into a single one. Use \texttt{fold} to implement this function.
+}}\\
+
+\exercise{
+  \functionEx{map2}{<a, b, c>(f: (x: a) => (y: b) => c) => (l1: List<a>) => (l2: List<b>): List<c>}{
+    that applies the function \texttt{f} to the elements in the same position of two lists of equal length \texttt{l1} and \texttt{l2}.
+}}\\
+
+\exercise{
+  \functionEx{fold2}{<s, a, b>(f: (state: s) => (x: a) => (y: b) => s) => (init: s) => (l1: List<a>) => (l2: List<b>): s}{
+    that applies a function \texttt{f} to elements in the same position from \texttt{l1} and \texttt{l2}, threading an accumulator argument of type \texttt{s} through the computation.
+}}\\
+
+\exercise{
+  \functionEx{zip}{<a, b>(l1: List<a>) => (l2: List<b>): List<Tuple<a, b>>}{
+    that take two lists with the same length and creates a list of pairs containing the elements that are in the same position from both lists. Implement this function by using normal recursion and then by using \texttt{fold2}
+}}\\
+
+\exercise{
+  \functionEx{map2Safe}{<a, b, c>(f: (x: a) => (y: b) => c) =>(l1: List<a>) =>\\ (l2: List<b>): List<Option<c>>}{
+    that applies the function \texttt{f} to the elements in the same position of two lists\texttt{l1} and \texttt{l2}, possibly with different length. If an element of one list does not have a correspondent element in the second list, then the function returns \texttt{None}.\\\\
+    
+    \noindent
+    \textbf{Example:}
+    Summing the elements of \texttt{[1, 2, 3, 4]} and \texttt{[4, 5]} with \texttt{map2Safe} returns \texttt{[Some(5), Some(7), None, None]}
+}}\\
 \end{document}
