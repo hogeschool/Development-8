@@ -28,7 +28,11 @@ console.log("PALINDROME: " + Unit2.palindrome(pal));
 console.log("COMPRESS: " + Unit2.compress(uncompressed).toString());
 //caesar
 var encodedText = Unit2.caesarChypher(text)(15);
+var encodeTest = Unit2.caesarChypher(Unit2.ArrayToList(["z", "y", "c"]))(5);
 var decodedText = Unit2.caesarChypher(encodedText)(-15).toString();
+var shiftTest = Unit2.shift("z")(5);
 console.log(encodedText.toString());
 console.log(decodedText.toString());
+console.log(encodeTest.toString());
+console.log(shiftTest);
 //# sourceMappingURL=main.js.map

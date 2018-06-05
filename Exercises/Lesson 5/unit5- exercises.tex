@@ -1,0 +1,87 @@
+\documentclass[]{article}
+
+\usepackage{enumitem}
+\usepackage{geometry}[top = 1cm, bottom = 2cm, left = 1.5cm, right = 1.5cm]
+\usepackage{listings}
+
+%opening
+\title{Development 8 - Exercises\\Unit 5}
+\author{}
+\date{}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function\\\\
+   \texttt{let #1 = #2}\\\\ #3
+}
+
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}\\\\ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\lstset{
+  breaklines = true,
+  basicstyle = \ttfamily,
+  tabsize = 2
+}
+
+\begin{document}
+\maketitle
+\noindent
+For these exercises use the following type definitions:\\\\
+
+\noindent
+\textbf{BINARY TREE:}
+\begin{lstlisting}
+type BinaryTreeData<a> = {
+  kind: "empty"
+} | {
+  kind: "node",
+  value: a
+  left: BinaryTree<a>,
+  right: BinaryTree<a>
+}  
+\end{lstlisting}
+
+\noindent
+\textbf{FUNCTOR:}
+\begin{lstlisting}
+interface Functor<F, G, a, b> {
+  map: (this: F, f: (x: a) => b) => G
+}
+\end{lstlisting}
+
+\noindent
+Moreover, try to express the operations on the data structures as immutable methods by extending the basic data structure with a record of functions.\\
+
+
+\exercise{
+  \functionEx{tryFind}{<a>(value: a) => (tree: BinaryTree<a>): Option<BinaryTree<a>>}{
+    that looks up for an element in a binary search tree. If the element is not found the function returns \texttt{None}.
+}}\\
+
+\exercise{
+  \functionEx{insert}{<a>(value: a) => (tree: BinaryTree<a>): BinaryTree<a>}{
+    that inserts a new element in a binary search tree.
+}}\\
+
+\exercise{
+  \functionEx{inorderFold}{<a, state>(f: (s: state) => (x: a) => state) \\=> (init: state) => (tree: BinaryTree<a>): state}{
+    that carries an accumulator through the in-order traversal of the binary search tree and updates its value by executing the function \texttt{f}.
+}}\\
+
+\exercise{
+  \functionEx{treeMap}{<a, b>(f: (x: a) => b) => (tree: BinaryTree<a>): BinaryTree<b>}{
+    that applies the function \texttt{f} to each node in a binary search tree by performing the in-order traversal. The function outputs a tree containing the results of the function application. SUGGESTION: to preserve the binary search property use a fold on the tree to accumulate the result.
+}}\\
+
+\exercise{Extend the \texttt{Option} data type to be a functor using the function record \texttt{Functor<F, G, a, b>}}\\
+
+\exercise{Extend the \texttt{List} data type to be a functor using the function record \texttt{Functor<F, G, a, b>}}\\
+
+\exercise{Extend the \texttt{Tree} data type to be a functor using the function record \texttt{Functor<F, G, a, b>}}\\
+
+
+
+\end{document}

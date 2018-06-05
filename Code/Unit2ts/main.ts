@@ -27,6 +27,10 @@ console.log("COMPRESS: " + Unit2.compress(uncompressed).toString())
 
 //caesar
 let encodedText = Unit2.caesarChypher(text)(15)
+let encodeTest = Unit2.caesarChypher(Unit2.ArrayToList(["z", "y", "c"]))(5)
 let decodedText = Unit2.caesarChypher(encodedText)(-15).toString()
+let shiftTest = Unit2.shift("z")(5)
 console.log(encodedText.toString())
 console.log(decodedText.toString())
+console.log(encodeTest.toString())
+console.log(shiftTest)
