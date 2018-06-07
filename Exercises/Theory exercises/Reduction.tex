@@ -164,25 +164,6 @@
   }
 }
 
-
-\vspace{0.5cm}
-\exercise{\reductionEx{
-    (\lambda x \; y \rightarrow ((\lambda z \rightarrow z) \; x)) \; 0
-  }{
-    \mprset{flushleft}
-    \inferrule*{ }
-    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
-  }{
-    \left \lbrace
-    \begin{array}{l}
-      x = \dots \\
-      t = \dots \\
-      u = \dots \\
-      t[x \mapsto u] = \dots
-    \end{array} \right.
-  }
-}
-
 \vspace{0.5cm}
 \exercise{\reductionEx{
     (\lambda x \; y \rightarrow ((\lambda z \rightarrow z) \; x)) \; 0
@@ -293,7 +274,7 @@
 }}
 
 \exercise{\reductionEx{
-  (\lambda x \; y \rightarrow x) \; ((\lambda f \; g \rightarrow g) \; (\lambda x \rightarrow x) \; 3)
+  (\lambda x \; y \rightarrow x) \; (((\lambda f \; g \rightarrow g) \; (\lambda x \rightarrow x)) \; 3)
 }{
   \mprset{flushleft}
   \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
