@@ -1,0 +1,313 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{comment}
+\usepackage{mathpartir}
+\usepackage[top=2cm, bottom=3cm, left=1.5cm, right=1.5cm]{geometry}
+
+\newcommand{\tu}{\textunderscore}
+
+\lstset{
+	tabsize=2,
+	basicstyle=\small\ttfamily,
+	columns=fixed,
+	showstringspaces=false,
+	breaklines=true,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function
+  
+  \vspace{0.15cm}
+  \texttt{let #1 = #2}
+   
+   \vspace{0.15cm}
+   #3
+}
+\newcommand{\reductionEx}[3]{
+  \noindent
+  Given the following untyped lambda-calculus expression:
+  
+  \begin{equation*}
+  #1
+  \end{equation*}
+  
+  \noindent
+  replace the requested terms with the elements from the expression in the following lambda-calculus rule that evaluates it:
+  
+  \begin{mathpar}
+  #2
+  \end{mathpar}
+  
+  \begin{equation*}
+  #3
+  \end{equation*}
+}
+
+\newcommand{\varRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*{ }
+  {x \rightarrow_{\beta} x}
+  \end{mathpar}
+}
+
+\newcommand{\lambdaRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*{ }
+  {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  \end{mathpar}
+}
+
+\newcommand{\appRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+  \end{mathpar}
+}
+
+\newcommand{\emptyPlace}{\tu\tu\tu}
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}
+  
+  \vspace{0.15cm}
+ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\title{Development 8 - Theory exercises}
+\date {  }
+
+
+\begin{document}
+\maketitle
+\large
+\textbf{Beta-reduction rules:}
+\normalsize
+
+\vspace{0.5cm}
+\textbf{Variables:}
+\varRule
+
+\vspace{0.5cm}
+\textbf{Function application:}
+\lambdaRule
+
+\vspace{0.5cm}
+\textbf{Application:}
+\appRule
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda x \; y \rightarrow x \; y) \; (\lambda y \rightarrow x \; y)
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda x \rightarrow \lambda x \rightarrow \lambda y \rightarrow y \; x) \; A
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda f \; g \rightarrow f) (\lambda x \rightarrow y \; x)
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda x \; y \rightarrow ((\lambda z \rightarrow z) \; x)) \; 0
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda x \; y \rightarrow ((\lambda z \rightarrow z) \; x)) \; 0
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+    (\lambda x \rightarrow (\lambda x \; y \rightarrow y \; x)) \; 0
+  }{
+    \mprset{flushleft}
+    \inferrule*{ }
+    {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  }{
+    \left \lbrace
+    \begin{array}{l}
+      x = \dots \\
+      t = \dots \\
+      u = \dots \\
+      t[x \mapsto u] = \dots
+    \end{array} \right.
+  }
+}
+
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+  ((\lambda x \; y \rightarrow y) \; 5) \; ((\lambda x \rightarrow x) \; 3)
+}{
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+}{
+ \left \lbrace
+ \begin{array}{l}
+   t = \dots \\
+   u = \dots \\
+   t' = \dots \\
+   u'= \dots \\
+   v = \dots
+ \end{array} \right. 
+}}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+  ((\lambda f \; g \rightarrow f) \; (\lambda x \rightarrow x)) \; 5
+}{
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+}{
+ \left \lbrace
+ \begin{array}{l}
+   t = \dots \\
+   u = \dots \\
+   t' = \dots \\
+   u'= \dots \\
+   v = \dots
+ \end{array} \right. 
+}}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+  (((\lambda f \; g \rightarrow g) \; ((\lambda x \; y \rightarrow \; y) \; 3)) \; (\lambda f \; g \rightarrow f))
+}{
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+}{
+ \left \lbrace
+ \begin{array}{l}
+   t = \dots \\
+   u = \dots \\
+   t' = \dots \\
+   u'= \dots \\
+   v = \dots
+ \end{array} \right. 
+}}
+
+\vspace{0.5cm}
+\exercise{\reductionEx{
+  (((\lambda x \; y \; z \rightarrow y \; z \; x) \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y)) \; 3
+}{
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+}{
+ \left \lbrace
+ \begin{array}{l}
+   t = \dots \\
+   u = \dots \\
+   t' = \dots \\
+   u'= \dots \\
+   v = \dots
+ \end{array} \right. 
+}}
+
+\exercise{\reductionEx{
+  (\lambda x \; y \rightarrow x) \; ((\lambda f \; g \rightarrow g) \; (\lambda x \rightarrow x) \; 3)
+}{
+  \mprset{flushleft}
+  \inferrule*{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+}{
+ \left \lbrace
+ \begin{array}{l}
+   t = \dots \\
+   u = \dots \\
+   t' = \dots \\
+   u'= \dots \\
+   v = \dots
+ \end{array} \right. 
+}}
+
+
+\end{document}

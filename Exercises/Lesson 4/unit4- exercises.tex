@@ -53,8 +53,8 @@
 }}\\
 
 \exercise{
-  \functionEx{carry}{<a, b>(f: (x: a, y: b) => b) => (x: a): b}{
-    that applies function `f` to element `x`.
+  \functionEx{curry}{<a, b, c>(f: Tuple<a, b> => c) => (x: a) => (y: b): c}{
+    that applies function `f` using as input elements `x` and `y` stored as a tuple.
 }}\\
 
 \exercise{
@@ -69,7 +69,7 @@
 
 \exercise{
   \functionEx{flatten}{<a>(l: List<List<a>>): List<a>}{
-    that takes a list of lists and places all their elements it into a single one. Use \texttt{fold} to implement this function.
+    that takes a list of lists and places all their elements into a single one. Use \texttt{fold} to implement this function.
 }}\\
 
 \exercise{
