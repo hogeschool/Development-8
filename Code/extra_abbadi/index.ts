@@ -2,6 +2,7 @@ import * as l1 from "./lesson1"
 import * as l2 from "./lesson2"
 import * as l3 from "./lesson3"
 import * as l4 from "./lesson4"
+import * as l5 from "./lesson5"
 import * as Immutable from "immutable"
 /*
 v:A->A
@@ -45,9 +46,10 @@ let x:number = sum (1) (2)
 //     let last_plus_one = last + 1
 // }
 
-console.log(l3.pretty_print_list(l3.custom_lst))
 
-console.log(l3.pretty_print_list(l4.filter_fold(l3.custom_lst, (n:number) => n % 2 == 0)))
+console.log(l3.pretty_print_list(l3.custom_lst))
+console.log("\n\n")
+console.log(l5.mk_tree(l3.custom_lst).toString())
 
 
 

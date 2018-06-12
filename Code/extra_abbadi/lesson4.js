@@ -97,6 +97,7 @@ var foldl = function (l, f, z) {
         return f(l.value, foldl(l.next, f, z));
     }
 };
+exports.fold = foldl;
 var length = function (l) { return foldr(l, function (_, state) { return state + 1; }, 0); };
 /*
 
@@ -116,4 +117,4 @@ exports.map_fold = function (l, f) {
 exports.filter_fold = function (l, p) {
     return foldl(l, function (curr_e, s) { return p(curr_e) ? lesson3_1.mk_node(curr_e, s) : s; }, lesson3_1.mk_empty());
 };
-//let filter_f = ?
+exports.multiplyFold = function (originalList) { return foldr(originalList, (function (value, state) { return value * state; }), 1); };
