@@ -6,8 +6,8 @@ type BinaryTreeData<a> = {
 } | {
   kind: "node",
   value: a
-  left: BinaryTree<a>,
-  right: BinaryTree<a>
+  left: BinaryTreeData<a>,
+  right: BinaryTreeData<a>
 }  
 
 interface BinaryTreeMethods<a> {
@@ -18,7 +18,7 @@ interface BinaryTreeMethods<a> {
 
 export type BinaryTree<a> = BinaryTreeData<a> & BinaryTreeMethods<a>
 
-let mkBTMethods = <a>(tree: BinaryTreeData<a>): BinaryTree<a> => {
+let BinaryTree = <a>(tree: BinaryTreeData<a>): BinaryTree<a> => {
   return {...tree,
     tryFind: function(this: BinaryTree<a>, value: a): Option<BinaryTree<a>> {
         return tryFind(value)(this)
@@ -34,7 +34,7 @@ let mkBTMethods = <a>(tree: BinaryTreeData<a>): BinaryTree<a> => {
 
 export let EmptyTree = <a>(): BinaryTree<a> => { 
   let t: BinaryTreeData<a> = { kind: "empty" }
-  return mkBTMethods(t)
+  return BinaryTree(t)
 }
 export let Tree = <a>(x: a, left: BinaryTree<a>, right: BinaryTree<a>): BinaryTree<a> => {
   let t: BinaryTreeData<a> = {
@@ -43,7 +43,7 @@ export let Tree = <a>(x: a, left: BinaryTree<a>, right: BinaryTree<a>): BinaryTr
     left: left,
     right: right
   }
-  return mkBTMethods<a>(t)
+  return BinaryTree<a>(t)
 }
 
 //find
@@ -56,10 +56,10 @@ export let tryFind = <a>(value: a) => (tree: BinaryTree<a>): Option<BinaryTree<a
       return Some<BinaryTree<a>>(tree)
     }
     else if (value <= tree.value) {
-      return tryFind(value)(tree.left)
+      return tryFind(value)(BinaryTree(tree.left))
     }
     else {
-      return tryFind(value)(tree.right)
+      return tryFind(value)(BinaryTree(tree.right))
     }
   }
 }
@@ -71,10 +71,10 @@ export let insert = <a>(value: a) => (tree: BinaryTree<a>): BinaryTree<a> => {
   }
   else {
     if (value <= tree.value) {
-      return Tree<a>(tree.value, insert(value)(tree.left), tree.right)
+      return Tree<a>(tree.value, insert(value)(BinaryTree(tree.left)), BinaryTree(tree.right))
     }
     else {
-      return Tree<a>(tree.value, tree.left, insert(value)(tree.right))
+      return Tree<a>(tree.value, BinaryTree(tree.left), insert(value)(BinaryTree(tree.right)))
     }
   }
 }
@@ -90,9 +90,9 @@ export let inorderFold = <a, state>(f: (s: state) => (x: a) => state) => (init: 
     return init
   }
   else {
-    let leftState = inorderFold<a, state>(f)(init)(tree.left)
+    let leftState = inorderFold<a, state>(f)(init)(BinaryTree(tree.left))
     let currentState = f(leftState)(tree.value)
-    let rightState = inorderFold<a, state>(f)(currentState)(tree.right)
+    let rightState = inorderFold<a, state>(f)(currentState)(BinaryTree(tree.right))
     return rightState
   }
 }

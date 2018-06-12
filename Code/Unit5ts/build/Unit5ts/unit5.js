@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var unit4_1 = require("../Unit4ts/unit4");
-var mkBTMethods = function (tree) {
+var BinaryTree = function (tree) {
     return __assign({}, tree, { tryFind: function (value) {
             return exports.tryFind(value)(this);
         }, insert: function (value) {
@@ -20,7 +20,7 @@ var mkBTMethods = function (tree) {
 };
 exports.EmptyTree = function () {
     var t = { kind: "empty" };
-    return mkBTMethods(t);
+    return BinaryTree(t);
 };
 exports.Tree = function (x, left, right) {
     var t = {
@@ -29,7 +29,7 @@ exports.Tree = function (x, left, right) {
         left: left,
         right: right
     };
-    return mkBTMethods(t);
+    return BinaryTree(t);
 };
 //find
 exports.tryFind = function (value) { return function (tree) {
@@ -41,10 +41,10 @@ exports.tryFind = function (value) { return function (tree) {
             return unit4_1.Some(tree);
         }
         else if (value <= tree.value) {
-            return exports.tryFind(value)(tree.left);
+            return exports.tryFind(value)(BinaryTree(tree.left));
         }
         else {
-            return exports.tryFind(value)(tree.right);
+            return exports.tryFind(value)(BinaryTree(tree.right));
         }
     }
 }; };
@@ -55,10 +55,10 @@ exports.insert = function (value) { return function (tree) {
     }
     else {
         if (value <= tree.value) {
-            return exports.Tree(tree.value, exports.insert(value)(tree.left), tree.right);
+            return exports.Tree(tree.value, exports.insert(value)(BinaryTree(tree.left)), BinaryTree(tree.right));
         }
         else {
-            return exports.Tree(tree.value, tree.left, exports.insert(value)(tree.right));
+            return exports.Tree(tree.value, BinaryTree(tree.left), exports.insert(value)(BinaryTree(tree.right)));
         }
     }
 }; };
@@ -72,9 +72,9 @@ exports.inorderFold = function (f) { return function (init) { return function (t
         return init;
     }
     else {
-        var leftState = exports.inorderFold(f)(init)(tree.left);
+        var leftState = exports.inorderFold(f)(init)(BinaryTree(tree.left));
         var currentState = f(leftState)(tree.value);
-        var rightState = exports.inorderFold(f)(currentState)(tree.right);
+        var rightState = exports.inorderFold(f)(currentState)(BinaryTree(tree.right));
         return rightState;
     }
 }; }; };
