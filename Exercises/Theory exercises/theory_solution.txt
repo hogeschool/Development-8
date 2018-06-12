@@ -1,0 +1,40 @@
+(lambda x -> lambda y -> x y) (lambda y -> x y)
+u = (lambda y -> x y)
+x = x
+t = lambda y -> x y
+
+lambda y -> (lambda y -> x y) y
+
+(lambda x1 -> lambda x2 -> lambda y -> y x2) A
+
+x = x
+t = lambda x2 -> lambda y -> x2 y
+u = A
+
+lambda x2 -> lambda y -> x2 y
+
+((lambda f g -> f) (lambda x -> x)) 5
+
+u = 5
+t = ((lambda f -> lambda g -> f) (lambda x -> x))
+
+t1 = (lambda g -> (lambda x -> x))
+u1 = 5
+
+(lambda g -> (lambda x -> x)) 5
+
+v = (lambda x -> x)
+
+(((lambda f -> lambda g -> g) ((lambda x -> lambda y -> y) 3))) (lambda f -> lambda g -> f)
+
+t = (((lambda f -> lambda g -> g) ((lambda x -> lambda y -> y) 3)))
+u = (lambda f -> lambda g -> f)
+
+t1 = (lambda g -> g)
+u1 = (lambda f -> lambda g -> f)
+
+v = (lambda f -> lambda g -> f)
+
+myObject.foo("Hellow" + "orld!")
+
+
