@@ -103,6 +103,7 @@ let foldl = <a,b>(l:List<a>, f:(a:a, b:b) => b, z:b) : b => {
         return f (l.value, foldl(l.next, f, z))
     }
 }
+export let fold = foldl
 
 let length = (l:List<number>):number => foldr(l, (_:number, state:number) => state + 1, 0)
 
@@ -129,5 +130,4 @@ export let filter_fold = <a,b>(l:List<a>, p:((_:a) => boolean)) : List<a> =>
           mk_empty())
 
 
-
-//let filter_f = ?
+export let multiplyFold = (originalList : List<number>) : number => foldr(originalList, ((value, state) => value * state), 1) 

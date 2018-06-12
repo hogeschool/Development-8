@@ -1,7 +1,7 @@
 "use strict";
 exports.__esModule = true;
 var l3 = require("./lesson3");
-var l4 = require("./lesson4");
+var l5 = require("./lesson5");
 /*
 v:A->A
 
@@ -39,4 +39,5 @@ var x = sum(1)(2);
 //     let last_plus_one = last + 1
 // }
 console.log(l3.pretty_print_list(l3.custom_lst));
-console.log(l3.pretty_print_list(l4.filter_fold(l3.custom_lst, function (n) { return n % 2 == 0; })));
+console.log("\n\n");
+console.log(l5.mk_tree(l3.custom_lst).toString());
