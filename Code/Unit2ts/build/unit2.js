@@ -70,13 +70,27 @@ exports.listToString = function (l) {
     };
     return "[ " + lts(l) + "]";
 };
-exports.rev = function (l) {
+//O(n^2) version
+exports.revSlow = function (l) {
     if (l.kind == "empty") {
         return l;
     }
     else {
         return exports.concat(exports.rev(l.tail))(exports.Cons(l.head, exports.Empty()));
     }
+};
+//O(n) with tail recursion
+exports.rev = function (l) {
+    var tailRecRev = function (l) { return function (result) {
+        if (l.kind == "empty") {
+            return result;
+        }
+        else {
+            var newResult = exports.Cons(l.head, result);
+            return tailRecRev(l.tail)(newResult);
+        }
+    }; };
+    return tailRecRev(l)(exports.Empty());
 };
 exports.nth = function (n) { return function (l) {
     if (l.kind == "empty") {

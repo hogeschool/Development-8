@@ -93,13 +93,28 @@ export let listToString = <a>(l: List<a>): string => {
   return `[ ${lts(l)}]`
 }
 
-export let rev = <a>(l: List<a>): List<a> => {
+//O(n^2) version
+export let revSlow = <a>(l: List<a>): List<a> => {
   if (l.kind == "empty") {
     return l
   }
   else {
     return concat(rev(l.tail))(Cons<a>(l.head, Empty<a>()))
   }
+}
+
+//O(n) with tail recursion
+export let rev = <a>(l: List<a>): List<a> => {
+  let tailRecRev = (l: List<a>) => (result: List<a>): List<a> => {
+    if (l.kind == "empty") {
+      return result
+    }
+    else {
+      let newResult = Cons<a>(l.head, result)
+      return tailRecRev(l.tail)(newResult)
+    }
+  }
+  return tailRecRev(l)(Empty<a>())
 }
 
 export let nth = <a>(n: number) => (l: List<a>): a => {
