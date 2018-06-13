@@ -45,12 +45,26 @@ let insert = <a>(tree:BinaryTree<a>, value:a) : BinaryTree<a> => {
     }
 }
 
-let tryFind = <a>(tree:BinaryTree<a>, value:a) : Option<a> => {
+//uncurry
+// let tryFind = <a>(tree:BinaryTree<a>, value:a) : Option<a> => {
+//     if(tree.kind == "empty") return mk_nothing("found empty tree")
+//     else if(tree.value == value) return mk_something(value)
+//     else if(tree.value > value) return tryFind(tree.left, value)
+//     else return tryFind(tree.right, value)
+// }
+
+//curry
+let tryFind = <a>(tree:BinaryTree<a>) =>  (value:a) : Option<a> => {
     if(tree.kind == "empty") return mk_nothing("found empty tree")
     else if(tree.value == value) return mk_something(value)
-    else if(tree.value > value) return tryFind(tree.left, value)
-    else return tryFind(tree.right, value)
+    else if(tree.value > value) return tryFind(tree.left)(value)
+    else return tryFind(tree.right)(value)
 }
+
+
+let curry = <a, b, c>(f:(a:a, b:b) => c) => (a:a) => (b:b) => f(a, b)
+let uncurry = <a, b, c>(f:(a:a) => (b:b) => c) => (a:a, b:b) => f(a)(b)
+
 
 let to_string = <a>(tree:BinaryTree<a>) : string => {
     if(tree.kind == "empty") return "empty"
@@ -62,3 +76,7 @@ let to_string = <a>(tree:BinaryTree<a>) : string => {
 export let mk_tree = (elems:List<number>) : BinaryTree<number> => {
     return fold(elems, (value:number, tree:BinaryTree<number>) => tree.insert(value), empty_tree())
 }
+
+// let filter = <a> (tree:BinaryTree<a>) => (p:(a:a) => boolean) : BinaryTree<a> => {
+//     return fold(tree, (elem, new_tree) => p(elem) ? insert(new_tree, elem) : new_tree , empty_tree())
+// }

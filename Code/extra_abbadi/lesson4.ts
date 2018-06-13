@@ -23,7 +23,7 @@ import { List, mk_node, mk_empty } from "./lesson3"
 //     else return mk_node(l.value.toString(), to_string(l.next))
 // }
 
-let map = <a, b>(l:List<a>, f:((_:a)=>b)):List<b> => {
+export let map = <a, b>(l:List<a>, f:((_:a)=>b)):List<b> => {
     if(l.kind == "empty") return l
     else return mk_node(f(l.value), map(l.next, f))
 }
