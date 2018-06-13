@@ -30,6 +30,8 @@ v = (lambda x -> x)
 t = (((lambda f -> lambda g -> g) ((lambda x -> lambda y -> y) 3)))
 u = (lambda f -> lambda g -> f)
 
+(lambda f -> lambda g -> g) (lambda y -> y)
+
 t1 = (lambda g -> g)
 u1 = (lambda f -> lambda g -> f)
 
