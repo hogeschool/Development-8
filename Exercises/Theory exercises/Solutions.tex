@@ -1,0 +1,263 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{comment}
+\usepackage{mathpartir}
+\usepackage[top=2cm, bottom=3cm, left=1.5cm, right=1.5cm]{geometry}
+
+\newcommand{\tu}{\textunderscore}
+
+\lstset{
+	tabsize=2,
+	basicstyle=\small\ttfamily,
+	columns=fixed,
+	showstringspaces=false,
+	breaklines=true,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function
+  
+  \vspace{0.15cm}
+  \texttt{let #1 = #2}
+   
+   \vspace{0.15cm}
+   #3
+}
+\newcommand{\reductionEx}[3]{
+  \noindent
+  Given the following untyped lambda-calculus expression:
+  
+  \begin{equation*}
+  #1
+  \end{equation*}
+  
+  \noindent
+  replace the requested terms with the elements from the expression in the following lambda-calculus rule that evaluates it:
+  
+  \begin{mathpar}
+  #2
+  \end{mathpar}
+  
+  \begin{equation*}
+  #3
+  \end{equation*}
+}
+
+\newcommand{\varRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*[right=\quad (1)]{ }
+  {x \rightarrow_{\beta} x}
+  \end{mathpar}
+}
+
+\newcommand{\lambdaRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*[right=\quad (2)]{ }
+  {(\lambda x \rightarrow t) \; u \rightarrow_{\beta} t[x \mapsto u]}
+  \end{mathpar}
+}
+
+\newcommand{\appRule}{
+  \begin{mathpar}
+  \mprset{flushleft}
+  \inferrule*[right=\quad (3)]{ t \rightarrow_{\beta} t' \wedge u \rightarrow u' \wedge t' \; u' \rightarrow_{\beta} v }
+  {t \; u \rightarrow_{\beta} v}
+  \end{mathpar}
+}
+
+\newcommand{\emptyPlace}{\tu\tu\tu}
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}
+  
+  \vspace{0.15cm}
+ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\title{Development 8 - Theory exercises}
+\date {  }
+
+
+\begin{document}
+\maketitle
+\large
+\textbf{Beta-reduction rules:}
+\normalsize
+
+\vspace{0.5cm}
+\textbf{Variables:}
+\varRule
+
+\vspace{0.5cm}
+\textbf{Function application:}
+\lambdaRule
+
+\vspace{0.5cm}
+\textbf{Application:}
+\appRule
+
+\vspace{0.5cm}
+
+\exercise{
+  \begin{align*}
+  \begin{array}{l}
+  x = x\\
+  t = \lambda y \rightarrow x \; y\\
+  u = \lambda y \rightarrow x \; y\\
+  t[x \mapsto u] = \lambda y \rightarrow (\lambda y \rightarrow x \; y) \; y
+  \end{array} 
+  \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+    \begin{array}{l}
+    x = x\\
+    t = \lambda x \rightarrow \lambda y \rightarrow y \; x\\
+    u = A\\
+    t[x \mapsto u] = \lambda x \rightarrow \lambda y \rightarrow y \; x \text{ \quad\quad mind the scope of x! }
+    \end{array} 
+    \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+    \begin{array}{l}
+    x = f\\
+    t = \lambda g \rightarrow f\\
+    u = \lambda x \rightarrow y \; x\\
+    t[x \mapsto u] = \lambda g \rightarrow \lambda x \rightarrow y \; x
+    \end{array} 
+  \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+    \begin{array}{l}
+      x = x\\
+      t = \lambda y \rightarrow ((\lambda z \rightarrow z) x)\\
+      u = 0\\
+      t[x \mapsto u] = \lambda y \rightarrow ((\lambda z \rightarrow z) \; 0)
+      \end{array} 
+    \end{align*}
+}
+
+\exercise{
+   \begin{align*}
+      \begin{array}{l}
+        x = x\\
+        t = \lambda x \; y \rightarrow y \; x\\
+        u = 0\\
+        t[x \mapsto u] = \lambda x \; y \rightarrow y \; x \text{\quad\quad mind the scope of x! }\\
+        \end{array} 
+    \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+  \begin{array}{l}
+     t = (\lambda x \; y \rightarrow y) \; 5 \\
+     u = (\lambda x \rightarrow x) \; 3 \\
+     t' = \lambda y \rightarrow y \\
+     u'= 3 \\
+     v = 
+      \left \lbrace
+      \begin{array}{l}
+      (\lambda y \rightarrow y) \; 3 \rightarrow_\beta \quad\\
+      3 
+      \end{array} \right.
+   \end{array}
+  \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+    \begin{array}{l}
+       t = (\lambda f \; g \rightarrow f) (\lambda x \rightarrow x)\\
+       u = 5 \\
+       t' = \lambda g \rightarrow \lambda x \rightarrow x \\
+       u'= 5 \\
+       v = \left \lbrace \begin{array}{l}
+          (\lambda g \rightarrow \lambda x \rightarrow x) \; 5 \rightarrow_{\beta}\\
+          \lambda x \rightarrow x
+          \end{array} \right.
+     \end{array}
+    \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+      \begin{array}{l}
+         t = ((\lambda f \; g \rightarrow g) \; ((\lambda x \; y \rightarrow \; y) \; 3))\\
+         u = (\lambda f \; g \rightarrow f) \\
+         t' = \left\lbrace
+          \begin{array}{l}
+          (\lambda f \; g \rightarrow g) \; ((\lambda x \; y \rightarrow \; y) \; 3) \rightarrow_\beta\\
+          (\lambda f \; g \rightarrow g) \; (\lambda y \rightarrow \; y) \rightarrow_\beta\\
+          \lambda g \rightarrow g
+          \end{array} \right. \\
+         u'= (\lambda f \; g \rightarrow f) \\
+         v = \left \lbrace \begin{array}{l}
+            (\lambda g \rightarrow g) \; (\lambda f \; g \rightarrow f) \rightarrow_{\beta} \\
+            (\lambda f \; g \rightarrow f)
+            \end{array} \right.
+       \end{array}
+      \end{align*}
+}
+
+\exercise{
+  \begin{align*}
+        \begin{array}{l}
+           t = ((\lambda x \; y \; z \rightarrow y \; z \; x) \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y)\\
+           u = 3 \\
+           t' = \left\lbrace
+            \begin{array}{l}
+            ((\lambda x \; y \; z \rightarrow y \; z \; x) \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y) \rightarrow_\beta\\
+            (\lambda y \; z \rightarrow y \; z \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y) \rightarrow_\beta\\
+            \lambda z \rightarrow ((\lambda y \; x \rightarrow x) \; z) \; (\lambda x \rightarrow x) \rightarrow_{\beta}\\
+            \lambda z \rightarrow (\lambda x \rightarrow x) \; (\lambda x \rightarrow x) \rightarrow_{\beta}\\
+            \lambda z \rightarrow \lambda x \rightarrow x
+            \end{array} \right. \\
+           u'= 3 \\
+           v = \left \lbrace \begin{array}{l}
+              (\lambda z \rightarrow \lambda x \rightarrow x) \; 3 \rightarrow_{\beta}\\
+              (\lambda x \rightarrow x)
+              \end{array} \right.
+         \end{array}
+        \end{align*}
+}
+\newpage
+\exercise{
+  \begin{align*}
+    \begin{array}{l}
+       t = \lambda x \; y \rightarrow x\\
+       u = ((\lambda f \; g \rightarrow g) \; (\lambda x \rightarrow x)) \; 3 \\
+       t' = \lambda x \; y \rightarrow x \\
+       u'= \left\lbrace \begin{array}{l}
+           ((\lambda f \; g \rightarrow g) \; (\lambda x \rightarrow x)) \; 3 \rightarrow_{\beta}\\
+           (\lambda g \rightarrow g) \; 3 \\
+           3
+           \end{array} \right. \\
+       v = \left \lbrace \begin{array}{l}
+           (\lambda x \; y \rightarrow x) \; 3 \rightarrow_{\beta}\\
+           \lambda y \rightarrow 3
+          \end{array} \right.
+     \end{array}
+    \end{align*}
+}
+
+\end{document}
