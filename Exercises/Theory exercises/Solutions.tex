@@ -228,14 +228,15 @@
             \begin{array}{l}
             ((\lambda x \; y \; z \rightarrow y \; z \; x) \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y) \rightarrow_\beta\\
             (\lambda y \; z \rightarrow y \; z \; (\lambda x \rightarrow x)) (\lambda y \; x \rightarrow x \; y) \rightarrow_\beta\\
-            \lambda z \rightarrow ((\lambda y \; x \rightarrow x) \; z) \; (\lambda x \rightarrow x) \rightarrow_{\beta}\\
-            \lambda z \rightarrow (\lambda x \rightarrow x) \; (\lambda x \rightarrow x) \rightarrow_{\beta}\\
-            \lambda z \rightarrow \lambda x \rightarrow x
+            \lambda z \rightarrow ((\lambda y \; x \rightarrow x \; y) \; z) \; (\lambda x \rightarrow x) \rightarrow_{\beta}\\
+            \lambda z \rightarrow (\lambda x \rightarrow x \; z) \; (\lambda x \rightarrow x)\\
+            \lambda z \rightarrow (\lambda x \rightarrow x) \; z \\
+            \lambda z \rightarrow z
             \end{array} \right. \\
            u'= 3 \\
            v = \left \lbrace \begin{array}{l}
-              (\lambda z \rightarrow \lambda x \rightarrow x) \; 3 \rightarrow_{\beta}\\
-              (\lambda x \rightarrow x)
+              (\lambda z \rightarrow z) \; 3 \rightarrow_{\beta}\\
+              3
               \end{array} \right.
          \end{array}
         \end{align*}
