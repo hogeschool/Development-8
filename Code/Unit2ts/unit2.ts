@@ -62,7 +62,7 @@ export let Tuple = <a, b>(x: a, y: b): Tuple<a, b> => {
 
 export let last = <a>(l: List<a>): a => {
   if (l.kind == "empty") {
-    throw new TypeError("The list is empty")
+    throw new Error("The list is empty")
   }
   else if (l.length() == 1) {
     return l.head
@@ -119,7 +119,7 @@ export let rev = <a>(l: List<a>): List<a> => {
 
 export let nth = <a>(n: number) => (l: List<a>): a => {
   if (l.kind == "empty") {
-    throw new TypeError("Out of bound")
+    throw new Error("Out of bound")
   }
   else if (n == 0) {
     return l.head
