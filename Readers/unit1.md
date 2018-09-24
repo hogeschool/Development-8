@@ -118,3 +118,107 @@ will be shortened into
 $\lambda x_1 \; x_2\;  ...\; x_n \rightarrow t$
 
 so we will not write the internal arrows and $\lambda$ symbols.
+
+**Bindings**
+
+Let us consider the following lambda calculus expression\:
+
+$((\lambda f \; g \rightarrow f (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A) \; (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A)$
+
+
+The expression $(\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A$ appears twice. Since it is inconvenient to write such a complex expression every time we need it, we would like to be able to write someting like\:
+
+$\text{let E} = (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A \text{ in } ((\lambda f \; g \rightarrow f \; E) \; E)$
+
+This construct is called _binding_. Note that this does *not* (notice the emphasis on this word) have the same semantics as variable assignment in imperative programming\: a variable assignment changes the state of a program, whilst here there is no change of state (we do not have a state at all) and it is merely a renaming of expressions.
+
+We now show that bindings can be expressed in the current semantics of lambda calculus without adding something new. When we have a binding in the form
+
+```
+let x = y in t
+```
+
+we replace every occurrence of `x` in `t` with `y`. This allows us to use a shorter "version" `x` in `t` that will be replaced by its full form `y` when we need to evaluate the lambda calculus program. This is not much different than how we normally substitute variables in the substitution rule of lambda calculus. Actually, it is just the same! Thus, the semantics of `let` can be just expressed in terms of the substitution rule\:
+
+$eval \text{ let } x = y \text{ in } t \rightarrow eval \; (\lambda x \rightarrow t) \; y$
+
+**A final note on lambda calculus**
+
+Bindings are one of the many examples of language extensions that can be implemented directly in lambda calculus as it is. They are just syntax to make the language more usable but lambda calculus in its current form has the same expressive power as any regular programming language. Since this is not a theoretical course on formal computational models, we will not show here how to map every construct that we explain to lambda calculus, but we will merely acknowledge that this is possible. For instance, it is possible to build numbers, boolean, arithmetic operations, boolean operators, and conditional expressions (if\-then\-else) only in terms of abstractions, but we will just accept that this is possible without proving it and use them in functional languages and use them right away with their usual semantics. The only thing that we will add is a type system to lambda calculus.
+
+## F\# vs Lambda Calculus
+
+In this section we proceed to introduce F\#, the language of choice for this course, by showing how the language abstractions of lambda calculus are mapped to it. F\# is a hybrid functional-imperative language. This means that in F\# we can combine abstractions from functional programming with imperative statement. In this course we use its imperative part only to display something in the standard output. We choose this language over pure functional languages like Haskell because I/O operations (and not only) in such languages require the knowledge of advanced functional design patterns called _Monads_ that go beyond the scope of this course.
+
+Moreover, since we have not introduced typed lambda calculus yet, we will rely on the F\# ability to _infer_ types in the program that we write\: in many functional languages type annotation is not mandatory (like, for instance, in Java or C) because the type checker of the compiler is powerful enough to understand the type of an expression most of the times (but not always, this is why it is important to manually determine the type of an expression).
+
+**Bindings**
+
+Bindings follow the same syntax we have defined in lambda calculus, for example\:
+
+```fsharp
+let x = 5 in x + 1
+```
+
+It is possible to omit the `in` keyword by breaking the line, so that the binding above becomes\:
+
+```fsharp
+let x = 5
+x + 1
+```
+
+Note that F\# is indentation\-sensitive, which means that indentation is not just a way of making your code more readable but a syntax rule itself. In the case of a binding, indentation is necessary when the expression that is bound appears in a new line. For instance, if we wanted to put 5 on a new line we would need to indent the code\:
+
+```fsharp
+let x = 
+  5
+x + 1
+```
+
+In this case this looks quite useless, but when we have longer expressions this could be quite convenient\:
+
+```fsharp
+let x = 
+  3 + 5 * 2 - % 4
+x + 1
+```
+
+**Abstractions**
+
+Abstractions can be defined by using the keyword `fun` in place of $lambda$. For example, the lambda calculus abstraction $\lambda x \rightarrow x + 1$ would become in F\#\:
+
+```fsharp
+fun x -> x + 1
+```
+
+Of course for convenience it is possible to bind an abstraction to a specific name for later re\-use, such as\:
+
+```fsharp
+let inc = fun x -> x + 1
+inc 2
+```
+
+which in lambda-calculus would become $(\lambda inc \rightarrow inc \; 2) \; (\lambda x \rightarrow x + 1)$.
+
+**Function application**
+
+Function application follows the very same syntax of lambda\-calculus\:
+
+```fsharp
+(fun x -> x + 1) 3
+```
+
+Naturally, if we bind an abstraction we can then apply it by using the name of the binding, such as\:
+
+```fsharp
+let inc = fun x -> x + 1
+in
+  inc 3
+```
+
+or in the more compact notation
+
+```fsharp
+let inc = fun x -> x + 1
+inc 3
+```
