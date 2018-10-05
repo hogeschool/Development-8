@@ -216,9 +216,101 @@ in
   inc 3
 ```
 
-or in the more compact notation
+or in the more compact notation\:
 
 ```fsharp
 let inc = fun x -> x + 1
 inc 3
 ```
+
+An alternative syntax to defining abstractions is the following\:
+
+```fsharp
+let inc x = x + 1
+inc 3
+```
+
+## Conditionals
+
+Conditionals in functional programming have a different semantics then in imperative programming. In the previous courses of development we saw that imperative languages support two different kinds of conditionals\: one is a conditional _statement_ and one is a conditional _expression_. Since in functional programming we have no state, the only supported conditional is the conditional expression. F\# support a conditional expression with the syntax\:
+
+```fsharp
+if condition then
+  thenExpr
+else
+  elseExpr
+```
+
+which is much different from, for instance, its C\# counterpart
+
+```csharp
+condition ? thenExpr : elseExpr
+```
+
+but they share the same semantics\:
+
+`eval <if C then T else E>` $\rightarrow$ `<if C' then T else E>  where  eval <C>` $\rightarrow$  `C'`
+
+`eval <if true then T else E>` $\rightarrow$ `<T>`
+
+`eval <if false then T else E>` $\rightarrow$ `<E>`
+
+
+The following function shows the usage of the conditional expression\:
+
+```fsharp
+let toInfinityAndBeyond =
+  fun x ->
+    if x >= 0 then
+      x + 1
+    else
+      x - 1
+```
+
+Remember that conditional expressions always need and `else` expression.
+
+## Currying
+
+TODO
+
+## Recursion
+
+In functional programming there is no concept of loop. Indeed loops require stateful computation, as their semantics is defined as\:
+
+`eval (<while C do T>,S)` $\rightarrow$ `(<if C then { T; while C do T } else { done }>, S)`
+
+Functional programming can achieve an equivalent behaviour through recursive functions. In F\# recursive functions are defined through the keyword `let rec`. For example, let us assume that we want to return a string containing all the numbers divisible by a number `n`. We can achieve this through a recursive function\: this function starts from 1 and tests all the numbers less or equal than `n` one by one. The base case of the recursion happens when the number that we are testing is greater than the current number. In this case we simply return an empty string. Ohterwise we check if the number is divisible by `n` and, if that is the case, we add it to the string\:
+
+```fsharp
+let rec getDivisors =
+  fun n i ->
+    if i > n then
+      ""
+    else
+      if (n % i = 0) then
+        i + " " + (getDivisors n (i + 1))
+      else
+        getDivisors n (i + 1)
+```
+
+Note that this function is equivalent to the following imperative code in C\#\:
+
+```csharp
+static string GetDivisors(int n)
+{
+  int i = 0;
+  string s = "";
+  while (i <= n)
+  {
+    if (n % i == 0)
+      s += " " + i;
+  }
+  return s;
+}
+```
+
+Observe how, in the case of the recursive function, we use the stack of the recursive calls to carry ahead all the information necessary for the computation instead of relying on side effects and the state. This should give the reader an idea on why recursion and loops are two sides of the same coin, and why functional programming is as computationally expressive as imperative programming.
+
+
+
+
