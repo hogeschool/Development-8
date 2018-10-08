@@ -167,9 +167,25 @@ we replace every occurrence of `x` in `t` with `y`. This allows us to use a shor
 
 $eval \text{ let } x = y \text{ in } t \rightarrow eval \; (\lambda x \rightarrow t) \; y$
 
-**Scoping**
+**Shadowing**
 
-TODO
+Consider the following lambda calculus expression\:
+
+$(\lambda x \; y \; x \rightarrow y \; x) \; A$
+
+One could blindly apply the substitution rule and end up with
+
+$\lambda y \; x \rightarrow y \; A$
+
+This is, however, incorrect\: the scope of the outer variable `x` and the inner variable `x` is different. The `x` that we incorrectly substituted above is referring to the inner `x` parameter and not the outer. In other words, the inner `x` _shadows_ the outer `x`. The correct result will, thus be
+
+$\lambda y \; x \rightarrow y \; x$
+
+For better clarity, one should imagine that the expression presented at the beginning of this paragraph was written as\:
+
+$\lambda x_1 \; y \; x_2 \rightarrow y \; x_2$
+
+where it is shown explicitly that the outer parameter is different than the inner.
 
 **A final note on lambda calculus**
 
@@ -212,26 +228,9 @@ let x =
 x + 1
 ```
 
-**Abstractions**
+**Abstractions and Function Applications**
 
 Abstractions can be defined by using the keyword `fun` in place of $lambda$. For example, the lambda calculus abstraction $\lambda x \rightarrow x + 1$ would become in F\#\:
-
-```fsharp
-fun x -> x + 1
-```
-
-Of course for convenience it is possible to bind an abstraction to a specific name for later re\-use, such as\:
-
-```fsharp
-let inc = fun x -> x + 1
-inc 2
-```
-
-which in lambda-calculus would become $(\lambda inc \rightarrow inc \; 2) \; (\lambda x \rightarrow x + 1)$.
-
-**Function application**
-
-Function application follows the very same syntax of lambda\-calculus\:
 
 ```fsharp
 (fun x -> x + 1) 3
@@ -252,7 +251,16 @@ let inc = fun x -> x + 1
 inc 3
 ```
 
-An alternative syntax to defining abstractions is the following\:
+which in lambda-calculus would become $(\lambda inc \rightarrow inc \; 3) \; (\lambda x \rightarrow x + 1)$. Note that shadowing works as expected in F\#, so the result of the following program
+
+
+```fsharp
+let f = fun x -> x + 1
+let f = fun x -> x - 1
+f 3
+```
+
+will be 2 and not 4. An alternative syntax to defining abstractions is the following\:
 
 ```fsharp
 let inc x = x + 1
@@ -334,8 +342,48 @@ static string GetDivisors(int n)
 }
 ```
 
-Observe how, in the case of the recursive function, we use the stack of the recursive calls to carry ahead all the information necessary for the computation instead of relying on side effects and the state. This should give the reader an idea on why recursion and loops are two sides of the same coin, and why functional programming is as computationally expressive as imperative programming.
+Observe how, in the case of the recursive function, we use the stack of the recursive calls to carry ahead all the information necessary for the computation instead of relying on side effects and the state. This should give the reader an idea on why recursion and loops are two sides of the same coin, and why functional programming is as computationally expressive as imperative programming. The recursive function can then be invoked, for example, as\:
 
-At this point, since the function 
+```fsharp
+getDivisors 15 1
+```
 
+This approach is not ideal, since the second parameter that we provide in the function application should always be 1, but we ask the caller to provide it. The recursive function above can be encapsulated within another function\: this function takes as parameter only the number `n` and defines **internally** the code of the recursive function, that can just be invoked every time by passing `n` and `1`.
+
+```fsharp
+let getDivisors =
+  fun n ->
+    let rec mkDivisors =
+      fun n i ->
+        if i > n then
+          ""
+        else
+          if (n % i = 0) then
+            i + " " + (getDivisors n (i + 1))
+          else
+            getDivisors n (i + 1)
+    mkDivisors n 1
+```
+
+## Printing to the standard output
+
+As said above, F\# is a hybrid objected-oriented/functional programming language, thus it supports also side effects. In this course we rely on side effects only to print something to the standard output. In F\# it is possible to print to the standard output in two different ways\: the first is to rely, as for C\#, on `System.Console.WriteLine`, while the other is by using the functions `printf` or `printfn`, which is more idiomatic.
+
+The function `printf` (and in the same `printfn`, with the only difference that a new line is added at the end) takes as input a _formatted string_. A formatted string contains regular text, as well as formatting information, that allows to inline the string representation of its parameters. The function can take a variable number of parameters, so it is possible to pass as many parameters as necessary. For example\:
+
+```fsharp
+printf "The city of %s was founded in %d %s and is %f KM far from Rotterdam" "Rome" 748 "BC" 1615.0
+```
+
+For a more comprehensive list of formatting parameters, visit [MSDN](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/core.printf-module-%5Bfsharp%5D)
+
+
+
+## Summary
+
+In this unit we started by describing the differences between imperative and functional programming. We showed that functional programming involves _stateless computation_ as functional program consists of a sequence of expressions that are evaluated, rather than a sequence of instructions that change a state. We hinted that this has the benefit that the result of a program never depends on the order of evaluation of its expressions or function calls.
+
+We then proceeded to outline the model that embraces all functional programming languages, called _lambda calculus_. In this unit we presented the semantics of the untyped version of this model.
+
+We then introduced the functional programming language F\# and show how to map constructs from lambda calculus in it.
 
