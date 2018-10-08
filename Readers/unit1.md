@@ -101,13 +101,38 @@ This rule states that, whenever we have a function application where the left te
 
 **Example**
 
-$eval \; ((\lambda x \rightarrow \lambda y \rightarrow x) \; A) \; ((\lambda f g \rightarrow g) (\lambda x \rightarrow z))$
+$eval \; ((\lambda x \rightarrow x) \; A) \; ((\lambda y \rightarrow A) \; B)$
 
-$eval \; ((\lambda x \rightarrow \lambda y \rightarrow x) \; A) \rightarrow (\lambda y \rightarrow A)$
+$eval \; A \; ((\lambda y \rightarrow A) \; B)$
 
-$eval \; (\lambda f g \rightarrow g) \; (\lambda x \rightarrow z) \rightarrow (\lambda g \rightarrow g)$
+$A \; A$
 
-$eval \; (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A$
+**Currying**
+
+As defined above, abstractions can accept only one input parameter. This might look limiting, since in all programming languages it is possible to write functions that accept multiple parameters. However, in functional programming, we can return other abstractions as result of an abstraction to overcome this limitation. Consider the following method in C\#:
+
+```csharp
+static int Add(int x, int y)
+{
+  return x + y;
+}
+
+```
+Assuming that arithmetic operators are available in lambda calculus (see the remark below for this),  we can build a function that takes `x` as parameter and whose body contains **another abstraction** that accepts `y` as parameter and finally computes  `x + y` in its body\:
+
+$\lambda x \rightarrow \lambda y \rightarrow x + y$
+
+Now, let us actually test that this behaves as expected\:
+
+$((\lambda x \rightarrow \lambda y \rightarrow x + y) \; 5) \; 3$
+
+$(\lambda y \rightarrow 5 + y) \; 3$
+
+$5 + 3$
+
+This mechanism is known as _currying_\: the arguments to the abstraction are substituted one by one and replaced sequentially. Since the outer abstraction body contains another lambda, when we perform the first substitution, the result will be another abstraction whose body contains the inlined value 5 and the argument variable `y`. At the next function application, the parameter `y` of this second abstraction will be replaced by 3.
+
+This can be seen as a mechanism where the outer abstraction can produce infinitely many abstractions as result that are capable to add any number to 5 (but to 5 only\!).
 
 For compactness, from now on, the following verbose notation
 
@@ -141,6 +166,10 @@ let x = y in t
 we replace every occurrence of `x` in `t` with `y`. This allows us to use a shorter "version" `x` in `t` that will be replaced by its full form `y` when we need to evaluate the lambda calculus program. This is not much different than how we normally substitute variables in the substitution rule of lambda calculus. Actually, it is just the same! Thus, the semantics of `let` can be just expressed in terms of the substitution rule\:
 
 $eval \text{ let } x = y \text{ in } t \rightarrow eval \; (\lambda x \rightarrow t) \; y$
+
+**Scoping**
+
+TODO
 
 **A final note on lambda calculus**
 
@@ -269,10 +298,6 @@ let toInfinityAndBeyond =
 
 Remember that conditional expressions always need and `else` expression.
 
-## Currying
-
-TODO
-
 ## Recursion
 
 In functional programming there is no concept of loop. Indeed loops require stateful computation, as their semantics is defined as\:
@@ -311,6 +336,6 @@ static string GetDivisors(int n)
 
 Observe how, in the case of the recursive function, we use the stack of the recursive calls to carry ahead all the information necessary for the computation instead of relying on side effects and the state. This should give the reader an idea on why recursion and loops are two sides of the same coin, and why functional programming is as computationally expressive as imperative programming.
 
-
+At this point, since the function 
 
 
