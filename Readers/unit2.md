@@ -31,7 +31,7 @@ let (x : float) = 5
 whereas, the same code in C\# would work\:
 
 ```csharp
-float x = 5;
+double x = 5;
 ```
 
 In order to correctly type the expression above, we use the correct floating\-point double\-precision literal:
@@ -73,3 +73,47 @@ let add (x : int) (y : int) : int = x + y
  ```
 
  This means that the function `stringify` is generic with respect to the type parameter `'a`. Note that the language distinguishes between non\-generic and generic types by checking if they are preceeded by an apostrophe, thus `'string` denotes a generic type called `string` and `string` (without the apostrophe) is the built\-in type for strings.
+
+## Basic Data Structures in F\#
+
+F\# natively implements complex data structures such as _tuples_ and _lists_. A tuple is an ordered sequence of non-homogeneous values, such as `(3,"Hello world!",-45.3f)`. The type of a tuple is denoted as
+
+```
+t1 * t2 * ... * tn
+```
+
+where `t1`, `t2`,..., `tn` are types. Thus a tuple is the n-ary cartesian product of values of type `t1`, `t2`,..., `tn`. For example\:
+
+```fsharp
+let (t : int * string * float32) = (3,"Hello world!",-45.3f)
+```
+
+Tuples, of course, can be passed as arguments to functions. In this context, there is a particular application of this which is an alternative to currying. In Unit 1 we saw that in lambda calculus (and also in F\#) function admits one argument only. In order to model the behaviour of functions that operate on more than one argument, we relied on the notion of currying\: a function that wants to use two arguments will simply return in its body another lambda that is able to process the second argument and has in its closure the first argument. For instance\:
+
+```fsharp
+let add = fun x -> fun y -> x + y
+```
+
+When we call such function with `add 3 5` we replace `x` with 3 in its body thus generating `fun y -> 3 + y`, and then we apply `(fun y -> 3 + y) 5` thus obtaining `3 + 5 = 8`. An alternative to this is the _uncurried_ version, where we pass the arguments in a tuple as follows\:
+
+```fsharp
+let addUncurried = fun (x,y) -> x + y
+```
+
+Note that the curried and uncurried versions are not interchangable because their type is different. For instance, the type of `add` is\:
+
+```fsharp
+let (add : int -> int -> int) = fun x y -> x + y
+```
+
+while the type of `addUncurried` is\:
+
+```fsharp
+let (addUncurried : int * int -> int) = fun (x,y) -> x + y
+```
+
+Notice that the uncurried version of a function takes both arguments all together, thus partial application is not possible\: we can call `add 3` and this will generate as result `lambda y -> 3 + y`, but we cannot call `addUncurried 3` because this would mean passing an argument of typ `int` to a function that expects `int * int`. We will see further ahead in this course that it is possible to define a generic function that can convert the curried version of a function to the uncurried version, and the opposite.
+
+## Optional Type
+
+Another buit-in type in F\# is `option`.

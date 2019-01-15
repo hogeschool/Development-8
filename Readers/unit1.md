@@ -372,7 +372,8 @@ As said above, F\# is a hybrid objected-oriented/functional programming language
 The function `printf` (and in the same `printfn`, with the only difference that a new line is added at the end) takes as input a _formatted string_. A formatted string contains regular text, as well as formatting information, that allows to inline the string representation of its parameters. The function can take a variable number of parameters, so it is possible to pass as many parameters as necessary. For example\:
 
 ```fsharp
-printf "The city of %s was founded in %d %s and is %f KM far from Rotterdam" "Rome" 748 "BC" 1615.0
+printf "The city of %s was founded in %d %s and is %f KM far from Rotterdam" 
+  "Rome" 748 "BC" 1615.0
 ```
 
 For a more comprehensive list of formatting parameters, visit [MSDN](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/core.printf-module-%5Bfsharp%5D)
@@ -387,3 +388,99 @@ We then proceeded to outline the model that embraces all functional programming 
 
 We then introduced the functional programming language F\# and show how to map constructs from lambda calculus in it.
 
+# Exercises
+
+## Exercise 1
+
+Implement a function
+
+```fsharp
+let allNumber (n: int) : string =
+```
+
+that returns a string containing all numbers from 0 to n. Separate the numbers with a white space.
+
+## Exercise 2
+
+Implement a function
+
+```fsharp
+let allNumberRev (n: int) : string
+```
+
+that returns a string containing all numbers from n to 0. Separate the numbers with a white space.
+
+## Exercise 3
+
+
+Implement a function
+
+```fsharp
+let allNumberRange (lower: int) (upper: int) : string
+```
+
+that returns a string containing all numbers from n to 0. Separate the numbers with a white space.
+
+## Exercise 4
+
+Implement a function
+
+```fsharp
+let allNumberRangeRev (lower: int) (upper: int) : string
+```
+
+that returns a string containing all numbers between lower and upper in reverse order. Separate the numbers with a white space.
+
+## Exercise 5
+
+Implement a function
+
+```fsharp
+let allEvenRange (lower: int) (upper: int) : string
+```
+
+that returns a string containing all even numbers between lower and upper. Separate the numbers with a white space.
+
+## Exercise 6
+
+Implement a function
+
+```fsharp
+let drawLine (length: int) : string
+```
+
+that returns a string containing length asterisks.
+
+## Exercise 7
+
+Implement a function
+
+```fsharp
+let drawSymbols (symbol: char) (length: int) : string
+```
+
+that returns a string containing length repetitions of symbol.
+
+## Exercise 8
+
+Implement a function
+
+```fsharp
+let toBinary (n: int) : string
+```
+
+that returns a string containing the binary representation of the input number (it must be positive).
+The binary representation is obtained using the following procedure:
+
+1. Add to the end of the string the remainder of the division between the current number and 2.
+2. Repeat the previous step with `n / 2` until the number is 0. In this case simply don't add anything.
+
+## Exercise 9
+
+Implement a function
+
+```fsharp
+let toBase (n: int) (base: int) : string
+```
+
+that returns a string containing the representation of the input number in an arbitrary base (the number must be positive). The algorithm is the same as above except you must take the remainder of `n` divided by `base` and pass `n / base` to the next step.
