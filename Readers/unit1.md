@@ -2,7 +2,7 @@
 
 Functional programming is a programming paradigm that is profoundly different from the imperative paradigm. This programming paradigm grants additional properties on the code that help the programmer to write code that is maintainable and correct. For this reason also imperative languages widely used in the industry have been including functional programming construct during the last decades: C\#, C++, Java, Javascript, Typescript all provide means of writing programs in terms  of functional programming abstractions, and some of them even integrated type systems that are as expressive as those of Haskell or CamL. It is evident that functional programming trascendended the role of a tool used only by researchers and pioneers of programming and is becoming more and more a reality in the industry.
 
-The goal of this unit is to show the reader a comparison between the model of imperative programming, which was explained during the Development courses of the first year, and the functional paradigm. We then proceed to define the semantics of a functional programming language in terms of the lambda\-calculus model and we finish by introducing F\#, the functional language of choice.
+The goal of this unit is to show the reader a comparison between the model of imperative programming, which was explained during the Development courses of the first year, and the functional paradigm. We then proceed to define the semantics of a functional programming language, namely F\#, and we present its main features.
 
 ## Imperative programming vs functional programming
 
@@ -35,9 +35,9 @@ x = x + 1
 
 In the first case, at the end of the execution, the state is $\lbrace x := 6, y := 4 \rbrace$ while in the second case the state is $\lbrace x := 6, y := 3 \rbrace$. The different results are determined by the different order of execution of line 3 and 4 in the two programs, wich is inverted in the second version. This creates undesirable side effect not only in single\-thread programs but also in multi\-thread ones. Getting rid of the problems related to shared memory often grants additional correctness properties and benefits, for example, parallelization and code maintainability. One very straightforward solution is getting rid of the mutable state itself, and this is where functional programming comes into play.
 
-The computation in functional programming does not rely on the notion of state, and for this reason it is always defined as _stateless_ or _immutable_. The computation in a functional programming language consists of expression evaluations. Recalling the development courses of last year, we defined in the semantics a special semantics, called `eval_expr`, to process expression\: its evaluation did not change the state of the program (even though we were in the context of imperative programming) because the result was simply a value resulting from a computation.
+The computation in functional programming does not rely on the notion of state, and for this reason it is defined as _stateless_ or _immutable_. The computation in a functional programming language consists of expression evaluations. Recalling the development courses of last year, we defined in the semantics a special semantics, called `eval_expr`, to process expression\: its evaluation did not change the state of the program (even though we were in the context of imperative programming) because the result was simply a value resulting from a computation.
 
-$eval\text{\textunderscore}expr(\langle E\rangle, S) \rightarrow \langle E'\rangle$
+$eval\text{\textunderscore}expr(\langle E\rangle, S) \Rightarrow \langle E'\rangle$
 
 The stateless model of computation grants an important property called _referential transparency_. Referential transparency grants that, at any point of a program, we can replace an expression with its value without changing the final result of the computation. In the following program
 
