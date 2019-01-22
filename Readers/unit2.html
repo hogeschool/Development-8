@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>Types in Functional Programming</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+        <style>
+/*--------------------------------------------------------------------------------------------- * Copyright (c) Microsoft Corporation. All rights reserved. * Licensed under the MIT License. See License.txt in the project root for license information. *--------------------------------------------------------------------------------------------*/ body { font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback"; font-size: 14px; padding: 0 26px; line-height: 22px; word-wrap: break-word; } #code-csp-warning { position: fixed; top: 0; right: 0; color: white; margin: 16px; text-align: center; font-size: 12px; font-family: sans-serif; background-color:#444444; cursor: pointer; padding: 6px; box-shadow: 1px 1px 1px rgba(0,0,0,.25); } #code-csp-warning:hover { text-decoration: none; background-color:#007acc; box-shadow: 2px 2px 2px rgba(0,0,0,.25); } body.scrollBeyondLastLine { margin-bottom: calc(100vh - 22px); } body.showEditorSelection .code-line { position: relative; } body.showEditorSelection .code-active-line:before, body.showEditorSelection .code-line:hover:before { content: ""; display: block; position: absolute; top: 0; left: -12px; height: 100%; } body.showEditorSelection li.code-active-line:before, body.showEditorSelection li.code-line:hover:before { left: -30px; } .vscode-light.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(0, 0, 0, 0.15); } .vscode-light.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(0, 0, 0, 0.40); } .vscode-light.showEditorSelection .code-line .code-line:hover:before { border-left: none; } .vscode-dark.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 255, 255, 0.4); } .vscode-dark.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 255, 255, 0.60); } .vscode-dark.showEditorSelection .code-line .code-line:hover:before { border-left: none; } .vscode-high-contrast.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 160, 0, 0.7); } .vscode-high-contrast.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 160, 0, 1); } .vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before { border-left: none; } img { max-width: 100%; max-height: 100%; } a { text-decoration: none; } a:hover { text-decoration: underline; } a:focus, input:focus, select:focus, textarea:focus { outline: 1px solid -webkit-focus-ring-color; outline-offset: -1px; } hr { border: 0; height: 2px; border-bottom: 2px solid; } h1 { padding-bottom: 0.3em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; } h1, h2, h3 { font-weight: normal; } h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; line-height: auto; } table { border-collapse: collapse; } table > thead > tr > th { text-align: left; border-bottom: 1px solid; } table > thead > tr > th, table > thead > tr > td, table > tbody > tr > th, table > tbody > tr > td { padding: 5px 10px; } table > tbody > tr + tr > td { border-top: 1px solid; } blockquote { margin: 0 7px 0 5px; padding: 0 16px 0 10px; border-left-width: 5px; border-left-style: solid; } code { font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback"; font-size: 14px; line-height: 19px; } body.wordWrap pre { white-space: pre-wrap; } .mac code { font-size: 12px; line-height: 18px; } pre:not(.hljs), pre.hljs code > div { padding: 16px; border-radius: 3px; overflow: auto; } /** Theming */ pre code { color: var(--vscode-editor-foreground); } .vscode-light pre { background-color: rgba(220, 220, 220, 0.4); } .vscode-dark pre { background-color: rgba(10, 10, 10, 0.4); } .vscode-high-contrast pre { background-color: rgb(0, 0, 0); } .vscode-high-contrast h1 { border-color: rgb(0, 0, 0); } .vscode-light table > thead > tr > th { border-color: rgba(0, 0, 0, 0.69); } .vscode-dark table > thead > tr > th { border-color: rgba(255, 255, 255, 0.69); } .vscode-light h1, .vscode-light hr, .vscode-light table > tbody > tr + tr > td { border-color: rgba(0, 0, 0, 0.18); } .vscode-dark h1, .vscode-dark hr, .vscode-dark table > tbody > tr + tr > td { border-color: rgba(255, 255, 255, 0.18); } 
+</style>
+<style>
+/* https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs2015.css */ /* * Visual Studio 2015 dark style * Author: Nicolas LLOBERA <nllobera@gmail.com> */ .hljs-keyword, .hljs-literal, .hljs-symbol, .hljs-name { color: #569CD6; } .hljs-link { color: #569CD6; text-decoration: underline; } .hljs-built_in, .hljs-type { color: #4EC9B0; } .hljs-number, .hljs-class { color: #B8D7A3; } .hljs-string, .hljs-meta-string { color: #D69D85; } .hljs-regexp, .hljs-template-tag { color: #9A5334; } .hljs-subst, .hljs-function, .hljs-title, .hljs-params, .hljs-formula { color: #DCDCDC; } .hljs-comment, .hljs-quote { color: #57A64A; font-style: italic; } .hljs-doctag { color: #608B4E; } .hljs-meta, .hljs-meta-keyword, .hljs-tag { color: #9B9B9B; } .hljs-variable, .hljs-template-variable { color: #BD63C5; } .hljs-attr, .hljs-attribute, .hljs-builtin-name { color: #9CDCFE; } .hljs-section { color: gold; } .hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: bold; } /*.hljs-code { font-family:'Monospace'; }*/ .hljs-bullet, .hljs-selector-tag, .hljs-selector-id, .hljs-selector-class, .hljs-selector-attr, .hljs-selector-pseudo { color: #D7BA7D; } .hljs-addition { background-color: #144212; display: inline-block; width: 100%; } .hljs-deletion { background-color: #600; display: inline-block; width: 100%; } /* From https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs.css */ /* Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name> */ .vscode-light .hljs-function, .vscode-light .hljs-params { color: inherit; } .vscode-light .hljs-comment, .vscode-light .hljs-quote, .vscode-light .hljs-variable { color: #008000; } .vscode-light .hljs-keyword, .vscode-light .hljs-selector-tag, .vscode-light .hljs-built_in, .vscode-light .hljs-name, .vscode-light .hljs-tag { color: #00f; } .vscode-light .hljs-string, .vscode-light .hljs-title, .vscode-light .hljs-section, .vscode-light .hljs-attribute, .vscode-light .hljs-literal, .vscode-light .hljs-template-tag, .vscode-light .hljs-template-variable, .vscode-light .hljs-type, .vscode-light .hljs-addition { color: #a31515; } .vscode-light .hljs-deletion, .vscode-light .hljs-selector-attr, .vscode-light .hljs-selector-pseudo, .vscode-light .hljs-meta { color: #2b91af; } .vscode-light .hljs-doctag { color: #808080; } .vscode-light .hljs-attr { color: #f00; } .vscode-light .hljs-symbol, .vscode-light .hljs-bullet, .vscode-light .hljs-link { color: #00b0e8; } .vscode-light .hljs-emphasis { font-style: italic; } .vscode-light .hljs-strong { font-weight: bold; }
+</style>
+<style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+    </head>
+    <body>
+        <h1 id="types-in-functional-programming">Types in Functional Programming</h1>
+<p>In Unit 1 we introduced an untyped formulation of lambda calculus, which is the foundational model of functional programming. We then proceeded to translate the constructs of lambda calculus into the functional programming language F# without focusing on types. In this chapter we introduce a statically typed version of lambda calculus and then we show how its usage in F#. We then proceed to define basic data structures in F#</p>
+<h2 id="typed-lambda-calculus">Typed Lambda Calculus</h2>
+<p>In this section we present the typing rules for lambda-calculus. As we have seen in the previous unit, lambda-calculus is made of the following main components: variables, abstractions, and function applications.</p>
+<p>//TODO</p>
+<h2 id="type-annotation-in-f">Type Annotation in F#</h2>
+<p>Type checking in F# follows the same basics rules defined in the previous section. Type annotation of bindings can be achieved with the following syntax:</p>
+<pre><code><div>let (id : type) = expr
+</div></code></pre>
+<p>where <code>id</code> is the identifier used for the binding and <code>type</code> a valid type indentified. Basic types in F# are <code>int</code>, <code>float</code> (double-precision floating-point numbers like <code>double</code> in C#), <code>float32</code> (single-precision floating-point numbers like <code>float</code> in C#), <code>string</code>, ...</p>
+<p>For example:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (x : float) = <span class="hljs-number">5.25</span>
+</div></code></pre>
+<p>Note that F# does not perform automatic type conversions like C#, so for example the following code will produce a type error:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (x : float) = <span class="hljs-number">5</span>
+</div></code></pre>
+<p>whereas, the same code in C# would work:</p>
+<pre><code class="language-csharp"><div><span class="hljs-keyword">double</span> x = <span class="hljs-number">5</span>;
+</div></code></pre>
+<p>In order to correctly type the expression above, we use the correct floating-point double-precision literal:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (x : float) = <span class="hljs-number">5.0</span>
+</div></code></pre>
+<p>For this reason, every numerical type has its different corresponding literal in F#. A comprehensive list can be found in <a href="https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals">MSDN</a>.</p>
+<p>Arguments of lambda abstractions can be typed analogously:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (f : t1 -&gt; t2 -&gt; ... -&gt; tn -&gt; tr) = 
+  (<span class="hljs-keyword">fun</span> (arg1 : t1) (arg2 : t2) ... (argn : tn) -&gt; expr) : t1 -&gt; t2 -&gt; ... -&gt; tn -&gt; tr
+</div></code></pre>
+<p>Notice that, if we do not want to rely on type inference, we must provide the type of the binding as the type of an abstraction, as we are binding a lambda. For example:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (add: int -&gt; int -&gt; int) = <span class="hljs-keyword">fun</span> (x : int) (y : int) -&gt; x + y
+</div></code></pre>
+<p>As seen in Unit 1, an alternative notation to define functions is possible, which becomes with type annotations:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> f (arg1 : t1) (arg2 : t2) ... (argn : tn) : tr = expr
+</div></code></pre>
+<p>Thus, for example, the function <code>add</code> can be redefined as:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> add (x : int) (y : int) : int = x + y
+</div></code></pre>
+<p>F# supports generic polymorphism, thus we can provide type parameters to functions. This is done by adding an apostrophe before the type name, such as:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (stringify : <span class="hljs-symbol">'a</span> -&gt; string) = <span class="hljs-keyword">fun</span> (x : <span class="hljs-symbol">'a</span>) -&gt; string x
+</div></code></pre>
+<p>This means that the function <code>stringify</code> is generic with respect to the type parameter <code>'a</code>. Note that the language distinguishes between non-generic and generic types by checking if they are preceeded by an apostrophe, thus <code>'string</code> denotes a generic type called <code>string</code> and <code>string</code> (without the apostrophe) is the built-in type for strings.</p>
+<h2 id="basic-data-structures-in-f">Basic Data Structures in F#</h2>
+<p>F# natively implements complex data structures such as <em>tuples</em> and <em>lists</em>. A tuple is an ordered sequence of non-homogeneous values, such as <code>(3,&quot;Hello world!&quot;,-45.3f)</code>. The type of a tuple is denoted as</p>
+<pre><code><div>t1 * t2 * ... * tn
+</div></code></pre>
+<p>where <code>t1</code>, <code>t2</code>,..., <code>tn</code> are types. Thus a tuple is the n-ary cartesian product of values of type <code>t1</code>, <code>t2</code>,..., <code>tn</code>. For example:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (t : int * string * float32) = (<span class="hljs-number">3</span>,<span class="hljs-string">"Hello world!"</span>,<span class="hljs-number">-45.3</span>f)
+</div></code></pre>
+<p>Tuples, of course, can be passed as arguments to functions. In this context, there is a particular application of this which is an alternative to currying. In Unit 1 we saw that in lambda calculus (and also in F#) function admits one argument only. In order to model the behaviour of functions that operate on more than one argument, we relied on the notion of currying: a function that wants to use two arguments will simply return in its body another lambda that is able to process the second argument and has in its closure the first argument. For instance:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> add = <span class="hljs-keyword">fun</span> x -&gt; <span class="hljs-keyword">fun</span> y -&gt; x + y
+</div></code></pre>
+<p>When we call such function with <code>add 3 5</code> we replace <code>x</code> with 3 in its body thus generating <code>fun y -&gt; 3 + y</code>, and then we apply <code>(fun y -&gt; 3 + y) 5</code> thus obtaining <code>3 + 5 = 8</code>. An alternative to this is the <em>uncurried</em> version, where we pass the arguments in a tuple as follows:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> addUncurried = <span class="hljs-keyword">fun</span> (x,y) -&gt; x + y
+</div></code></pre>
+<p>Note that the curried and uncurried versions are not interchangable because their type is different. For instance, the type of <code>add</code> is:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (add : int -&gt; int -&gt; int) = <span class="hljs-keyword">fun</span> x y -&gt; x + y
+</div></code></pre>
+<p>while the type of <code>addUncurried</code> is:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (addUncurried : int * int -&gt; int) = <span class="hljs-keyword">fun</span> (x,y) -&gt; x + y
+</div></code></pre>
+<p>Notice that the uncurried version of a function takes both arguments all together, thus partial application is not possible: we can call <code>add 3</code> and this will generate as result <code>lambda y -&gt; 3 + y</code>, but we cannot call <code>addUncurried 3</code> because this would mean passing an argument of typ <code>int</code> to a function that expects <code>int * int</code>. We will see further ahead in this course that it is possible to define a generic function that can convert the curried version of a function to the uncurried version, and the opposite.</p>
+<h2 id="records">Records</h2>
+<p>Recors are a set of named values that can optionally define some members. This definition resembles that of Class in a object-oriented language, but there is a profound difference: the fields of a record are by default immutable, meaning that it is not possible to change their values directly. Of course, being a hybrid language, F# allows also to define mutable record fields, but, as said before, we ignore mutability in this course. A record is declared with the following syntax:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">R</span> </span>=
+  {
+    f1 : t1
+    f2 : t2
+    ...
+    fn : tn
+  }
+</div></code></pre>
+<p>For instance, the following record represents the login information to connect to a server:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">LoginInfo</span> </span>=
+  {
+    UserName        : string
+    Password        : string
+    Address         : string
+  }
+</div></code></pre>
+<p>Synce F# is indentation sensitive, we must place particular care about how we indent the record definition: brackets should be indented with respect to the <code>type</code> keyword, and fields must be indented with respect to brackes. Failing to do so will result in a compilation error.</p>
+<p>Optionally a record can define some methods and properties (members):</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">R</span> </span>=
+  {
+    f1 : t1
+    f2 : t2
+    ...
+    fn : tn
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> M1(arg1 : t1, arg2 : t2, ..., argn : tn1) : tr1 =
+    ...
+    <span class="hljs-keyword">member</span> this.M2(arg1 : t1, arg2 : t2, ..., argn : tn2) : tr2 =
+    ...
+</div></code></pre>
+<p>A characteristic of F# is that an instance method must always declare the name of the implicit <code>this</code> parameter. This is so because F# does not restrict the name of the implicit parameter to a specific keyword, like <code>this</code> in C#, rather it can be customized, so for example you could call it <code>self</code> or <code>current</code>. Notice that it is possible also to use the curried version of methods with the usual syntax. For instance:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.M2 (arg1 : T1) (arg2 : T2) ... (argn : tn2) : tr2 = ...
+</div></code></pre>
+<p>Also notice that, in order to define a recursive method, it is not necessary to use the <code>rec</code> keyword as for functions. All members can be recursivelly called without the need of an extra clause.</p>
+<p>A record can be instantiated with the following syntax:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> r = { f1 = value1 ; f2 = value2 ; ... ; fn = valuen }
+</div></code></pre>
+<p>or</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> r =
+  {
+    f1 = value1
+    f2 = value2
+    ...
+    fn = valuen
+  }
+</div></code></pre>
+<p>It is immediately evident that, for records with a high number of fields, this syntax becomes quite cumbersome. For this reason, it is preferable to define a static method <code>Create</code> to instantiate a record:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">R</span> </span>=
+  {
+    f1 : t1
+    f2 : t2
+    ...
+    fn : tn
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(arg1 : t1, arg2 : t2, ..., argn : tn) : R =
+      {
+        f1 = arg1
+        f2 = arg2
+        ...
+        fn = argn
+      }
+</div></code></pre>
+<h2 id="record-copy-and-update">Record copy and update</h2>
+<p>As said above, records are immutable, so it is not possible to directly update their fields. In order obtain the same effect of a field update, we must create a new record where all the values of the fields that are left untouched by the update are initialized by reading the corresponding values in the original record, and all the updated fields are initialized with the new value. For instance, let us consider the <code>LoginInfo</code> above, and suppose that you need to change the server address, that would require the following steps:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> oldLogin = { UserName = <span class="hljs-string">"awesomeuser@aw.us"</span> ; Password = <span class="hljs-string">"supersecretkey"</span>; Address = <span class="hljs-string">"155.34.21.105"</span> }
+<span class="hljs-keyword">let</span> newLogin = { UserName = oldLogin.UserName; Password = oldLogin.Password; Address = <span class="hljs-string">"165.40.69.69"</span> } 
+</div></code></pre>
+<p>You can immediately notice that this operation becomes quite cumbersome when updating just a small number of fields of records with many fields. For this reason, the following shortcut is available:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> newRecord = 
+  { oldRecord <span class="hljs-keyword">with</span> 
+      f1 = v1
+      f2 = v2 
+      ... 
+      fk = vk 
+  }
+</div></code></pre>
+<p>This will make a copy of oldRecord and initialize the fields <code>f1</code>,<code>f2</code>, ..., <code>fk</code> with the specified values, while the others simply contain the values from <code>oldRecord</code>. The concrete example above becomes then :</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> oldLogin = { UserName = <span class="hljs-string">"awesomeuser@aw.us"</span> ; Password = <span class="hljs-string">"supersecretkey"</span>; Address = <span class="hljs-string">"155.34.21.105"</span> }
+<span class="hljs-keyword">let</span> newLogin =
+  {oldLogin <span class="hljs-keyword">with</span>
+      Address = <span class="hljs-string">"165.40.69.69"</span>
+  }
+</div></code></pre>
+<h2 id="structural-equality">Structural Equality</h2>
+<p>Lacking the notion of states, functional programming languages cannot perform equality comparisons based on references, like we are used to in imperative programming languages. By default, all data structures in F#, including newly-defined records, are compared by value and not by reference. This means that, using the <code>=</code> operator, F# will recursively check the components of the data structures and compare their value.
+For instance, consider the tuples <code>let t1 = (1,3,5)</code> and <code>let t2 = (1,3,-5)</code>: in this case F# will compare the first component of <code>t1</code> with the first component of <code>t2</code>, which passes the test. Then it will compare the second component of <code>t1</code> with the second of <code>t2</code>, passing the test as well. Finally, the third components are compare, which returns <code>false</code> because of course 5 and -5 are different. The same is done for the fields of a record. Notice that, since tuple components and record fields can contain complex data structures, this procedure is recursive, i.e. if the component/field is a tuple or a record then the structural equality is recursively applied on their values. For instance, the value in <code>test</code> in the following code is <code>true</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> l1 = { UserName = <span class="hljs-string">"awesomeuser@aw.us"</span> ; Password = <span class="hljs-string">"supersecretkey"</span>; Address = <span class="hljs-string">"155.34.21.105"</span> }
+<span class="hljs-keyword">let</span> l2 = { UserName = <span class="hljs-string">"awesomeuser@aw.us"</span> ; Password = <span class="hljs-string">"supersecretkey"</span>; Address = <span class="hljs-string">"155.34.21.105"</span> }
+<span class="hljs-keyword">let</span> test = l1 = l2
+</div></code></pre>
+<h2 id="case-study-tanks-and-guns">Case Study: Tanks and Guns</h2>
+<p>In this section we present a small case study to show the usage of records. Let us assume that we want to model an entity <code>Tank</code> defined by name, speed, weapon, armor, and health. Each tank weapon is a gun defined by name, penetration power, and damage. A tank can shoot another tank with its gun, with the following effect: if the gun penetration is higher than the armour than the health of the target is reduced by the weapon damage. Otherwise the amount of armour is decreased by the gun penetration. Let us first define the records for guns and tanks:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Gun</span> </span>=
+  {
+    Name              : string
+    Penetration       : float
+    Damage            : float
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(name: string, penetration : float, damage : float) =
+      { Name = name; Penetration = penetration; Damage = damage }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Tank</span> </span>=
+  {
+    Name    : string
+    Weapon  : Gun
+    Armor   : float
+    Health  : float
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(name :string, weapon : Gun, armor : float, health : float) =
+      {
+        Name = name
+        Weapon = weapon
+        Armor = armor
+        Health = health
+      }
+</div></code></pre>
+<p>and let us define some gun and tank models:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> kwk36 = Gun.Create(<span class="hljs-string">"88mm KwK 36"</span>, <span class="hljs-number">150.0</span>, <span class="hljs-number">90.0</span>)
+<span class="hljs-keyword">let</span> f32 = Gun.Create(<span class="hljs-string">"76mm F-32"</span>, <span class="hljs-number">70.0</span>, <span class="hljs-number">60.0</span>)
+<span class="hljs-keyword">let</span> kwk40short = Gun.Create(<span class="hljs-string">"75mm kwk 37"</span>, <span class="hljs-number">35.5</span>, <span class="hljs-number">55.5</span>)
+<span class="hljs-keyword">let</span> kwk40Long = Gun.Create(<span class="hljs-string">"75mm KwK 40"</span>, <span class="hljs-number">99.5</span>, <span class="hljs-number">55.5</span>)
+<span class="hljs-keyword">let</span> m1a1 = Gun.Create(<span class="hljs-string">"76mm M1A1"</span>, <span class="hljs-number">99.0</span>, <span class="hljs-number">60.0</span>)
+<span class="hljs-keyword">let</span> tiger = Tank.Create(<span class="hljs-string">"Pz.Kpfw. VI Tiger Ausf. E"</span>, kwk36, <span class="hljs-number">340.0</span>, <span class="hljs-number">800.0</span>)
+<span class="hljs-keyword">let</span> t34 = Tank.Create(<span class="hljs-string">"T-34/76"</span>, f32, <span class="hljs-number">200.0</span>, <span class="hljs-number">400.0</span>)
+<span class="hljs-keyword">let</span> p4f = Tank.Create(<span class="hljs-string">"Pz.Kpfw. IV"</span>, kwk40short, <span class="hljs-number">130.0</span>, <span class="hljs-number">350.0</span>)
+<span class="hljs-keyword">let</span> p4g = Tank.Create(<span class="hljs-string">"Pz.Kpfw. IV"</span>, kwk40Long, <span class="hljs-number">130.0</span>, <span class="hljs-number">350.0</span>)
+<span class="hljs-keyword">let</span> shermanE8 = Tank.Create(<span class="hljs-string">"M4A3 Sherman E8"</span>, m1a1, <span class="hljs-number">220.0</span>, <span class="hljs-number">450.0</span>)
+</div></code></pre>
+<p>Now let us implement the logic of the fight as a method of <code>Tank</code>. This method will take as explicit parameter the opponent tank.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Shoot (tank : Tank) = ... 
+</div></code></pre>
+<p>This method will have to check the weapon penetration of <code>this</code> against the <code>Armor</code> of <code>tank</code>. If it is higher than we print a message on the status and we update the health of <code>tank</code>. If it is lower than we reduce the armour value of <code>tank</code>.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Shoot(tank : Tank) =
+  <span class="hljs-keyword">if</span> this.Weapon.Penetration &gt; tank.Armor <span class="hljs-keyword">then</span>
+    printfn <span class="hljs-string">"%s shoots %s with %s causing %f damage --&gt; HEALTH: %f"</span> 
+      this.Name 
+      tank.Name 
+      this.Weapon.Name 
+      this.Weapon.Damage 
+      tank.Health 
+    { tank <span class="hljs-keyword">with</span> Health = tank.Health - this.Weapon.Damage }
+  <span class="hljs-keyword">else</span>
+    printfn <span class="hljs-string">"%s shoots %s with %s reducing armour by %f --&gt; ARMOUR: %f"</span> 
+      this.Name 
+      tank.Name 
+      this.Weapon.Name 
+      this.Weapon.Penetration
+      tank.Armor
+    { tank <span class="hljs-keyword">with</span> Armor = tank.Armor - this.Weapon.Penetration }
+</div></code></pre>
+<p>Now let us make two tanks fight. We do so by implementing a function that takes two tanks and repetedly calls the <code>Shoot</code> method in turn until one of the two tanks is destroyed. This function will be recursive, since it must repeat the shooting phase an indefinite number of times. The base case of the recursion is when one of the two tanks is destroyed. Ohterwise we must call the function again with the updated tanks after they shoot each other:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> fight (t1 : Tank) (t2 : Tank) =
+  <span class="hljs-keyword">if</span> t1.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span>
+    printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> t1.Name t2.Name
+    t1,t2
+  <span class="hljs-keyword">elif</span> t2.Health &lt;= <span class="hljs-number">0</span>
+    printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> t2.Name t1.Name
+    t1,t2
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">let</span> t2 = t1.Shoot t2
+    <span class="hljs-keyword">let</span> t1 = t2.Shoot t1
+    fight t1 t2
+</div></code></pre>
+<p>Now let us assume that we want to retrofit a specific tank with a better gun. The retrofit takes a gun and tries to mount it on a tank. If the tank model matches the retrofitting model then the new gun is applied, otherwise the tank is returned as it is. In order to do this, we have to exploit the structural equality provided by F#: we compare the current tank with the retrofitting model, and if they are structurally equal then we returned a new tank with the modified gun, otherwise we return the tank as it is.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Retrofit (gun : Gun, tank : Tank) =
+  <span class="hljs-keyword">if</span> this = tank <span class="hljs-keyword">then</span>
+    {this <span class="hljs-keyword">with</span>
+        Weapon = gun}
+  <span class="hljs-keyword">else</span>
+    this
+</div></code></pre>
+<p>Structural equality also offers the possibility of refactoring our code. Notice that in <code>fight</code> the first two cases of the <code>if</code> are doing the same thing. We can thus define a function <strong>nested</strong> into <code>fight</code> that prints the message in both cases and returns <code>t1</code> and <code>t2</code>. This function will be defined as</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> outcome (loser : Tank) (winner : Tank) = ...
+</div></code></pre>
+<p>This function will be called as <code>outcome t1 t2</code> in the first case of the <code>if</code> and as <code>outcome t2 t1</code> in the second case. Notice that, since the argument in the two calls are swapped, in the body of <code>outcome</code> we cannot simply return <code>loser,winner</code> because that would sometimes swap the returned tanks. We can check if <code>loser</code> is indeed <code>t1</code> and, if not, return <code>t2,t1</code> instead of <code>t1,t2</code> (by convention we are returning the <code>loser</code> tank in the first position of the tuple).</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> outcome loser winner =
+  printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> loser.Name winner.Name
+  <span class="hljs-keyword">if</span> t1 = loser <span class="hljs-keyword">then</span>
+    t1,t2
+  <span class="hljs-keyword">else</span>
+    t2,t1
+</div></code></pre>
+<p>With this refactoring, <code>fight</code> becomes:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> fight (t1 : Tank) (t2 : Tank) =
+  <span class="hljs-keyword">let</span> outcome (loser : Tank) (winner : Tank) =
+    printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> loser.Name winner.Name
+    <span class="hljs-keyword">if</span> t1 = loser <span class="hljs-keyword">then</span>
+      t1,t2
+    <span class="hljs-keyword">else</span>
+      t2,t1
+  <span class="hljs-keyword">if</span> t1.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span>
+    outcome t1 t2
+  <span class="hljs-keyword">elif</span> t2.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span> 
+    outcome t2 t1
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">let</span> t2 = t1.Shoot t2
+    <span class="hljs-keyword">let</span> t1 = t2.Shoot t1
+    fight t1 t2
+</div></code></pre>
+<h2 id="inheritance-via-record-nesting">Inheritance via record nesting</h2>
+<p>Inheritance is an important feature of object-oriented programming that allows, among other things, to recycle the code and the definition of existing classes and, at the same time, to enrich them with additional functionalities. F# records cannot be inherited, but it is possible to achieve an analogous result by nesting records. Consider again the record <code>Tank</code> used above, and suppose that we want to define a new kind of tank with more than one weapon. This would be expressed in C# as <code>Tank2Weapons : Tank</code>. In F# we can define a new record <code>Tank2Weapons</code> that has a field of type <code>Tank</code> containing the base record <code>Tank</code>. This new tank will have an additional field defining the secondary gun and a new way of shooting: it will first shoot the main gun of the tank and then shoot the secondary gun.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Tank2Weapons</span> </span>=
+  {
+    SecondaryWeapon   : Gun
+    Base              : Tank
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create (weapon : Gun) (tank : Tank) =
+      {
+        SecondaryWeapon = weapon
+        Base = tank
+      }
+</div></code></pre>
+<p>Now let us refactor the <code>Shoot</code> function and let us define it in <code>Gun</code> instead of <code>Tank</code>, so that it becomes:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Gun</span> </span>=
+  {
+    Name              : string
+    Penetration       : float
+    Damage            : float
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(name: string, penetration : float, damage : float) =
+      { Name = name; Penetration = penetration; Damage = damage }
+    <span class="hljs-keyword">member</span> this.Shoot(tank : Tank) =
+      <span class="hljs-keyword">if</span> this.Penetration &gt; tank.Armor <span class="hljs-keyword">then</span>
+        printfn <span class="hljs-string">"%s shoots %s with %s causing %f damage --&gt; HEALTH: %f"</span> 
+          this.Name 
+          tank.Name 
+          this.Name 
+          this.Damage 
+          tank.Health 
+        { tank <span class="hljs-keyword">with</span> Health = tank.Health - this.Damage }
+      <span class="hljs-keyword">else</span>
+        printfn <span class="hljs-string">"%s shoots %s with %s reducing armour by %f --&gt; ARMOUR: %f"</span> 
+          this.Name 
+          tank.Name 
+          this.Name 
+          this.Penetration
+          tank.Armor
+        { tank <span class="hljs-keyword">with</span> Armor = tank.Armor - this.Penetration }
+</div></code></pre>
+<p>and let us also redefine <code>fight</code>  as member of both <code>Tank</code> and <code>Tank2Weapons</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-comment">//Fight in Tank</span>
+<span class="hljs-keyword">member</span> this.Fight(tank : Tank) =
+  <span class="hljs-keyword">let</span> outcome loser winner =
+    printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> loser.Name winner.Name
+    <span class="hljs-keyword">if</span> this = loser <span class="hljs-keyword">then</span>
+      this,tank
+    <span class="hljs-keyword">else</span>
+      tank,this
+  <span class="hljs-keyword">if</span> this.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span>
+    outcome this tank
+  <span class="hljs-keyword">elif</span> tank.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span> 
+    outcome tank this
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">let</span> t2 = this.Weapon.Shoot tank
+    <span class="hljs-keyword">let</span> t1 = tank.Weapon.Shoot this
+    t1.Fight t2
+
+<span class="hljs-comment">//Fight in Tank2Weapons</span>
+<span class="hljs-keyword">member</span> this.Fight(tank : Tank2Weapons) =
+  <span class="hljs-keyword">let</span> outcome loser winner =
+    printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> loser.Base.Name winner.Base.Name
+    <span class="hljs-keyword">if</span> this = loser <span class="hljs-keyword">then</span>
+      this,tank
+    <span class="hljs-keyword">else</span>
+      tank,this
+  <span class="hljs-keyword">if</span> this.Base.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span>
+    outcome this tank
+  <span class="hljs-keyword">elif</span> tank.Base.Health &lt;= <span class="hljs-number">0.0</span> <span class="hljs-keyword">then</span> 
+    outcome tank this
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">let</span> t2 = { tank <span class="hljs-keyword">with</span> Base = this.Base.Weapon.Shoot tank.Base }
+    <span class="hljs-keyword">let</span> t2 = { t2 <span class="hljs-keyword">with</span> Base = this.SecondaryWeapon.Shoot t2.Base }
+    <span class="hljs-keyword">let</span> t1 = { this <span class="hljs-keyword">with</span> Base = tank.Base.Weapon.Shoot this.Base }
+    <span class="hljs-keyword">let</span> t1 = { t1 <span class="hljs-keyword">with</span> Base = tank.SecondaryWeapon.Shoot tank.Base }
+    t1.Fight t2
+</div></code></pre>
+<p>The version of <code>Fight</code> in <code>Tank2Weapons</code> will first shoot the base weapon of the current tank. This will return an updated copy of <code>Base</code> of the other tank, which must replace the current value in the <code>Base</code> field. Then it will shoot the secondary weapon thus obtaining another copy of <code>Base</code> that must replace the old value again. The same operations are performed for the second tank.</p>
+<p>The attentive reader will notice that now we have a design problem: we can let <code>Tank</code> fight another <code>Tank</code> and <code>Tank2Weapons</code> fight <code>Tank2Weapons</code> but we cannot mix them up (as it would make sense). This problem can be solved by using polymorphism, thus by defining a function that accepts a <code>TankKind</code> that can be either a <code>Tank</code> or a <code>Tank2Weapons</code>, or function records, but we will explain these topics further ahead.</p>
+
+    </body>
+    </html>

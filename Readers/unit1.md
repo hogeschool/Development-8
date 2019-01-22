@@ -8,14 +8,14 @@ The goal of this unit is to show the reader a comparison between the model of im
 
 An imperative program is made of a sequence of instructions or commands that alter the memory, which is in general refered to also as _State_. In the introductory programming courses of the first year we said that a program is evaluated through its _semantics_, that is a set of rules defining the behaviour of each construct in the language. In general, in an imperative programming language, each of these rules processes a program and in general returns a new program and a new state.
 
-$eval(\langle P \rangle ,S) \rightarrow \langle P '\rangle,S'$
+$eval(\langle P \rangle ,S) \Rightarrow \langle P '\rangle,S'$
 
 
 The new program is generally returned because the evaluation of a single instruction might, in general, require multiple steps. The new state is due to the fact that some of the instructions might perform operations in memory and thus change the state.
 
 In the following more advanced courses we further extended the model of state by allowing _scoping_ and differentiate between _stack_ and _heap_, but the underlying logic does not change in its substance. Indeed the evaluation of a program with stack and heap is given by the following rule\:
 
-$eval (\langle I;J\rangle,S,H) \rightarrow \langle I';J\rangle,S',H' \text{ where } eval(\langle I\rangle,S,H) \rightarrow \langle I'\rangle,S',H'$
+$eval (\langle I;J\rangle,S,H) \Rightarrow \langle I';J\rangle,S',H' \text{ where } eval(\langle I\rangle,S,H) \Rightarrow \langle I'\rangle,S',H'$
 
 In this context the program uses a shared memory that is read and written by each instruction. This means that the order that we use to execute the instructions change the behaviour of the program. So two different programs with the same instructions in different order might produce two different results. For example consider the following two code snippets in Python\:
 
@@ -58,7 +58,7 @@ Lambda calculus is a computational model that is at the foundation of the semant
 Lambda calculus is made of three syntactic elements:
 
 * _Variables_ as $x$, $y$, $A$, ...
-* _Abstractions_, that are function declarations with **one** parameter, in the form $\lambda x \rightarrow t$ where $x$ is a variable and $t$ is the body of the function.
+* _Abstractions_, that are function declarations with **one** parameter, in the form $\text{fun} \; x \rightarrow t$ where $x$ is a variable and $t$ is the body of the function.
 * _Applications_ (calling a function with one argument) in the form $t \; u$ where $t$ is a function being called and $u$ is its argument. Both $t$ and $u$ can be themselves complex expressions in lambda calculus.
 
 Note that in lambda calculus abstractions can be passed as values, thus functions can be passed as arguments of other functions.
@@ -67,43 +67,43 @@ Now that we have defined the syntax of the language, we have to define its _sema
 
 **Variables**
 
-$eval \; x \rightarrow x$
+$eval \; x \Rightarrow x$
 
 This rule states that variables cannot be further evaluated.
 
 **Abstractions**
 
-$eval \; (\lambda x \rightarrow t) \rightarrow (\lambda x \rightarrow t)$
+$eval \; (\text{fun} \; \; x \rightarrow t) \Rightarrow (\text{fun} \; x \rightarrow t)$
 
 This rule states that abstractions **alone** cannot be further evaluated.
 
 **Substitution rule**
 
-$eval \; (\lambda x \rightarrow t) \; u \rightarrow t[x \mapsto u]$
+$eval \; (\text{fun} \; x \rightarrow t) \; u \Rightarrow t[x \mapsto u]$
 
 This rule states that whenever we call an abstraction with a parameter $u$, the result is the body of the abstraction where its argument variable is replaced by $u$
 
 **Example**
 
-$eval \; (\lambda x \rightarrow x) \; A \rightarrow x[x \mapsto A] \rightarrow A$
+$eval \; (\text{fun} \; x \rightarrow x) \; A \Rightarrow x[x \mapsto A] \Rightarrow A$
 
-$eval \; (\lambda x \rightarrow \lambda y \rightarrow x) \; (\lambda x \rightarrow x) \rightarrow$
+$eval \; (\text{fun} \; x \rightarrow \text{fun} \; y \rightarrow x) \; (\text{fun} \; x \rightarrow x) \Rightarrow$
 
-$(\lambda y \rightarrow x)[x \mapsto (\lambda x \rightarrow x)] \rightarrow$
+$(\text{fun} \; y \rightarrow x)[x \mapsto (\text{fun} \; x \rightarrow x)] \Rightarrow$
 
-$\lambda y \rightarrow (\lambda x \rightarrow x)$
+$\text{fun} \; y \rightarrow (\text{fun} \; x \rightarrow x)$
 
 **Function application**
 
-$eval \; (t \; u) \rightarrow v \text{ where } eval \; t \rightarrow t', eval \; u \rightarrow u', eval \; t' \; u' \rightarrow v$
+$eval \; (t \; u) \Rightarrow v \text{ where } eval \; t \Rightarrow t', eval \; u \Rightarrow u', eval \; t' \; u' \Rightarrow v$
 
 This rule states that, whenever we have a function application where the left term is not immediately an abstraction, we have to evaluate the terms left\-to\-right and then use their evaluation to compute the final result.
 
 **Example**
 
-$eval \; ((\lambda x \rightarrow x) \; A) \; ((\lambda y \rightarrow A) \; B)$
+$eval \; ((\text{fun} \; x \rightarrow x) \; A) \; ((\text{fun} \; y \rightarrow A) \; B)$
 
-$eval \; A \; ((\lambda y \rightarrow A) \; B)$
+$eval \; A \; ((\text{fun} \; y \rightarrow A) \; B)$
 
 $A \; A$
 
@@ -116,17 +116,16 @@ static int Add(int x, int y)
 {
   return x + y;
 }
-
 ```
 Assuming that arithmetic operators are available in lambda calculus (see the remark below for this),  we can build a function that takes `x` as parameter and whose body contains **another abstraction** that accepts `y` as parameter and finally computes  `x + y` in its body\:
 
-$\lambda x \rightarrow \lambda y \rightarrow x + y$
+$\text{fun} \; x \rightarrow \text{fun} \; y \rightarrow x + y$
 
 Now, let us actually test that this behaves as expected\:
 
-$((\lambda x \rightarrow \lambda y \rightarrow x + y) \; 5) \; 3$
+$((\text{fun} \; x \rightarrow \text{fun} \; y \rightarrow x + y) \; 5) \; 3$
 
-$(\lambda y \rightarrow 5 + y) \; 3$
+$(\text{fun} \; y \rightarrow 5 + y) \; 3$
 
 $5 + 3$
 
@@ -136,24 +135,24 @@ This can be seen as a mechanism where the outer abstraction can produce infinite
 
 For compactness, from now on, the following verbose notation
 
-$\lambda x_1 \rightarrow \lambda x_2 \rightarrow ... \rightarrow \lambda x_n \rightarrow t$
+$\text{fun} \; x_1 \rightarrow \text{fun} \; x_2 \rightarrow ... \rightarrow \text{fun} \; x_n \rightarrow t$
 
 will be shortened into
 
-$\lambda x_1 \; x_2\;  ...\; x_n \rightarrow t$
+$\text{fun} \; x_1 \; x_2\;  ...\; x_n \rightarrow t$
 
-so we will not write the internal arrows and $\lambda$ symbols.
+so we will not write the internal arrows and $\text{fun} \;$ symbols.
 
 **Bindings**
 
 Let us consider the following lambda calculus expression\:
 
-$((\lambda f \; g \rightarrow f (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A) \; (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A)$
+$((\text{fun} \; f \; g \rightarrow f (\text{fun} \; y \rightarrow A) \; (\text{fun} \; g \rightarrow g) \rightarrow A) \; ((\text{fun} \; y \rightarrow A) \; (\text{fun} \; g \rightarrow g)) \rightarrow A)$
 
 
-The expression $(\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A$ appears twice. Since it is inconvenient to write such a complex expression every time we need it, we would like to be able to write someting like\:
+The expression $(\text{fun} \; y \rightarrow A) \; (\text{fun} \; g \rightarrow g) \rightarrow A$ appears twice. Since it is inconvenient to write such a complex expression every time we need it, we would like to be able to write someting like\:
 
-$\text{let E} = (\lambda y \rightarrow A) \; (\lambda g \rightarrow g) \rightarrow A \text{ in } ((\lambda f \; g \rightarrow f \; E) \; E)$
+$\text{let E} = (\text{fun} \; y \rightarrow A) \; (\text{fun} \; g \rightarrow g) \rightarrow A \text{ in } ((\text{fun} \; f \; g \rightarrow f \; E) \; E)$
 
 This construct is called _binding_. Note that this does *not* (notice the emphasis on this word) have the same semantics as variable assignment in imperative programming\: a variable assignment changes the state of a program, whilst here there is no change of state (we do not have a state at all) and it is merely a renaming of expressions.
 
@@ -165,25 +164,25 @@ let x = y in t
 
 we replace every occurrence of `x` in `t` with `y`. This allows us to use a shorter "version" `x` in `t` that will be replaced by its full form `y` when we need to evaluate the lambda calculus program. This is not much different than how we normally substitute variables in the substitution rule of lambda calculus. Actually, it is just the same! Thus, the semantics of `let` can be just expressed in terms of the substitution rule\:
 
-$eval \text{ let } x = y \text{ in } t \rightarrow eval \; (\lambda x \rightarrow t) \; y$
+$eval \text{ let } x = y \text{ in } t \Rightarrow eval \; (\text{fun} \; x \rightarrow t) \; y$
 
 **Shadowing**
 
 Consider the following lambda calculus expression\:
 
-$(\lambda x \; y \; x \rightarrow y \; x) \; A$
+$(\text{fun} \; x \; y \; x \rightarrow y \; x) \; A$
 
 One could blindly apply the substitution rule and end up with
 
-$\lambda y \; x \rightarrow y \; A$
+$\text{fun} \; y \; x \rightarrow y \; A$
 
 This is, however, incorrect\: the scope of the outer variable `x` and the inner variable `x` is different. The `x` that we incorrectly substituted above is referring to the inner `x` parameter and not the outer. In other words, the inner `x` _shadows_ the outer `x`. The correct result will, thus be
 
-$\lambda y \; x \rightarrow y \; x$
+$\text{fun} \; y \; x \rightarrow y \; x$
 
 For better clarity, one should imagine that the expression presented at the beginning of this paragraph was written as\:
 
-$\lambda x_1 \; y \; x_2 \rightarrow y \; x_2$
+$\text{fun} \; x_1 \; y \; x_2 \rightarrow y \; x_2$
 
 where it is shown explicitly that the outer parameter is different than the inner.
 
@@ -230,7 +229,7 @@ x + 1
 
 **Abstractions and Function Applications**
 
-Abstractions can be defined by using the keyword `fun` in place of $lambda$. For example, the lambda calculus abstraction $\lambda x \rightarrow x + 1$ would become in F\#\:
+Abstractions can be defined by using the keyword `fun` as well. For example, the lambda calculus abstraction $\text{fun} \; x \rightarrow x + 1$ would become in F\#\:
 
 ```fsharp
 (fun x -> x + 1) 3
@@ -251,7 +250,7 @@ let inc = fun x -> x + 1
 inc 3
 ```
 
-which in lambda-calculus would become $(\lambda inc \rightarrow inc \; 3) \; (\lambda x \rightarrow x + 1)$. Note that shadowing works as expected in F\#, so the result of the following program
+which in lambda-calculus would become $(\text{fun} \; inc \rightarrow inc \; 3) \; (\text{fun} \; x \rightarrow x + 1)$. Note that shadowing works as expected in F\#, so the result of the following program
 
 
 ```fsharp
@@ -312,7 +311,7 @@ In functional programming there is no concept of loop. Indeed loops require stat
 
 `eval (<while C do T>,S)` $\rightarrow$ `(<if C then { T; while C do T } else { done }>, S)`
 
-Functional programming can achieve an equivalent behaviour through recursive functions. In F\# recursive functions are defined through the keyword `let rec`. For example, let us assume that we want to return a string containing all the numbers divisible by a number `n`. We can achieve this through a recursive function\: this function starts from 1 and tests all the numbers less or equal than `n` one by one. The base case of the recursion happens when the number that we are testing is greater than the current number. In this case we simply return an empty string. Ohterwise we check if the number is divisible by `n` and, if that is the case, we add it to the string\:
+Functional programming can achieve an equivalent behaviour through recursive functions. In F\# recursive functions are defined through the keyword `let rec`. For example, let us assume that we want to return a string containing all the numbers divisible by a number `n`. We can achieve this through a recursive function\: this function starts from 1 and tests all the numbers less or equal than `n` one by one. The base case of the recursion happens when the number that we are testing is greater than the current number. In this case we simply return an empty string. Otherwise we check if the number is divisible by `n` and, if that is the case, we add it to the string\:
 
 ```fsharp
 let rec getDivisors =
