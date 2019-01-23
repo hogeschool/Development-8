@@ -1,74 +1,123 @@
 ﻿module Unit2
 
-let rec last (l : List<'a>) : Option<'a> =
-  if l.IsEmpty then 
-    None
-  elif l.Tail.IsEmpty then 
-    Some  l.Head
-  else
-    last l.Tail
+open System
 
-let rec rev (l : List<'a>) : List<'a> =
-  if l.IsEmpty then 
-    []
-  else
-    (rev l.Tail) @ [l.Head]
+let r = Random()
 
-let rec append (l1 : List<'a>) (l2 : List<'a>) : List<'a> =
-  if l1.IsEmpty then
-    l2
-  else
-    l1.Head :: (append l1.Tail l2)
+type Gun =
+  {
+    Name              : string
+    Penetration       : float
+    Damage            : float
+  }
+  with
+    static member Create(name: string, penetration : float, damage : float) =
+      { Name = name; Penetration = penetration; Damage = damage }
+    member this.Shoot(tank : Tank) =
+      if this.Penetration > tank.Armor then
+        printfn "%s shoots %s with %s causing %f damage --> HEALTH: %f" 
+          this.Name 
+          tank.Name 
+          this.Name 
+          this.Damage 
+          tank.Health 
+        { tank with Health = tank.Health - this.Damage }
+      else
+        printfn "%s shoots %s with %s reducing armour by %f --> ARMOUR: %f" 
+          this.Name 
+          tank.Name 
+          this.Name 
+          this.Penetration
+          tank.Armor
+        { tank with Armor = tank.Armor - this.Penetration }  
 
-let rec nth (n : int) (l : List<'a>) : Option<'a> =
-  if l.IsEmpty then
-    None
-  elif n = 0 then
-    Some l.Head
-  else  
-    nth (n - 1) l.Tail
+and Tank =
+  {
+    Name        : string
+    Weapon      : Gun
+    Armor       : float
+    Health      : float
+    Position    : float * float
+    Speed       : float
+  }
+  with
+    static member Create
+      (
+        name :string, 
+        weapon : Gun, 
+        armor : float,
+        health : float, 
+        position : float * float, 
+        speed : float
+      ) =
+      {
+        Name = name
+        Weapon = weapon
+        Armor = armor
+        Health = health
+        Position = position
+        Speed = speed
+      }
+    member this.Retrofit (gun : Gun, tank : Tank) =
+      if this = tank then
+        {this with
+            Weapon = gun}
+      else
+        this
+    member this.CanSee(tank : Tank) =
+      (fst this.Position) = (fst tank.Position) ||
+      (snd this.Position) = (snd tank.Position)
+    member this.Move() : Tank =
+      let choice = r.Next(1,5)
+      if choice = 0 then
+        this.Up
+      elif choice = 1 then
+        this.Down
+      elif choice = 2 then
+        this.Left
+      else
+        this.Right
 
-let palindrome (l : List<'a>) : bool = l = (rev l)
-
-let rec compress (l : List<'a>) : List<'a> =
-  if l.IsEmpty then []
-  elif l.Tail.IsEmpty then [l.Head]
-  else
-    let x = l.Head
-    let y = l.Tail.Head
-    let xs = l.Tail.Tail
-    if x = y then
-      compress (y :: xs)
-    else
-      x :: (compress (y :: xs))
-
-
-let shift (c : char) (n : int) =
-  let lowerBound = int 'a'
-  let upperBound = int 'z'
-  let offset = (int 'z') - (int 'a')
-  let o = n % offset + 1
-  let letterCode = (int c) + o
-  if letterCode < lowerBound then
-    char (upperBound - (lowerBound - letterCode))
-  elif letterCode > upperBound then
-    char (lowerBound + (letterCode - upperBound))
-  else
-    char letterCode
+    member this.Fight(tank : Tank) =
+      let outcome loser winner =
+        printfn "%s: KABOOOM!!! %s wins" loser.Name winner.Name
+        if this = loser then
+          this,tank
+        else
+          tank,this
+      if this.Health <= 0.0 then
+        outcome this tank
+      elif tank.Health <= 0.0 then 
+        outcome tank this
+      elif this.CanSee tank then
+        let (t2 : Tank) = this.Weapon.Shoot tank
+        let (t1 : Tank) = tank.Weapon.Shoot this
+        t1.Move().Fight(t2.Move())       
+      else
+        this.Fight tank
+    member this.Up =
+      { this with Position = fst this.Position,(snd this.Position) + this.Speed }
+    member this.Down =
+      { this with Position = fst this.Position,(snd this.Position) - this.Speed }
+    member this.Right =
+      { this with Position = (fst this.Position + this.Speed), snd this.Position }
+    member this.Left =
+      { this with Position = (fst this.Position - this.Speed), snd this.Position }
 
 
-
-let rec caesarCypher (text : List<char>) (offset : int) : List<char> =
-  if text.IsEmpty then
-    []
-  else
-    let c = text.Head
-    let charCode = (int c)
-    if charCode >= (int 'a') && charCode <= (int 'z') then
-      let encodedChar = shift c offset
-      encodedChar :: (caesarCypher text.Tail offset)
-    else
-      c :: (caesarCypher text.Tail offset)
-  
-     
+let test() =
+  let kwk36 = Gun.Create("88mm KwK 36", 150.0, 90.0)
+  let f32 = Gun.Create("76mm F-32", 70.0, 60.0)
+  let kwk40short = Gun.Create("75mm kwk 37", 35.5, 55.5)
+  let kwk40Long = Gun.Create("75mm KwK 40", 99.5, 55.5)
+  let mg42 = Gun.Create("MG-42",5.0,5.0)
+  let browning = Gun.Create("M2 Browning",10.0,10.0)
+  let m1a1 = Gun.Create("76mm M1A1", 99.0, 60.0)
+  let tiger = Tank.Create("Pz.Kpfw. VI Tiger Ausf. E", kwk36, 340.0, 800.0,(0.0,0.0),23.0)
+  let t34 = Tank.Create("T-34/76", f32, 200.0, 400.0,(0.0,300.0),45.0)
+  let p4f = Tank.Create("Pz.Kpfw. IV", kwk40short, 130.0,350.0,(0.0,0.0),30.0)
+  let p4g = Tank.Create("Pz.Kpfw. IV", kwk40Long, 130.0,350.0,(0.0,0.0),30.0)
+  let shermanE8 = Tank.Create("M4A3 Sherman E8", m1a1, 220.0,450.0,(0.0,300.0),45.0)
+  let tanks = tiger.Fight shermanE8
+  printfn "LOSER: %A\n\nWINNER: %A" (fst tanks) (snd tanks)
 
