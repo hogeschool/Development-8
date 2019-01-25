@@ -59,6 +59,14 @@ let (x : float) = 5.0
 
 For this reason, every numerical type has its different corresponding literal in F\#. A comprehensive list can be found in [MSDN](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals).
 
+Type conversions can be achieved by using conversion functions, such as `int`, `float`, `string`, ... They are all named after the type you want to convert to. These are especially useful when doing operations between incompatible types. For instance, in C\# the expression `x / 5.0` when `x` has type `int` is accepted and typecheck correctly, while in F\# it would return a type error because no automatic conversion is performed. For this reason one should use the conversion function `int` to convert `x` in a float\:
+
+```fsharp
+(int x) / 5.0
+```
+
+Another important type in F\# is `unit`. This identifies the absence of values and its only value is `()`. Note that the value of type `unit`, unlike `void` in C\#, can be normally bound to variables (in C\# there is no value corresponding to `void`). `unit` can be used when a function takes no arguments or returns nothing.
+
 Arguments of lambda abstractions can be typed analogously\:
 
 ```fsharp
@@ -491,3 +499,29 @@ member this.Fight(tank : Tank2Weapons) =
 ```
 
 The attentive reader will notice that now we have a design problem\: we can let `Tank` fight another `Tank` and `Tank2Weapons` fight `Tank2Weapons` but we cannot mix them up (as it would make sense). This problem can be solved by using polymorphism, thus by defining a function that accepts a `TankKind` that can be either a `Tank` or a `Tank2Weapons`, or function records, but we will explain these topics further ahead.
+
+# Exercises
+
+## Exercise 1
+Model a point in the space as a record `Point2D` containing a field `Position`, which is a tuple of type `float * float`. Define two different constructors for this point\: the first creates a point given 2 coordinates `x` and `y` taken as input. The second creates a random point whose coordinates are between two parameters `min` and `max` taken as input. In order to generate a random number you can open `System` and instantiate as global binding an instance of `Random` class\:
+
+```fsharp
+let r = Random()
+```
+
+Then you can use `r.NextDouble()` to create a random floating\-point number between 0.0 and 1.0 and rescale it in the interval that you need.
+
+## Exercise 2
+Extend `Point2D` with two properties to read the first and second coordinate, and a method to compute the distance between two points. Given a point $(x_1,y_1)$ and $(x_2,y_2)$ its distance is given by  $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$. You can use `Math.Sqrt` static method to compute the square root of a number.
+
+## Exercise 3
+
+A `Blob` is defined by a `Position` of type `Point2D` and a `Size` of type `int`. Each `Blob` randomly roams around a 100x100 area. This means that the minimum x coordinate of `Position` can be -50.0 and the maximum 50.0. The same applies for the y coordinate. Represent a `Blob` as a record with a constructor that takes no arguments and sets the position to a random `Point2D` and the speed to a random value between 1 and 5. You can use the method `Next(x,y)` in `Random` to generate an integer between `x` included and `y` excluded. For instance, if you want a number between 10 and 20 you have to call `r.Next(10,21)`, where `r` is the binding containing the instance of `Random`.
+
+## Exercise 4
+
+Extend the `Blob` record by adding a method `Move` that takes no arguments and randomly moves the `Blob`. A `Blob` randomly choose whether to go up, down, left, or right, thus you can generate a random number between 0 and 3 to decide what to do and change the position accordingly. The movement must not take the `Blob` outside the 100x100 area, thus if either the x or the y coordinates are outside the interval `[-50,50]` they are reset to the lower bound or the upper bound, depending on where the overflow occurs (if you get past 50 you go back to 50, and if you go below -50 you go back to -50).
+
+## Exercise 5
+
+Create a reconrd `World` that contains two blobs and a field `Tick`. `World` contains a constructor, which takes a number of ticks and creates two blobs, and a method `Run` that takes no parameters and move the blobs around for as many ticks as specified by `World`.

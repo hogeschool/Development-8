@@ -375,6 +375,8 @@ printf "The city of %s was founded in %d %s and is %f KM far from Rotterdam"
   "Rome" 748 "BC" 1615.0
 ```
 
+One useful format parameter is `%A`, which is basically capable of generating a string for each data structure defined in F\# (unless it is a `class`, but we are not going to use them in this course).
+
 For a more comprehensive list of formatting parameters, visit [MSDN](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/core.printf-module-%5Bfsharp%5D)
 
 

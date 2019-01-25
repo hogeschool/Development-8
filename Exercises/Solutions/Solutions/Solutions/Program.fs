@@ -16,7 +16,7 @@ let testUnit1() =
 
 let testUnit2() =
   printf "==== Testing Unit 2... ====\n\n"
-  test()
+  Unit2.test()
   
 
 let testUnit3() =
