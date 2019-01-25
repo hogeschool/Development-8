@@ -6,7 +6,22 @@ In Unit 1 we introduced an untyped formulation of lambda calculus, which is the 
 
 In this section we present the typing rules for lambda\-calculus. As we have seen in the previous unit, lambda\-calculus is made of the following main components\: variables, abstractions, and function applications.
 
-//TODO
+In this context we assume that we have a set of declarations that contains the type definitions encountered so far, and we call this $T$. Moreover, we to say that a term $x$ in the language has type $t$, we write $x : t$
+
+When we encounter a variable $v$, we simply return its type looked up in the declaration table\:
+
+$check(v,T) \Rightarrow (T[v],T)$
+
+This means that we look up in the declarations the variable $v$. If this exists then the look-up will return its type. If the variable does not exist then the typechecking fails.
+
+When we encounter an abstraction, we simply add the type of its parameter (remember that it is alway one) to $T$, and then we proceed to typecheck the function body\:
+
+$check(\text{fun} (x : t_1) \rightarrow e) \Rightarrow (t_1 \rightarrow t_2,T) \text{ when } check(e,T[x := t_1]) \Rightarrow (t_2,T)$
+
+Finally, when we encounter a function application, we simply make sure that the input of the function has the same type of its parameter\:
+
+$check((f \; x),T) \Rightarrow (t_2,T) \text{ when } check(f,T) \Rightarrow (t_1 \rightarrow t_2) \text{ and } check(x,T) \Rightarrow t_1$
+
 
 ## Type Annotation in F\#
 
@@ -75,7 +90,7 @@ let add (x : int) (y : int) : int = x + y
  let (stringify : 'a -> string) = fun (x : 'a) -> string x
  ```
 
- This means that the function `stringify` is generic with respect to the type parameter `'a`. Note that the language distinguishes between non\-generic and generic types by checking if they are preceeded by an apostrophe, thus `'string` denotes a generic type called `string` and `string` (without the apostrophe) is the built\-in type for strings.
+ This means that the function `stringify` is generic with respect to the type parameter `'a`. Note that the language distinguishes between non\-generic and generic types by checking if they are preceeded by an apostrophe, thus `'string` denotes a generic type called `'string` and `string` (without the apostrophe) is the built\-in type for strings.
 
 ## Basic Data Structures in F\#
 
@@ -85,13 +100,13 @@ F\# natively implements complex data structures such as _tuples_ and _lists_. A 
 t1 * t2 * ... * tn
 ```
 
-where `t1`, `t2`,..., `tn` are types. Thus a tuple is the n-ary cartesian product of values of type `t1`, `t2`,..., `tn`. For example\:
+where `t1`, `t2`,..., `tn` are types. Thus a tuple is the n-ary Cartesian product of values of type `t1`, `t2`,..., `tn`. For example\:
 
 ```fsharp
 let (t : int * string * float32) = (3,"Hello world!",-45.3f)
 ```
 
-Tuples, of course, can be passed as arguments to functions. In this context, there is a particular application of this which is an alternative to currying. In Unit 1 we saw that in lambda calculus (and also in F\#) function admits one argument only. In order to model the behaviour of functions that operate on more than one argument, we relied on the notion of currying\: a function that wants to use two arguments will simply return in its body another lambda that is able to process the second argument and has in its closure the first argument. For instance\:
+Tuples, of course, can be passed as arguments to functions. In this context, there is a particular application of this which is an alternative to currying. In Unit 1 we saw that in lambda calculus (and also in F\#) a function admits one argument only. In order to model the behaviour of functions that operate on more than one argument, we relied on the notion of currying\: a function that wants to use two arguments will simply return in its body another lambda that is able to process the second argument and has in its closure the first argument. For instance\:
 
 ```fsharp
 let add = fun x -> fun y -> x + y
@@ -115,11 +130,11 @@ while the type of `addUncurried` is\:
 let (addUncurried : int * int -> int) = fun (x,y) -> x + y
 ```
 
-Notice that the uncurried version of a function takes both arguments all together, thus partial application is not possible\: we can call `add 3` and this will generate as result `lambda y -> 3 + y`, but we cannot call `addUncurried 3` because this would mean passing an argument of typ `int` to a function that expects `int * int`. We will see further ahead in this course that it is possible to define a generic function that can convert the curried version of a function to the uncurried version, and the opposite.
+Notice that the uncurried version of a function takes both arguments all together, thus partial application is not possible\: we can call `add 3` and this will generate as result `fun y -> 3 + y`, but we cannot call `addUncurried 3` because this would mean passing an argument of typ `int` to a function that expects `int * int`. We will see further ahead in this course that it is possible to define a generic function that can convert the curried version of a function to the uncurried version, and the opposite.
 
 ## Records
 
-Recors are a set of named values that can optionally define some members. This definition resembles that of Class in a object\-oriented language, but there is a profound difference\: the fields of a record are by default immutable, meaning that it is not possible to change their values directly. Of course, being a hybrid language, F\# allows also to define mutable record fields, but, as said before, we ignore mutability in this course. A record is declared with the following syntax\:
+Recors are finite map of names into values that can optionally define some members. This definition resembles that of Class in a object\-oriented language, but there is a profound difference\: the fields of a record are by default immutable, meaning that it is not possible to change their values directly. Of course, being a hybrid language, F\# allows also to define mutable record fields, but, as said before, we ignore mutability in this course. A record is declared with the following syntax\:
 
 ```fsharp
 type R =
@@ -142,7 +157,7 @@ type LoginInfo =
   }
 ```
 
-Synce F\# is indentation sensitive, we must place particular care about how we indent the record definition\: brackets should be indented with respect to the `type` keyword, and fields must be indented with respect to brackes. Failing to do so will result in a compilation error.
+Synce F\# is indentation\-sensitive, we must place particular care about how we indent the record definition\: brackets should be indented with respect to the `type` keyword, and fields must be indented with respect to brackes. Failing to do so will often result in a compilation error.
 
 Optionally a record can define some methods and properties (members)\:
 
@@ -160,6 +175,8 @@ type R =
     member this.M2(arg1 : t1, arg2 : t2, ..., argn : tn2) : tr2 =
     ...
 ```
+Note that, given the immutable nature of records, their methods must also behave in an immutable way. 
+
 A characteristic of F\# is that an instance method must always declare the name of the implicit `this` parameter. This is so because F\# does not restrict the name of the implicit parameter to a specific keyword, like `this` in C\#, rather it can be customized, so for example you could call it `self` or `current`. Notice that it is possible also to use the curried version of methods with the usual syntax. For instance\:
 
 ```fsharp
@@ -170,13 +187,12 @@ Also notice that, in order to define a recursive method, it is not necessary to 
 A record can be instantiated with the following syntax\:
 
 ```fsharp
-let r = { f1 = value1 ; f2 = value2 ; ... ; fn = valuen }
+{ f1 = value1 ; f2 = value2 ; ... ; fn = valuen }
 ```
 
 or
 
 ```fsharp
-let r =
   {
     f1 = value1
     f2 = value2
@@ -184,7 +200,7 @@ let r =
     fn = valuen
   }
 ```
-It is immediately evident that, for records with a high number of fields, this syntax becomes quite cumbersome. For this reason, it is preferable to define a static method `Create` to instantiate a record\:
+It is immediately evident that, for records with a high number of fields, this syntax becomes quite cumbersome. For this reason, it is preferable to define a static method `Create`, which is equivalent to a constructor in an objec-oriented language, to instantiate a record\:
 
 ```fsharp
 type R =
@@ -235,8 +251,8 @@ let newLogin =
 
 ## Structural Equality
 
-Lacking the notion of states, functional programming languages cannot perform equality comparisons based on references, like we are used to in imperative programming languages. By default, all data structures in F\#, including newly\-defined records, are compared by value and not by reference. This means that, using the `=` operator, F\# will recursively check the components of the data structures and compare their value. 
-For instance, consider the tuples `let t1 = (1,3,5)` and `let t2 = (1,3,-5)`\: in this case F\# will compare the first component of `t1` with the first component of `t2`, which passes the test. Then it will compare the second component of `t1` with the second of `t2`, passing the test as well. Finally, the third components are compare, which returns `false` because of course 5 and -5 are different. The same is done for the fields of a record. Notice that, since tuple components and record fields can contain complex data structures, this procedure is recursive, i.e. if the component/field is a tuple or a record then the structural equality is recursively applied on their values. For instance, the value in `test` in the following code is `true`\:
+Since the semantics of functional programming languages do not rely on a shared memory, they cannot perform equality comparisons based on references like we are used to in imperative programming languages. By default, all data structures in F\#, including newly\-defined records, are compared by value and not by reference. This means that, using the `=` operator, F\# will recursively check the components of the data structures and compare their value. 
+For instance, consider the tuples `let t1 = (1,3,5)` and `let t2 = (1,3,-5)`\: in this case F\# will compare the first component of `t1` with the first component of `t2`, which passes the test. Then it will compare the second component of `t1` with the second of `t2`, passing the test as well. Finally, the third components are compared, which returns `false` because of course 5 and -5 are different. The same is done for the fields of a record. Notice that, since tuple components and record fields can contain complex data structures, this procedure is recursive, i.e. if the component/field is a tuple or a record then the structural equality is recursively applied on their values. For instance, the value in `test` in the following code is `true`\:
 
 ```fsharp
 let l1 = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address = "155.34.21.105" }
@@ -246,7 +262,7 @@ let test = l1 = l2
 
 ## Case Study\: Tanks and Guns
 
-In this section we present a small case study to show the usage of records. Let us assume that we want to model an entity `Tank` defined by name, speed, weapon, armor, and health. Each tank weapon is a gun defined by name, penetration power, and damage. A tank can shoot another tank with its gun, with the following effect\: if the gun penetration is higher than the armour than the health of the target is reduced by the weapon damage. Otherwise the amount of armour is decreased by the gun penetration. Let us first define the records for guns and tanks\:
+In this section we present a small case study to show the usage of records. Let us assume that we want to model an entity `Tank` defined by name, speed, weapon, armor, and health. Each tank weapon is a gun defined by name, penetration power, and damage. A tank can shoot a shell at another tank with its gun, with the following effect\: if the gun penetration is higher than the target armour then the health of the target is reduced by the weapon damage. Otherwise the amount of armour is decreased by the gun penetration. Let us first define the records for guns and tanks\:
 
 ```fsharp
 type Gun =
@@ -291,13 +307,13 @@ let p4g = Tank.Create("Pz.Kpfw. IV", kwk40Long, 130.0, 350.0)
 let shermanE8 = Tank.Create("M4A3 Sherman E8", m1a1, 220.0, 450.0)
 ```
 
-Now let us implement the logic of the fight as a method of `Tank`. This method will take as explicit parameter the opponent tank.
+Now let us implement the logic of the combat as a method of `Tank`. This method will take as explicit parameter the opponent tank.
 
 ```fsharp
 member this.Shoot (tank : Tank) = ... 
 ```
 
-This method will have to check the weapon penetration of `this` against the `Armor` of `tank`. If it is higher than we print a message on the status and we update the health of `tank`\. If it is lower than we reduce the armour value of `tank`.
+This method will have to check the weapon penetration of `this` against the `Armor` of `tank`. If it is higher than we print a message on the status and we update the health of `tank`\. If it is lower than the target armour we reduce the armour value of `tank`.
 
 ```fsharp
 member this.Shoot(tank : Tank) =
@@ -326,7 +342,7 @@ let rec fight (t1 : Tank) (t2 : Tank) =
   if t1.Health <= 0.0 then
     printfn "%s: KABOOOM!!! %s wins" t1.Name t2.Name
     t1,t2
-  elif t2.Health <= 0
+  elif t2.Health <= 0.0 then
     printfn "%s: KABOOOM!!! %s wins" t2.Name t1.Name
     t1,t2
   else
@@ -384,7 +400,7 @@ let rec fight (t1 : Tank) (t2 : Tank) =
 ```
 ## Inheritance via record nesting
 
-Inheritance is an important feature of object\-oriented programming that allows, among other things, to recycle the code and the definition of existing classes and, at the same time, to enrich them with additional functionalities. F\# records cannot be inherited, but it is possible to achieve an analogous result by nesting records. Consider again the record `Tank` used above, and suppose that we want to define a new kind of tank with more than one weapon. This would be expressed in C\# as `Tank2Weapons : Tank`. In F\# we can define a new record `Tank2Weapons` that has a field of type `Tank` containing the base record `Tank`. This new tank will have an additional field defining the secondary gun and a new way of shooting\: it will first shoot the main gun of the tank and then shoot the secondary gun.
+Inheritance is an important feature of object\-oriented programming that allows, among other things, to recycle the code and the definition of existing classes and, at the same time, to enrich them with additional functionalities. F\# records cannot be inherited, but it is possible to achieve an analogous result by nesting them. Consider again the record `Tank` used above, and suppose that we want to define a new kind of tank with more than one weapon. This would be expressed in C\# as `Tank2Weapons : Tank`. In F\# we can define a new record `Tank2Weapons` that has a field of type `Tank` containing the base record `Tank`. This new tank will have an additional field defining the secondary gun and a new way of shooting\: it will first shoot the main gun of the tank and then shoot the secondary gun.
 
 ```fsharp
 type Tank2Weapons =
@@ -449,7 +465,11 @@ member this.Fight(tank : Tank) =
     let t2 = this.Weapon.Shoot tank
     let t1 = tank.Weapon.Shoot this
     t1.Fight t2
+```
 
+The version of `Fight` in `Tank2Weapons` will first shoot the base weapon of the current tank. This will return an updated copy of `Base` of the other tank, which must replace the current value in the `Base` field. Then it will shoot the secondary weapon thus obtaining another copy of `Base` that must replace the old value again. The same operations are performed for the second tank.
+
+```fsharp
 //Fight in Tank2Weapons
 member this.Fight(tank : Tank2Weapons) =
   let outcome loser winner =
@@ -469,7 +489,5 @@ member this.Fight(tank : Tank2Weapons) =
     let t1 = { t1 with Base = tank.SecondaryWeapon.Shoot tank.Base }
     t1.Fight t2
 ```
-
-The version of `Fight` in `Tank2Weapons` will first shoot the base weapon of the current tank. This will return an updated copy of `Base` of the other tank, which must replace the current value in the `Base` field. Then it will shoot the secondary weapon thus obtaining another copy of `Base` that must replace the old value again. The same operations are performed for the second tank.
 
 The attentive reader will notice that now we have a design problem\: we can let `Tank` fight another `Tank` and `Tank2Weapons` fight `Tank2Weapons` but we cannot mix them up (as it would make sense). This problem can be solved by using polymorphism, thus by defining a function that accepts a `TankKind` that can be either a `Tank` or a `Tank2Weapons`, or function records, but we will explain these topics further ahead.
