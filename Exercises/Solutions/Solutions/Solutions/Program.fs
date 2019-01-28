@@ -1,6 +1,6 @@
 ﻿open Unit1
 open Unit2
-open Unit3
+open Unit4
 
 let testUnit1() =
   printf "==== Testing Unit 1... ====\n\n"
@@ -17,9 +17,13 @@ let testUnit1() =
 let testUnit2() =
   printf "==== Testing Unit 2... ====\n\n"
   Unit2.test()
-  
 
 let testUnit3() =
+  printf "==== Testing Unit 2... ====\n\n"
+  Unit3.test()
+  
+
+let testUnit4() =
   printf "==== Testing Unit 3... ====\n\n"
   printfn "Exercise 1:\n%A" (last ["What";"r";"you";"doing?!";"Stahp!"])
   printfn "Exercise 2:\n%A" (rev ["What";"r";"you";"doing?!";"Stahp!"])
@@ -36,5 +40,5 @@ let testUnit3() =
 let main argv =
     //unit 1
     //testUnit1()
-    testUnit2()
+    testUnit3()
     0
