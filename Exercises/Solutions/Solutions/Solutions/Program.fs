@@ -19,12 +19,12 @@ let testUnit2() =
   Unit2.test()
 
 let testUnit3() =
-  printf "==== Testing Unit 2... ====\n\n"
+  printf "==== Testing Unit 3... ====\n\n"
   Unit3.test()
   
 
 let testUnit4() =
-  printf "==== Testing Unit 3... ====\n\n"
+  printf "==== Testing Unit 4... ====\n\n"
   printfn "Exercise 1:\n%A" (last ["What";"r";"you";"doing?!";"Stahp!"])
   printfn "Exercise 2:\n%A" (rev ["What";"r";"you";"doing?!";"Stahp!"])
   printfn "Exercise 3:\n%A" (append [3;0;5;-1] [0;5;1;2])
@@ -36,9 +36,13 @@ let testUnit4() =
     Array.toList
   printfn "Exercise 7:\n%A" (caesarCypher aeneid 5 |> Array.ofList |> Array.map string |> Array.fold (+) "")
 
+let testUnit5() =
+  printf "==== Testing Unit 5... ====\n\n"
+  Unit5.test()
+
 [<EntryPoint>]
 let main argv =
     //unit 1
     //testUnit1()
-    testUnit3()
+    testUnit5()
     0

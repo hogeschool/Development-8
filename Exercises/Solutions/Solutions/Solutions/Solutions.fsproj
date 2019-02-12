@@ -6,11 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Unit5.fs" />
     <Compile Include="Unit1.fs" />
     <Compile Include="Unit2.fs" />
     <Compile Include="Unit3.fs" />
     <Compile Include="Unit4.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
 </Project>
