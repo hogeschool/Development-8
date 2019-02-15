@@ -15,7 +15,7 @@ type TreeNode<'k,'v> when 'k : comparison  =
   {
     Root    : Entry<'k,'v>
     Left    : BinarySearchTree<'k,'v>
-    Right   : BinarySearchTree<'k,'v> 
+    Right   : BinarySearchTree<'k,'v>
   }
   with
     static member Create(element : Entry<'k,'v>) =
@@ -38,7 +38,9 @@ and BinarySearchTree<'k,'v> when 'k : comparison =
 | Tree of TreeNode<'k,'v>
   with
     static member add (element : Entry<'k,'v>) (tree : BinarySearchTree<'k,'v>) =
-      tree.Add(element)
+      tree.Add element
+    static member delete (key : 'k) (tree : BinarySearchTree<'k,'v>) =
+      tree.Delete key
     member this.Add (element : Entry<'k,'v>) =
       match this with
       | Empty -> Tree(TreeNode.Create(element))
@@ -49,6 +51,43 @@ and BinarySearchTree<'k,'v> when 'k : comparison =
           else
             let subtree = t.Right.Add(element)
             Tree({ t with Right = subtree })
+    member this.TryFind(key : 'k) =
+      match this with
+      | Empty -> None
+      | Tree t ->
+          if t.Root.Key = key then
+            Some t.Root
+          else
+            if key < t.Root.Key then
+              t.Left.TryFind key
+            else
+              t.Right.TryFind key
+    member this.Delete(key : 'k) =
+      let rec rightmostNode (Tree t : BinarySearchTree<'k,'v>) (root : Entry<'k,'v>) =
+            match t.Right with
+            | Empty -> t,Tree({ t with Root = root })
+            | _ -> rightmostNode t.Right root
+      match this with
+      | Empty -> this
+      | Tree t ->
+          if t.Root.Key = key then
+            match t.Left,t.Right with
+            | Empty,Empty -> Empty
+            | Tree _,Empty -> t.Left
+            | Empty,Tree _ -> t.Right
+            | Tree t1, Tree _ ->
+                let rmNode,replacedLeft = (rightmostNode t.Left t.Root)
+                let newLeft = replacedLeft.Delete(key)
+                let newRoot =
+                  { t with
+                      Root = rmNode.Root
+                      Left = newLeft
+                  }
+                Tree(newRoot)
+          elif key < t.Root.Key then
+            Tree({ t with Left = t.Left.Delete key })
+          else
+            Tree({ t with Right = t.Right.Delete key })
     member this.InOrderFold (f : 'state -> Entry<'k,'v> -> 'state) (init : 'state) : 'state =
       match this with
       | Empty -> init
@@ -69,7 +108,11 @@ let test() =
     BinarySearchTree.add(Entry.Create(10,1)) |>
     BinarySearchTree.add(Entry.Create(8,-12)) |>
     BinarySearchTree.add(Entry.Create(20,5))
-  printfn "%s" (string bst)
+  let bst1 = 
+    bst |>
+    BinarySearchTree.delete(10) |>
+    BinarySearchTree.delete(4)
+  printfn "%s\n%s" (string bst) (string bst1)
 
 
 

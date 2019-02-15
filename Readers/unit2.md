@@ -268,6 +268,43 @@ let l2 = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address
 let test = l1 = l2
 ```
 
+## Recursive type definitions
+
+Like for functions, types are normally visible if they are declared before the line in which we are trying to use them. For instance the following code will produce a type error\:
+
+```fsharp
+
+type A = 
+  {
+    X : int
+    Y : B //this generate a compilation error
+  }
+
+type B =
+  {
+    X : A
+    Y : string
+  }
+```
+
+In the definition of `A` we are trying to use a field of type `B` that is declared below. What we want to achieve is a recursive type definition. This can be expressed in F\# by replacing the keyword `type` in `B` with `and` \:
+
+```fsharp
+type A = 
+  {
+    X : int
+    Y : B
+  }
+
+and B =
+  {
+    X : A
+    Y : string
+  }
+```
+
+All types that are declared with the `and` keyword in place of `type` are visible before the line of their declaration.
+
 ## Case Study\: Tanks and Guns
 
 In this section we present a small case study to show the usage of records. Let us assume that we want to model an entity `Tank` defined by name, speed, weapon, armor, and health. Each tank weapon is a gun defined by name, penetration power, and damage. A tank can shoot a shell at another tank with its gun, with the following effect\: if the gun penetration is higher than the target armour then the health of the target is reduced by the weapon damage. Otherwise the amount of armour is decreased by the gun penetration. Let us first define the records for guns and tanks\:

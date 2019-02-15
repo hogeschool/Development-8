@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Lesson3.fs" />
+    <Compile Include="Lesson3Lists.fs" />
+    <Compile Include="Lesson3Tanks.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
