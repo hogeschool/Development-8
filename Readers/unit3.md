@@ -102,8 +102,7 @@ The `expression` argument can be any expression, including tuples, discriminate 
 
 - If $P_2$ is the wildcard symbol `_` then the $P_1$ always matches $P_2$.
 - If $P_1$ is a variable then it always matches $P_2$. In this case we bind the value of $P_1$ to $P_2$.
-- If $P_1$ is a literal (so an atomic value like `5`,`true`,`"Hi!"`,...) then it matches $P_2$ only if $P_1 = P_2$.
-- If $P_1$ is a tuple or a record than it matches $P_2$ only if they are structurally equal.
+- If $P_1$ is a value (like `5`,`true`,`"Hi!"`,...) then it matches $P_2$ only if $P_1 = P_2$. Note that this holds also for tuple and record values, which must be structurally equal.
 - If $P_1$ is a discriminate union whose case is $C_1(x_1,x_2,...,x_n)$ and $P_2$ is $C_2(y_1,y_2,...,y_n)$ than $P_1$ matches $P_2$ if\:
   - $C_1 = C_2$, i.e. $P_1$ and $P_2$ are the same case of the union (i.e. the name of the constructor in the discriminate union is the same).
   - $x_i$ matches $y_i$ for each $i = 1,2,..,n$, i.e. each argument of $C_1$ matches each argument of $C_2$.
@@ -117,6 +116,153 @@ $\text{check}(\text{match } e \text{ with } \vert P_1 \rightarrow e_1 \vert P_2 
 - $\text{check}(e) \Rightarrow T_1$ 
 - $\text{check}(e_i) \Rightarrow T \; \forall i = 1,2,...,n$.
 
-This means that the argument expression of `match` must have the same type of each pattern, and that the expression in the right\-hand side of each case must have the same type.
+This means that the argument expression of `match` must have the same type of each pattern, and that the expression in the right\-hand side of each case must have the same type. Note that if no case of the `match` passes the pattern matching, then you will have a runtime exception. The compiler of F\# is able to detect automatically when this situation might occur, but it will only report it as a warning, since there might be cases when we are sure that the remaining combinations of patterns are never covered because of the execution flow of the program. So in principle not covering all the possible pattern cases is not a compilation error (so a wrong program), but it might happen that the pattern matching triggers a runtime exception because we forget to cover all the cases that we need.
+
+**Example\:**
+
+Consider the two following type definitions\:
+
+```fsharp
+type DegreeCourse =
+  {
+    Code              : string
+    Name              : string
+    EnrollmentDate    : int * int * int
+  }
+
+type Contract =
+  {
+    Serial              : string
+    Salary              : float
+    BeginDate           : int * int * int               
+  }
+
+type Student =
+  {
+    Id          : string
+    Name        : string
+    LastName    : string
+    Enrollment  : DegreeCourse 
+  }
+
+type Employee =
+  {
+    Id          : string
+    Name        : string
+    LastName    : string
+    Enrollment  : Contract
+  }
+
+type SchoolPerson = 
+| Student of Student
+| Employee of Employee
+```
+
+and the following code\:
+
+```fsharp
+let student1 =
+  Student(
+  {
+    Id     = "0963963"
+    Name   = "John"
+    LastName = "Doe"
+    Enrollment =
+      {
+        Code    = "INF"
+        Name    = "Computer Science"
+        EnrollmentDate = (15,08,2018)
+      }
+  })
+
+match student1 with
+| Employee e -> ...
+| Student s -> ...
+```
+
+According to the rules above the first case of the match will fail to match the pattern, since the union case `Student` is different than the union case `Employee` in the pattern.
+
+The second case will pass the pattern matching, since the union case is `Student` as well and the element of the pattern is a variable.
+
+Now let us consider the following code\:
+
+```fsharp
+match student1 with
+| Employee e -> ()
+| Student
+    ( {
+        Id = _
+        Name = _
+        LastName = _
+        Enrollment = (
+          {
+            Code    = "INF"
+            Name    = "Computer Science"
+            EnrollmentDate = (15,08,2018)
+          })
+      }) -> ()
+```
+The second case of the match checks the structural equality of the record in `student1` with the one in the pattern\: the fields `Id`, `Name`, and `LastName` are structurally equal since their value is the wildcard. The field `Enrollment` will be recursively checked for stractural equality, since it contains a record instance. All the three fields of this record are stracturally equal to those in `student1`, thus the record `Enrollment` is structurally equal both in the pattern of the `match` and in `student1`. Note that, to be absolutely accurate, we should also recursively check the structural equality of the tuples in `EnrollmentDate`, but for brevity we skip this step in this explanation. Given these considerations, we can conclude that `student1` passes the pattern matching.
+Informally, this case of the union is checking if `student1` contains either a school employee or a student enrolled in the Computer Science course in a specific date.
+
+## Options
+
+One simple example of a discriminate union is the type `Option<T>`. An option represents an optional value, which is used in a situation when we are not sure whether we have a value or not. It is a safe version of `null`, because having a discriminate union will force you to explicitly handle the situation in which we do not have a value through pattern matching. The optional type is defined as \:
+
+```fsharp
+type Option<T> =
+| None
+| Some of T
+```
+
+Note that this type is already built\-in in F\# in the library `FSharpCore` that is automatically loaded by the compiler (so you do not have to import it explicitly).
+
+Consider now a simulation of a server connection, where a server can fail to reply. A server is defined by an address, which consists of four bytes, a reply probability, which simulates the reliability of the server, and a reply message. A connection is built by providing the ip address of the server you want to connect to. The connection holds an optional `Data` field which contains a possible answer from the server. Note that this is optional because we cannot know if the server will ever reply or not. The connection has a method `Connect` that takes as input a `Server` and tries to connect to it and get a reply. The connection fails to get a reply if the address of the server does not match or if a random number is greater than the chance of getting a reply (we simulate a server failure). Note that to access the reply of the server we must pattern match the `Data` field against the possible pattern of `Option<T>`\: if `Data` matches the pattern `Some data` then we access `data` contained in it (remember that, when an element of the pattern is a variable, we bind the value of the corresponding variable in the pattern that we are comparing from).
+
+```fsharp
+module Lesson3
+
+let r = System.Random()
+
+type Server =
+  {
+    Address   : byte * byte * byte * byte
+    ReplyProbability : float
+    Reply     : string
+  }
+  with
+    static member Create(address : byte * byte * byte * byte,replyProbability : float, reply : string) =
+      {
+        Address = address
+        ReplyProbability = replyProbability
+        Reply = reply
+      }
+
+type Connection =
+  {
+    Address   : byte * byte * byte * byte
+    Data      : Option<string>
+  }
+  with
+    static member Create(address : byte * byte * byte * byte) =
+      {
+        Address = address
+        Data = None
+      }
+    member this.Connect (server : Server) =
+      if this.Address <> server.Address ||
+         r.NextDouble() > server.ReplyProbability then
+         this
+      else
+        { this with Data = Some server.Reply }
+
+
+let helloServer = Server.Create((169uy, 180uy, 0uy, 1uy),0.35,"Hello!")
+let connection = Connection.Create((169uy, 180uy, 0uy, 1uy))
+match connection.Connect(helloServer).Data with
+| Some data -> printfn "The server replied: %s" data
+| None -> printfn "404 server not found"
+```
+
 
 
