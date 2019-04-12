@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>Unit 4 – Advanced Functions</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+    </head>
+    <body>
+        <h1 id="unit-4-%E2%80%93-advanced-functions">Unit 4 – Advanced Functions</h1>
+<p>In this unit, we study the various function operators available in F#. We will start with basic function manipulation operators, and then move on to important design patterns that make use of these operators.</p>
+<h2 id="function-composition-pipe-operator">Function composition, pipe operator</h2>
+<p>Functions in F# are not more special than, say, integers or strings. Just like these simple data types can be defined, manipulated in expressions, transformed, taken as parameters from functions, and be returned as parameters, so can functions. This means that <em>functions may accept as parameters, and return as result, other functions</em>. A function that accepts another function as parameter is called a <em>higher order function</em> (HOF), and a function that returns a function is known as <em>curried</em>.</p>
+<blockquote>
+<p>This characteristic of supporting higher order and curried functions, which was originally typical of cutting-edge functional languages, has been widely recognized to be a fundamental aspect of high quality software engineering, and is now found in most modern programming languages. In this, F# has played an important historical role: the adoption of functional constructs in the mainstream began many years ago in C#, directly integrating F# innovations and know-how. From C#, &quot;lambda functions&quot; spread to other languages, from C++ to Java and more, finally becoming an absolute requirement. Of course other languages helped popularize these concepts, among others JavaScript played a very large role next to C#, in shaping software engineering as we understand it nowadays.</p>
+</blockquote>
+<p>A simple higher order curried function is <code>compose</code>, the function that takes two functions as parameters and invokes them in sequence, turning them into a pipeline:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> compose f g = <span class="hljs-keyword">fun</span> x -&gt; g(f(x))
+</div></code></pre>
+<p><code>compose</code> is a HOF because <code>f</code> and <code>g</code>, its parameters, are both functions. Given that <code>compose</code> returns a function, we also say that it is curried.</p>
+<p>The <code>compose</code> function is actually so central to functional programming, that it already exists as a stndard operator in F#: the <code>(&gt;&gt;)</code> operator.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> compose = (&gt;&gt;)
+</div></code></pre>
+<blockquote>
+<p>Notice that the <code>(&gt;&gt;)</code> operator, which visually resembles an arrow or a sort of pipeline, comes from the mathematical function composition operator <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mo>∘</mo><mi>f</mi></mrow><annotation encoding="application/x-tex">g \circ f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.63889em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∘</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span> (or <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mo>⋅</mo><mi>f</mi></mrow><annotation encoding="application/x-tex">g \cdot f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.63889em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span>), which is meant to represent the analogous to multiplication, but for functions. Notice that the mathematical notation is not very handy for programmers, as the order of execution will go from right to left, and for this reason <code>(&gt;&gt;)</code> flips the order. To respect this analogy with mathematics, languages like Haskell use the <code>.</code> operator as function composition, which F# has kept for object and field lookup in order to maintain the similarity to C#, C, C++, and Java.
+The identity of function composition is <code>id</code>, both in F# and in mathematics. <code>f &gt;&gt; id == id &gt;&gt; f == f</code>.</p>
+</blockquote>
+<p>We could play around with function composition as follows:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> incr x = x + <span class="hljs-number">1</span>
+<span class="hljs-keyword">let</span> double x = x * <span class="hljs-number">2</span>
+<span class="hljs-keyword">let</span> halve x = x / <span class="hljs-number">2</span>
+
+<span class="hljs-keyword">let</span> f = incr &gt;&gt; double
+</div></code></pre>
+<p>Or we could go for an even longer pipeline:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> f = double &gt;&gt; incr &gt;&gt; incr &gt;&gt; halve
+</div></code></pre>
+<p>Notice that <code>f</code> does not invoke <code>double</code> or <code>incr</code>. Rather, <code>f</code> is simply a newly created, dynamic function, which will invoke <code>double</code>, <code>incr</code>, etc. whenever it itself is invoked.</p>
+<p>F# knows another operator, <code>(|&gt;)</code>, which we can use to pass an argument to a function by swapping the order. This makes it possible to write code in the order <code>subject |&gt; verb |&gt; verb |&gt; ... |&gt; verb</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> f x = x |&gt; incr
+            |&gt; double
+</div></code></pre>
+<blockquote>
+<p>When using <code>(&gt;&gt;)</code> instead of <code>(|&gt;)</code>, we can omit the declaration of parameters, but use of <code>(|&gt;)</code> alone can greatly improve code readability.</p>
+</blockquote>
+<p>An interesting pattern that we can build with function composition is function repetition, which basically implements the logic of a <code>for</code> loop by composing the body of the loop (a function <code>f</code>) <code>n</code> times with itself:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> repeat n f = <span class="hljs-keyword">if</span> n &lt;= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> id <span class="hljs-keyword">else</span> f &gt;&gt; repeat (n<span class="hljs-number">-1</span>) f
+</div></code></pre>
+<p>Thanks to <code>repeat</code>, we can perform an operation many times, easily building regular patterns:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> star s = s + <span class="hljs-string">"*"</span>
+<span class="hljs-keyword">let</span> space s = s + <span class="hljs-string">" "</span>
+<span class="hljs-keyword">let</span> newline s = s + <span class="hljs-string">"\n"</span>
+
+<span class="hljs-keyword">let</span> row n = repeat n star
+<span class="hljs-keyword">let</span> square n = repeat n (row n &gt;&gt; newline)
+</div></code></pre>
+<p>Notice that neither <code>row 3</code>, nor <code>square 5</code> would be pictures. They are both functions, waiting to be either composed with other rendering functions, or invoked with an initial string to render from (<code>square 5 &quot;&quot;</code>).</p>
+<h2 id="hof-design-patterns">HOF design patterns</h2>
+<p>Higher order functions can be assembled along standard design patterns which arise very commonly in most data structures.</p>
+<h3 id="map"><code>map</code></h3>
+<p>A very powerful, and the most common design pattern when it comes to higher order and curried functions is <code>map</code> over a data structure. <code>map</code> performs a transformation of the <em>content</em> of a data structure, without altering the structure itself. We often refer to <code>map</code> as a <em>structure-preserving transformation</em>.</p>
+<p>For example, consider transforming the first element of a pair <code>(x,y)</code> according to a function <code>f</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapTupleLeft f (x,y) = (f x,y)
+</div></code></pre>
+<p>Notice that the resulting pair will still be a pair (moreover: the second element is precisely the same!). This is what we mean by <em>preserving structure</em>. Had the pair become a triple, then the structure would now be different. The first element is changed, by feeding the original value to function <code>f</code>. This leads to a new first element, which not only could be of a different value, but could actually even have a fully different type. We do not consider this change of <em>internal type</em> to be a change in structure, because the only structure we wish to preserve is the outer structure of the pair, and not the inner structure of the content to be transformed.</p>
+<p>We could call the function as follows:</p>
+<pre><code class="language-fsharp"><div>mapTupleLeft incr (<span class="hljs-number">1</span>,<span class="hljs-string">"a"</span>) -&gt; (<span class="hljs-number">2</span>,<span class="hljs-string">"a"</span>)
+mapTupleLeft double (<span class="hljs-number">2</span>,<span class="hljs-string">"a"</span>) -&gt; (<span class="hljs-number">4</span>,<span class="hljs-string">"a"</span>)
+mapTupleLeft (incr &gt;&gt; double) (<span class="hljs-number">2</span>,[<span class="hljs-string">"a"</span>;<span class="hljs-string">"b"</span>]) -&gt; (<span class="hljs-number">6</span>,[<span class="hljs-string">"a"</span>;<span class="hljs-string">"b"</span>])
+</div></code></pre>
+<blockquote>
+<p>There is a reason why the <code>map</code> design pattern is so common: <code>map</code> is the homomorphism associated with a functor. Functors are an incredibly common structure both in mathematics and in programming, and as such they are found everywhere. Many developers, unaware of the existance of functors, rediscover the concept accidentally by noticing that their data structures could indeed implement <code>map</code>.</p>
+</blockquote>
+<p>A tuple supports two different <code>map</code> functions: one for the left element, the other for the right element. The preserved structure is clearly the same, but the preserved element is not:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapTupleRight f (x,y) = (x,f y)
+</div></code></pre>
+<p>We can define a structure-preserving transformation for basically anything, but when it comes to containers, the transformation becomes even more interesting, as it allows us to <em>perform operations on all the content</em> of the container at once.</p>
+<p>For example, consider the <code>Option</code> datatype. <code>Option</code> is a container, that may contain at most one element. In this sense, its <code>map</code> function performs some operation on the content, thus either once or not at all, depending on the structure (<code>Some</code> or <code>None</code>) of the original input:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapOption f o = <span class="hljs-keyword">match</span> o <span class="hljs-keyword">with</span> None -&gt; None | Some x -&gt; Some(f x)
+</div></code></pre>
+<p>Notice that the structure-preservation guarantees that <code>mapOption</code> will always return <code>None</code> if the input was <code>None</code>, and <code>Some</code> if the input was <code>Some</code> (albeit with different content in the second case).</p>
+<pre><code class="language-fsharp"><div>mapOption incr None -&gt; None
+mapOption incr (Some <span class="hljs-number">3</span>) -&gt; Some <span class="hljs-number">4</span>
+mapOption double (Some <span class="hljs-number">3</span>) -&gt; Some <span class="hljs-number">6</span>
+</div></code></pre>
+<p>Similarly, we can extend the <code>map</code> concept to <code>List</code>. This means that we will transform all elements of the list, in a recursive fashion, according to the given function:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> mapList f l = <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span> [] -&gt; [] | x::xs -&gt; (f x)::mapList f xs
+</div></code></pre>
+<p>The structure preservation can here be seen in the fact that the result of <code>mapList</code> always has the same number of list elements as the input list, meaning that <code>mapList</code> will never alter the length of the original list:</p>
+<pre><code class="language-fsharp"><div>mapList incr [] -&gt; []
+mapList incr [<span class="hljs-number">1</span>;<span class="hljs-number">3</span>;<span class="hljs-number">5</span>] -&gt; [<span class="hljs-number">2</span>;<span class="hljs-number">4</span>;<span class="hljs-number">6</span>]
+mapList double [<span class="hljs-number">1</span>;<span class="hljs-number">3</span>;<span class="hljs-number">5</span>] -&gt; [<span class="hljs-number">2</span>;<span class="hljs-number">6</span>;<span class="hljs-number">10</span>]
+</div></code></pre>
+<h2 id="composing-multiple-maps">Composing multiple <code>map</code>'s</h2>
+<p>It is possible to combine different <code>map</code> functions together. We can combine them by simply invoking them in a nested fashion, by explicitly specifying the content transformation:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapListOption f = mapList (mapOption f)
+</div></code></pre>
+<p>Of course declaring a parameter <code>f</code> just to pass it along is not very pretty, as it clutters code without really adding anything interesting or particularly informative. Fortunately, function composition comes to the rescue, because we can simply compose (look out for the inverted order!) the two mapping functions as follows:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapListOption = mapOption &gt;&gt; mapList
+</div></code></pre>
+<h2 id="non-structure-preserving-transformations-filter">Non-structure-preserving transformations: <code>filter</code></h2>
+<p><code>map</code> is not the only common design pattern in functional programming. Another transformation that frequently arises, but only when dealing with a dynamic collection, is <code>filter</code>, which removes elements from a collection based on some predicate.</p>
+<p><code>filter</code> on an <code>Option</code> would check whether or not there is an element, and it respects the predicate. In all other cases, the element is discarded from the collection:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> filterOption p l =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | Some x <span class="hljs-keyword">when</span> p x -&gt; Some x
+  | _ -&gt; None
+</div></code></pre>
+<p>Filtering a list requires checking all elements in turn, recursively:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> filterList p l =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | [] -&gt; []
+  | x::xs <span class="hljs-keyword">when</span> p x -&gt; x::filterList p xs
+  | x::xs -&gt; filterList p xs
+</div></code></pre>
+<p>Notice that, while <code>map</code> preserves structure (that is, the number of elements in a list), <code>filter</code> does not. Whereas <code>map</code> gives a result that might have a different content type (<code>List&lt;int&gt; -&gt; List&lt;string&gt;</code>), <code>filter</code> will always preserve the type.</p>
+<p><code>filter</code> decides which elements to keep, and which elements to discard from a collection, so for example:</p>
+<pre><code class="language-fsharp"><div>filterList (<span class="hljs-keyword">fun</span> x -&gt; x % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">5</span>;<span class="hljs-number">6</span>] -&gt; [<span class="hljs-number">2</span>;<span class="hljs-number">4</span>;<span class="hljs-number">6</span>]
+filterList (<span class="hljs-keyword">fun</span> (x:string) -&gt; x.StartsWith <span class="hljs-string">"a"</span>) [<span class="hljs-string">"a"</span>; <span class="hljs-string">"aa"</span>; <span class="hljs-string">"baa"</span>; <span class="hljs-string">"bb"</span>] -&gt; [<span class="hljs-string">"a"</span>; <span class="hljs-string">"aa"</span>]
+</div></code></pre>
+<h2 id="fold"><code>fold</code></h2>
+<p>The most general design pattern, which only applies to data structures with variable length (just like <code>filter</code>), is <code>fold</code>. <code>fold</code> will apply a function to all elements in a sort of cascade, in order to aggregate them all together into a single result. A typical example of folding a sequence is adding all elements together, computing the minimum, computing the maximum, finding a specific element, etc.</p>
+<p><code>fold</code> is implemented on lists in two different ways, depending on the order in which we want to visit the elements (left-to-right or right-to-left):</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> foldList z f l = <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span> [] -&gt; z | x::xs -&gt; f x (foldList z f xs)
+
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> foldList2 z f l = <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span> [] -&gt; z | x::xs -&gt; foldList2 (f z x) f xs
+</div></code></pre>
+<p>We could, for example, use <code>fold</code> to add all elements as follows:</p>
+<pre><code class="language-fsharp"><div>foldList <span class="hljs-number">0</span> (+) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>] -&gt; (<span class="hljs-number">1</span> + (<span class="hljs-number">2</span> + (<span class="hljs-number">3</span> + <span class="hljs-number">0</span>))) -&gt; <span class="hljs-number">6</span>
+</div></code></pre>
+<p>or</p>
+<pre><code class="language-fsharp"><div>foldList2 <span class="hljs-number">0</span> (+) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>] -&gt; (((<span class="hljs-number">0</span> + <span class="hljs-number">1</span>) + <span class="hljs-number">2</span>) + <span class="hljs-number">3</span>) -&gt; <span class="hljs-number">6</span>
+</div></code></pre>
+<blockquote>
+<p>While for many operations it does not matter which version of <code>fold</code> we use (and thus, in those cases we should use <code>foldList2</code>, as it does not use the stack as much as <code>foldList</code> and can thus be compiled into a loop via <em>tail recursion optimisation</em>), sometimes the order in which the operations are executed really matters. Be on the lookout for these cases!</p>
+</blockquote>
+<p>We could also compute the minimum of a list, but we must be careful: an empty list has no minimum, thus the result must be <code>Option</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> minOption x y =
+  <span class="hljs-keyword">match</span> y <span class="hljs-keyword">with</span>
+  | Some a <span class="hljs-keyword">when</span> a &lt; y -&gt; y
+  | _ -&gt; Some x
+
+foldList None minOption [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>] -&gt; Some <span class="hljs-number">1</span>
+</div></code></pre>
+<p><code>fold</code> is very powerful. When a datastructure supports the  <code>fold</code> pattern, then we can build most (if not all!) of the functions we need on it via <code>fold</code> itself. For example, given that <code>List</code> supports <code>fold</code>, then we can define both <code>map</code> and <code>filter</code> on <code>List</code> via <code>fold</code>, instead of building both functions manually:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapList f = foldList [] (<span class="hljs-keyword">fun</span> x xs -&gt; f x::xs)
+
+<span class="hljs-keyword">let</span> filterList p l =
+  foldList [] (<span class="hljs-keyword">fun</span> x xs -&gt; <span class="hljs-keyword">if</span> p x <span class="hljs-keyword">then</span> x::xs <span class="hljs-keyword">else</span> xs)
+</div></code></pre>
+<h2 id="partial-application-curry-and-uncurry">Partial application, curry, and uncurry</h2>
+<p>Currying is the technique which lets functions return other functions. It is very commonly encountered in functional programming languages such as F#, whenever a function takes its parameters one at a time. For example, consider a function that adds two numbers together:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> add x y = x + y
+</div></code></pre>
+<p>The <code>add</code> function does not really take as input two numbers and returns their sum. Rather, it takes as input a single number, and returns the function that takes as input the second number and adds it to the first. This means that we could call <code>add</code> with only one input:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> incr = add <span class="hljs-number">1</span>
+</div></code></pre>
+<p>thereby obtaining the function that adds for example <code>1</code> to its input. Add is a <em>curried</em> function, and passing some of its parameters like we have just done to produce <code>incr</code> is called <em>partial application</em> (&quot;partial&quot; because we have provided <em>only a part</em> of its input, and not all of it).</p>
+<p>We can also perform computations between the arguments. For example, we could define a function that determines what to do based on the value of one of the first parameters:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> conditionalPipeline p f g x = <span class="hljs-keyword">if</span> p x <span class="hljs-keyword">then</span> f <span class="hljs-keyword">else</span> g
+</div></code></pre>
+<p>We would call this function as follows:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> f = conditionalPipeline (<span class="hljs-keyword">fun</span> x -&gt; x &gt; <span class="hljs-number">0</span>) incr double
+</div></code></pre>
+<p>and then, depending on what we would give to <code>f</code>, see either <code>incr</code> or <code>double</code> happen:</p>
+<pre><code class="language-fsharp"><div>f <span class="hljs-number">3</span> -&gt; <span class="hljs-number">4</span>
+f <span class="hljs-number">-3</span> -&gt; <span class="hljs-number">-6</span>
+</div></code></pre>
+<p>A simple practical example could be drawn from the <code>draw</code> functions we built when presenting <code>repeat</code>. Instead of defining <code>star</code>, <code>space</code>, etc. manually, we could simply define them as the partial application of a curried <code>draw</code> function in which the symbol to draw is the first parameter:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> draw sym s = s + sym
+<span class="hljs-keyword">let</span> star = draw <span class="hljs-string">"*"</span>
+<span class="hljs-keyword">let</span> space = draw <span class="hljs-string">" "</span>
+<span class="hljs-keyword">let</span> newline = draw <span class="hljs-string">"\n"</span>
+</div></code></pre>
+<p>Interestingly, we can automatically move between curried and uncurried functions, by defining the <code>curry</code> and <code>uncurry</code> higher order functions that transform an uncurried function that takes a tuple as input into a curried function that takes the inputs one at a time, and vice-versa:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> curry f x y = f (x,y)
+<span class="hljs-keyword">let</span> uncurry f (x,y) = f x y
+</div></code></pre>
+<p>Suppose now that we were provided with a small-minded draw function which, for reasons unknown to us (incompetence? malice? who knows!) is not built with currying and thus cannot be partially applied:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> drawWrong(sym,s) = s + sym
+</div></code></pre>
+<p>Fortunately, we can use <code>curry</code> to turn this function into its proper curried equivalent, and use it to define our utilities without ugly code repetition or the introduction of useless arguments that we only pass along or use just once in uninteresting fashions:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> draw = curry drawWrong
+<span class="hljs-keyword">let</span> star = draw <span class="hljs-string">"*"</span>
+<span class="hljs-keyword">let</span> space = draw <span class="hljs-string">" "</span>
+<span class="hljs-keyword">let</span> newline = draw <span class="hljs-string">"\n"</span>
+</div></code></pre>
+<p>As a final example, consider the case of a <code>Person</code> record, plus a curried <code>rename</code> function:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Person</span> </span>= { name:string; surname:string }
+<span class="hljs-keyword">let</span> rename newName p = { p <span class="hljs-keyword">with</span> name=newName }
+</div></code></pre>
+<p>We can now define some (admittedly not very useful) utility functions that change the name of a <code>Person</code> to the desired name. These functions all expect a <code>Person</code>, thanks to the partial application of <code>rename</code> to its first parameter only:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> georgeify = rename <span class="hljs-string">"George"</span>
+<span class="hljs-keyword">let</span> janeify = rename <span class="hljs-string">"Jane"</span>
+<span class="hljs-keyword">let</span> jackify = rename <span class="hljs-string">"Jack"</span>
+</div></code></pre>
+<p>We can then use these functions to rename some instances of <code>Person</code> as follows:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> p1 = { name=<span class="hljs-string">"Giorgio"</span>; surname=<span class="hljs-string">"Ruffa"</span> } |&gt; johnify
+<span class="hljs-keyword">let</span> p2 = { name=<span class="hljs-string">"Alex"</span>; surname=<span class="hljs-string">"Pomaré"</span> } |&gt; janeify
+<span class="hljs-keyword">let</span> p3 = { name=<span class="hljs-string">"Mandingo"</span>; surname=<span class="hljs-string">"Siffredi"</span> }
+</div></code></pre>
+<h2 id="function-records">Function records</h2>
+<p>We can combine all we have seen so far in a powerful design pattern, known as type-classes, where we define a record of functions over some generic datatype in order to implement something that somewhat resembles an interface in object-oriented languages.</p>
+<blockquote>
+<p>Be careful! While it is true that type-classes can be used in order to simulate interfaces, they also support quite a lot more than object-oriented languages interfaces. For example, type-classes allow us to define static methods, constructors, and operators, which interfaces do not support because of their requirement of at least one instance of the implementing class (the instance that will become <code>this</code> in the concrete implementation).</p>
+</blockquote>
+<p>Consider two conceptually similar datatypes, built separately and not necessarily overlapping in attribute names (but indeed overlapping in attribute <em>meaning</em>):</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Manager</span> </span>= {
+  name:string
+  surname:string
+  birthday:DateTime
+  company:string
+  salary:int
+}
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Student</span> </span>= {
+  Name:string
+  Surname:string
+  Birthday:DateTime
+  StudyPoints:int
+}
+</div></code></pre>
+<p>We would now like to encode the fact that both of these data structures really represent some interface <code>Person</code>, which allows getting and setting <code>Name</code>, <code>Surname</code>, and <code>Birthday</code>. Other attributes cannot really be defined for <code>Person</code>, as they are not present in both <code>Manager</code> and <code>Student</code>. We encode this by defining a record of functions over a generic datatype <code>'p</code>, which is the actual (and at this point unknown) type of a <code>Person</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">IPerson</span>&lt;<span class="hljs-title">'p</span>&gt; </span>= {
+  getName:<span class="hljs-symbol">'p</span> -&gt; string
+  getSurname:<span class="hljs-symbol">'p</span> -&gt; string
+  getBirthday:<span class="hljs-symbol">'p</span> -&gt; DateTime
+  setName:string -&gt; <span class="hljs-symbol">'p</span> -&gt; <span class="hljs-symbol">'p</span>
+  setSurname:string -&gt; <span class="hljs-symbol">'p</span> -&gt; <span class="hljs-symbol">'p</span>
+  setBirthday:DateTime -&gt; <span class="hljs-symbol">'p</span> -&gt; <span class="hljs-symbol">'p</span>
+}
+</div></code></pre>
+<p>We then define the implementation of <code>IPerson</code> for a <code>Manager</code>, and for a <code>Student</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> managerPerson:IPerson&lt;Manager&gt; =
+  {
+    getName=<span class="hljs-keyword">fun</span> (x:Manager) -&gt; x.name;
+    getSurname=<span class="hljs-keyword">fun</span> (x:Manager) -&gt; x.surname;
+    getBirthday=<span class="hljs-keyword">fun</span> (x:Manager) -&gt; x.birthday;
+    setName=<span class="hljs-keyword">fun</span> v (x:Manager) -&gt; { x <span class="hljs-keyword">with</span> name=v };
+    setSurname=<span class="hljs-keyword">fun</span> v (x:Manager) -&gt; { x <span class="hljs-keyword">with</span> surname=v };
+    setBirthday=<span class="hljs-keyword">fun</span> v (x:Manager) -&gt; { x <span class="hljs-keyword">with</span> birthday=v }
+  }
+
+<span class="hljs-keyword">let</span> studentPerson:IPerson&lt;Student&gt; =
+  {
+    getName=<span class="hljs-keyword">fun</span> (x:Student) -&gt; x.Name;
+    getSurname=<span class="hljs-keyword">fun</span> (x:Student) -&gt; x.Surname;
+    getBirthday=<span class="hljs-keyword">fun</span> (x:Student) -&gt; x.Birthday;
+    setName=<span class="hljs-keyword">fun</span> v (x:Student) -&gt; { x <span class="hljs-keyword">with</span> Name=v };
+    setSurname=<span class="hljs-keyword">fun</span> v (x:Student) -&gt; { x <span class="hljs-keyword">with</span> Surname=v };
+    setBirthday=<span class="hljs-keyword">fun</span> v (x:Student) -&gt; { x <span class="hljs-keyword">with</span> Birthday=v }
+  }
+</div></code></pre>
+<p>At this point, we could define a simple, but highly generic program that takes as input both a person and its interface implementation (we call <code>i</code> the <em>witness</em> of <code>'p</code> being a <code>Person</code>, which sounds kind of awesome) and does stuff with the input <code>Person</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> genericProgram (i:IPerson&lt;<span class="hljs-symbol">'p</span>&gt;) (p:<span class="hljs-symbol">'p</span>) =
+  <span class="hljs-keyword">let</span> p1 = i.setSurname (<span class="hljs-string">"'o"</span> + i.getSurname p) p
+  i.setBirthday (i.getBirthday p1 + System.TimeSpan.FromDays <span class="hljs-number">365.0</span>) p1
+</div></code></pre>
+<p>We can then call this generic program on both a <code>Student</code> and a <code>Manager</code>, by providing the actual witnesses <code>studentPerson</code> and <code>managerPerson</code> respectively:</p>
+<pre><code class="language-fsharp"><div>printfn <span class="hljs-string">"%A"</span> (genericProgram studentPerson { Name=<span class="hljs-string">"Jack"</span>; Surname=<span class="hljs-string">"Lantern"</span>; Birthday=System.DateTime(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1985</span>); StudyPoints=<span class="hljs-number">120</span>} )
+printfn <span class="hljs-string">"%A"</span> (genericProgram managerPerson { name=<span class="hljs-string">"John"</span>; surname=<span class="hljs-string">"Connor"</span>; birthday=System.DateTime(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1965</span>); company=<span class="hljs-string">"Microsoft"</span>; salary=<span class="hljs-number">150000</span>} )
+</div></code></pre>
+<h2 id="composition-of-functions-and-types">Composition of functions and types</h2>
+<p>Functions have a type. The function from <code>'a</code> to <code>'b</code> is called <code>'a -&gt; 'b</code>. Types built with the function <code>-&gt;</code> operator can be mixed with all other type constructions.</p>
+<p>For example, we could define a function that takes as input a list of curried functions, and invokes them all with the same arguments (thus multiple times). A first implementation to do this could be:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;<span class="hljs-symbol">'c</span>&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.map (<span class="hljs-keyword">fun</span> f -&gt; f a)
+    |&gt; List.map (<span class="hljs-keyword">fun</span> f -&gt; f b)
+</div></code></pre>
+<p>Of course, there is no need to go through the list twice, so we can use <code>List.map</code> only once, to invoke the function with both parameters:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;<span class="hljs-symbol">'c</span>&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.map (<span class="hljs-keyword">fun</span> f -&gt; f a b)
+</div></code></pre>
+<p>We can make the situation even more complex. We could assume that we have a list of function <code>Option</code>'s, that is some functions we have, and some we do not. In this case, we first collect all the functions we have (at most one per <code>Option</code>), and then we proceed with their actual invocation:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;Option&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;<span class="hljs-symbol">'c</span>&gt;&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.collect (<span class="hljs-keyword">function</span> None -&gt; [] | Some f -&gt; [f])
+    |&gt; List.map (<span class="hljs-keyword">fun</span> f -&gt; f a b)
+</div></code></pre>
+<p>From a <code>List</code> of <code>Option</code>'s of functions, we could also choose to only apply the functions when we have them, and to return <code>None</code> when no function was available. This means that, instead of a <code>List</code> of all possible results, we return a <code>List</code> with <code>Option</code>'s that might contain the results:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;Option&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;<span class="hljs-symbol">'c</span>&gt;&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.map (<span class="hljs-keyword">function</span> None -&gt; None | Some f -&gt; Some(f a b))
+</div></code></pre>
+<p>We could also have the function itself give back a result which might not be there, leading us to two possible implementations, depending on whether or not we wish to filter away the absent functions or results:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;Option&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.collect (<span class="hljs-keyword">function</span> None -&gt; [] | Some f -&gt; <span class="hljs-keyword">match</span> f a b <span class="hljs-keyword">with</span> | None -&gt; [] | Some x -&gt; [x])
+</div></code></pre>
+<p>or</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;Option&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
+  l |&gt; List.map (<span class="hljs-keyword">function</span> None -&gt; None | Some f -&gt; f a b)
+</div></code></pre>
+<p>This goes on to show that functions really are just like all other datatypes in F#, and they can be freely mixed with all other types and all other tools we have defined so far.</p>
+<blockquote>
+<p>The ability to compose constructs according to our will, without artificial limitations imposed by the language, is crucial, and more often than not underestimated in its impact when building high quality software.
+Composition makes it possible to build complex abstractions and large programs by leveraging the power of all the tried-and-tested functions and other components that we have already built and tested. Few tools offer the ability that (pure, referentially transparent) functional languages have to build components in isolation, test them, compose them, and obtain flawlessly working programs as a direct result, leading beginning practitioners of functional programming to believe that &quot;programming in [insert functional language here] simply <em>works</em>, without bugs!&quot;.</p>
+</blockquote>
+<h2 id="exercises">Exercises</h2>
+<p>Implement functions with the following signatures:</p>
+<pre><code class="language-fsharp"><div>map2 : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; <span class="hljs-symbol">'c</span>) -&gt; List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;
+</div></code></pre>
+<pre><code class="language-fsharp"><div>map2' : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; <span class="hljs-symbol">'c</span>) -&gt; List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;
+</div></code></pre>
+<pre><code class="language-fsharp"><div>zip: List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt;
+</div></code></pre>
+<p>Implement a series of SQL operators (<code>SELECT</code>, <code>WHERE</code>, <code>ORDERBY</code>, <code>AGGREGATE</code>) via higher order functions. Hint: <code>SELECT == map</code>, <code>WHERE == filter</code>.</p>
+
+    </body>
+    </html>

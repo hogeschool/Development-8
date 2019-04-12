@@ -1,4 +1,4 @@
-# Introduction to functional programming
+# Unit 1 - Introduction to functional programming
 
 Functional programming is a programming paradigm that is profoundly different from the imperative paradigm. This programming paradigm grants additional properties on the code that help the programmer to write code that is maintainable and correct. For this reason also imperative languages widely used in the industry have been including functional programming construct during the last decades: C\#, C++, Java, Javascript, Typescript all provide means of writing programs in terms  of functional programming abstractions, and some of them even integrated type systems that are as expressive as those of Haskell or CamL. It is evident that functional programming trascendended the role of a tool used only by researchers and pioneers of programming and is becoming more and more a reality in the industry.
 
@@ -266,6 +266,18 @@ let inc x = x + 1
 inc 3
 ```
 
+In F\# it is also possible to define custom `operators`. This is achieved by putting a sequence of symbols between brackets after the `let` keyword\:
+
+```fsharp
+let (>>=) x y = ...
+```
+
+This means that the function can then be called by using the syntax
+
+```fsharp
+let res = x >>= y
+```
+
 ## Conditionals
 
 Conditionals in functional programming have a different semantics then in imperative programming. In the previous courses of development we saw that imperative languages support two different kinds of conditionals\: one is a conditional _statement_ and one is a conditional _expression_. Since in functional programming we have no state, the only supported conditional is the conditional expression. F\# support a conditional expression with the syntax\:
@@ -363,6 +375,7 @@ let getDivisors =
             getDivisors n (i + 1)
     mkDivisors n 1
 ```
+
 
 ## Printing to the standard output
 

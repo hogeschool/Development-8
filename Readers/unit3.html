@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>Polymorphism in Functional Programming</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+    </head>
+    <body>
+        <h1 id="polymorphism-in-functional-programming">Polymorphism in Functional Programming</h1>
+<p>In Unit2 we introduced the typed lambda-calculus and show its application in the type system of F#. We then proceeded to study built-in advanced types such as tuples and records. We concluded the unit by showing how to implement inheritance in functional programming through the use of immutable records and presented a complex case study. In this unit we show how to implement polymorphism in a functional programming language.</p>
+<h2 id="discriminated-unions">Discriminated Unions</h2>
+<p>In F# it is possible to specify a type as a discriminated union, which is essentially a type that can be constructed in multiple ways. In F# this can be achieved by using the following syntax</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">T</span> </span>=
+| Constructor_1 <span class="hljs-keyword">of</span> T_1
+| Constructor_2 <span class="hljs-keyword">of</span> T_2
+...
+| Constructor_n <span class="hljs-keyword">of</span> T_n
+</div></code></pre>
+<p>where <code>T</code> is the name of the type that we declare as usual, each <code>Constructor_i</code> is the name of each possible constructor that we can use to build our polymorphic type, and each <code>T_i</code> is the type of the input argument of the constructor. Note, if we need to pass multiple arguments to construct a specific case of the polymorhpic type we can provide a tuple. Note that the type argument is optional, so if we do not require arguments to construct that particular case, we can simply provide the constructor name only.</p>
+<p>This would be equivalent to the following C# code:</p>
+<pre><code class="language-csharp"><div><span class="hljs-keyword">interface</span> <span class="hljs-title">T</span> { }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">Constructor_1</span> : <span class="hljs-title">T</span>
+{
+  <span class="hljs-keyword">public</span> T_1 Data;
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">Constructor_2</span> : <span class="hljs-title">T</span>
+{
+  <span class="hljs-keyword">public</span> T_2 Data;
+}
+
+...
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">Constructor_n</span> : <span class="hljs-title">T</span>
+{
+  <span class="hljs-keyword">public</span> T_n Data;
+}
+</div></code></pre>
+<p>For instance, let us assume that we want to model a vehicle and each vehicle is characterized by a list of components. A car as four wheels, and an engine, a tank has two tracks, an engine,and a gun, a plane has an engine and two wings. This can be modelled by the following discriminated untion (assuming that we already have type definitions ofr <code>Wheel</code>, <code>Engine</code>, <code>Track</code>, and <code>Gun</code>):</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Vehicle</span> </span>=
+| Car <span class="hljs-keyword">of</span> Wheel * Wheel * Wheel * Wheel * Engine
+| Tank <span class="hljs-keyword">of</span> Track * Track * Engine * Gun
+| Plane <span class="hljs-keyword">of</span> Wing * Wing * Engine
+</div></code></pre>
+<p>Of course we can combine records and unions for better readability. For example we can refactor the code above as:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Car</span> </span>=
+  {
+    Wheel1 : Wheel
+    Wheel2 : Wheel
+    Wheel3 : Wheel
+    Wheel4 : Wheel
+    Engine : Engine
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Tank</span> </span>=
+  {
+    Track1 : Track
+    Track2 : Track
+    Engine : Engine
+    Gun : Gun
+  }
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Plane</span> </span>=
+  {
+    Wing1 : Wing
+    Wing2 : Wing
+    Engine : Engine
+  }
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Vehicle</span> </span>=
+| Car <span class="hljs-keyword">of</span> Car
+| Tank <span class="hljs-keyword">of</span> Tank
+| Plane <span class="hljs-keyword">of</span> Plane
+</div></code></pre>
+<p>Note that we can add members to discriminated unions in the same way we do for records, for instance</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Vehicle</span> </span>=
+| Car <span class="hljs-keyword">of</span> Car
+| Tank <span class="hljs-keyword">of</span> Tank
+| Plane <span class="hljs-keyword">of</span> Plane
+<span class="hljs-keyword">with</span>
+  <span class="hljs-keyword">member</span> this.Run() = ...
+</div></code></pre>
+<h2 id="pattern-matching">Pattern Matching</h2>
+<p>Let us suppose that we want to give the implementation of the method <code>Run</code> described in the snippet above, so that each kind of <code>Vehicle</code> outputs a different sound. In order to do that, we must check which specific case of the vehicle polymorhpic type we are considering. In pure object-oriented programming this is usually achieved through a visitor or strategy design pattern. Several functional programming languages offer instead built-in abstractions to achieve the same behaviour. In F# this abstraction is called <code>match</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">match</span> expression <span class="hljs-keyword">with</span>
+| Pattern_1 -&gt; expr_1
+| Pattern_2 -&gt; expr_2
+...
+| Pattern_n -&gt; expr_n
+</div></code></pre>
+<p>The <code>expression</code> argument can be any expression, including tuples, discriminated unions, or even function calls. The <code>match</code> control structure takes the expression argument and matches its pattern with one of those provided in its body. When the pattern is matched the corresponding right-hand side expression is computed. Assuming to have two patterns <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, we say that <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> in the following cases:</p>
+<ul>
+<li>If <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is the wildcard symbol <code>_</code> then <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> always matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>.</li>
+<li>If <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is a variable then it always matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>. In this case we bind the value of <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> to <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>.</li>
+<li>If <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is a value (like <code>5</code>,<code>true</code>,<code>&quot;Hi!&quot;</code>,...) then it matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> only if <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub><mo>=</mo><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_1 = P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>. Note that this holds also for tuple and record values, which must be structurally equal.</li>
+<li>If <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is a discriminated union whose case is <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>(</mo><msub><mi>x</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>x</mi><mn>2</mn></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><msub><mi>x</mi><mi>n</mi></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">C_1(x_1,x_2,...,x_n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mn>2</mn></msub><mo>(</mo><msub><mi>y</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>2</mn></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><msub><mi>y</mi><mi>n</mi></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">C_2(y_1,y_2,...,y_n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> than <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> if:
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>=</mo><msub><mi>C</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">C_1 = C_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, i.e. <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">P_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">P_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> are the same case of the union (the name of the constructor in the discriminated union is the same).</li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">x_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> matches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">y_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> for each <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">i = 1,2,...,n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span></span></span></span>, i.e. each argument of <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">C_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> matches each argument of <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">C_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>.</li>
+</ul>
+</li>
+</ul>
+<p>The type checking of the <code>match</code> works as follows:</p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>check</mtext><mo>(</mo><mtext>match </mtext><mi>e</mi><mtext> with </mtext><mi mathvariant="normal">∣</mi><msub><mi>P</mi><mn>1</mn></msub><mo>→</mo><msub><mi>e</mi><mn>1</mn></msub><mi mathvariant="normal">∣</mi><msub><mi>P</mi><mn>2</mn></msub><mo>→</mo><msub><mi>e</mi><mn>2</mn></msub><mi mathvariant="normal">∣</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">∣</mi><msub><mi>P</mi><mi>n</mi></msub><mo>→</mo><msub><mi>e</mi><mi>n</mi></msub><mo>)</mo><mo>⇒</mo><mi>T</mi><mtext> when: </mtext></mrow><annotation encoding="application/x-tex">\text{check}(\text{match } e \text{ with } \vert P_1 \rightarrow e_1 \vert P_2 \rightarrow e_2 \vert ... \vert P_n \rightarrow e_n) \Rightarrow T \text{ when: }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">check</span></span><span class="mopen">(</span><span class="mord text"><span class="mord">match </span></span><span class="mord mathdefault">e</span><span class="mord text"><span class="mord"> with </span></span><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mord text"><span class="mord"> when: </span></span></span></span></span></p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>check</mtext><mo>(</mo><msub><mi>P</mi><mi>i</mi></msub><mo>)</mo><mo>⇒</mo><msub><mi>T</mi><mn>1</mn></msub><mtext>&ThickSpace;</mtext><mi mathvariant="normal">∀</mi><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">\text{check}(P_i) \Rightarrow T_1 \; \forall i = 1,2,...,n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">check</span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∀</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>check</mtext><mo>(</mo><mi>e</mi><mo>)</mo><mo>⇒</mo><msub><mi>T</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">\text{check}(e) \Rightarrow T_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">check</span></span><span class="mopen">(</span><span class="mord mathdefault">e</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>check</mtext><mo>(</mo><msub><mi>e</mi><mi>i</mi></msub><mo>)</mo><mo>⇒</mo><mi>T</mi><mtext>&ThickSpace;</mtext><mi mathvariant="normal">∀</mi><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">\text{check}(e_i) \Rightarrow T \; \forall i = 1,2,...,n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">check</span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∀</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span></span></span></span>.</li>
+</ul>
+<p>This means that the argument expression of <code>match</code> must have the same type of each pattern, and that the expression in the right-hand side of each case must have the same type. Note that if no case of the <code>match</code> passes the pattern matching, then you will have a runtime exception. The compiler of F# is able to detect automatically when this situation might occur, but it will only report it as a warning, since there might be cases when we are sure that the remaining combinations of patterns are never covered because of the execution flow of the program. So in principle not covering all the possible pattern cases is not a compilation error (so a wrong program), but it might happen that the pattern matching triggers a runtime exception because we forget to cover all the cases that we need.</p>
+<p><strong>Example:</strong></p>
+<p>Consider the two following type definitions:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">DegreeCourse</span> </span>=
+  {
+    Code              : string
+    Name              : string
+    EnrollmentDate    : int * int * int
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Contract</span> </span>=
+  {
+    Serial              : string
+    Salary              : float
+    BeginDate           : int * int * int               
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Student</span> </span>=
+  {
+    Id          : string
+    Name        : string
+    LastName    : string
+    Enrollment  : DegreeCourse 
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Employee</span> </span>=
+  {
+    Id          : string
+    Name        : string
+    LastName    : string
+    Enrollment  : Contract
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">SchoolPerson</span> </span>= 
+| Student <span class="hljs-keyword">of</span> Student
+| Employee <span class="hljs-keyword">of</span> Employee
+</div></code></pre>
+<p>and the following code:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> student1 =
+  Student(
+  {
+    Id     = <span class="hljs-string">"0963963"</span>
+    Name   = <span class="hljs-string">"John"</span>
+    LastName = <span class="hljs-string">"Doe"</span>
+    Enrollment =
+      {
+        Code    = <span class="hljs-string">"INF"</span>
+        Name    = <span class="hljs-string">"Computer Science"</span>
+        EnrollmentDate = (<span class="hljs-number">15</span>,<span class="hljs-number">08</span>,<span class="hljs-number">2018</span>)
+      }
+  })
+
+<span class="hljs-keyword">match</span> student1 <span class="hljs-keyword">with</span>
+| Employee e -&gt; ...
+| Student s -&gt; ...
+</div></code></pre>
+<p>According to the rules above the first case of the match will fail to match the pattern, since the union case <code>Student</code> is different than the union case <code>Employee</code> in the pattern.</p>
+<p>The second case will pass the pattern matching, since the union case is <code>Student</code> as well and the element of the pattern is a variable.</p>
+<p>Now let us consider the following code:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">match</span> student1 <span class="hljs-keyword">with</span>
+| Employee e -&gt; ()
+| Student
+    ( {
+        Id = _
+        Name = _
+        LastName = _
+        Enrollment = (
+          {
+            Code    = <span class="hljs-string">"INF"</span>
+            Name    = <span class="hljs-string">"Computer Science"</span>
+            EnrollmentDate = (<span class="hljs-number">15</span>,<span class="hljs-number">08</span>,<span class="hljs-number">2018</span>)
+          })
+      }) -&gt; ()
+</div></code></pre>
+<p>The second case of the match checks the structural equality of the record in <code>student1</code> with the one in the pattern: the fields <code>Id</code>, <code>Name</code>, and <code>LastName</code> are structurally equal since their value is the wildcard. The field <code>Enrollment</code> will be recursively checked for stractural equality, since it contains a record instance. All the three fields of this record are structurally equal to those in <code>student1</code>, thus the record <code>Enrollment</code> is structurally equal both in the pattern of the <code>match</code> and in <code>student1</code>. Note that, to be absolutely accurate, we should also recursively check the structural equality of the tuples in <code>EnrollmentDate</code>, but for brevity we skip this step in this explanation. Given these considerations, we can conclude that <code>student1</code> passes the pattern matching.
+Informally, this case of the union is checking if <code>student1</code> contains either a school employee or a student enrolled in the Computer Science course in a specific date.</p>
+<h2 id="options">Options</h2>
+<p>One simple example of a discriminated union is the type <code>Option&lt;T&gt;</code>. An option represents an optional value, which is used in a situation when we are not sure whether we have a value or not. It is a safe version of <code>null</code>, because having a discriminated union will force you to explicitly handle the situation in which we do not have a value through pattern matching. The optional type is defined as :</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Option</span>&lt;<span class="hljs-title">'T</span>&gt; </span>=
+| None
+| Some <span class="hljs-keyword">of</span> T
+</div></code></pre>
+<p>Note that this type is already built-in in F# in the library <code>FSharpCore</code> that is automatically loaded by the compiler (so you do not have to import it explicitly).</p>
+<p>Consider now a simulation of a server connection, where a server can fail to reply. A server is defined by an address, which consists of four bytes, a reply probability, which simulates the reliability of the server, and a reply message. A connection is built by providing the ip address of the server you want to connect to. The connection holds an optional <code>Data</code> field which contains a possible answer from the server. Note that this is optional because we cannot know if the server will ever reply or not. The connection has a method <code>Connect</code> that takes as input a <code>Server</code> and tries to connect to it and get a reply. The connection fails to get a reply if the address of the server does not match or if a random number is greater than the chance of getting a reply (we simulate a server failure). Note that to access the reply of the server we must pattern match the <code>Data</code> field against the possible pattern of <code>Option&lt;T&gt;</code>: if <code>Data</code> matches the pattern <code>Some data</code> then we access <code>data</code> contained in it (remember that, when an element of the pattern is a variable, we bind the value of the corresponding variable in the pattern that we are comparing from). You can see the implementation of this example below.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> r = System.Random()
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Server</span> </span>=
+  {
+    Address   : byte * byte * byte * byte
+    ReplyProbability : float
+    Reply     : string
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(address : byte * byte * byte * byte,replyProbability : float, reply : string) =
+      {
+        Address = address
+        ReplyProbability = replyProbability
+        Reply = reply
+      }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Connection</span> </span>=
+  {
+    Address   : byte * byte * byte * byte
+    Data      : Option&lt;string&gt;
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(address : byte * byte * byte * byte) =
+      {
+        Address = address
+        Data = None
+      }
+    <span class="hljs-keyword">member</span> this.Connect (server : Server) =
+      <span class="hljs-keyword">if</span> this.Address &lt;&gt; server.Address ||
+         r.NextDouble() &gt; server.ReplyProbability <span class="hljs-keyword">then</span>
+         this
+      <span class="hljs-keyword">else</span>
+        { this <span class="hljs-keyword">with</span> Data = Some server.Reply }
+
+
+<span class="hljs-keyword">let</span> helloServer = Server.Create((<span class="hljs-number">169</span>uy, <span class="hljs-number">180</span>uy, <span class="hljs-number">0</span>uy, <span class="hljs-number">1</span>uy),<span class="hljs-number">0.35</span>,<span class="hljs-string">"Hello!"</span>)
+<span class="hljs-keyword">let</span> connection = Connection.Create((<span class="hljs-number">169</span>uy, <span class="hljs-number">180</span>uy, <span class="hljs-number">0</span>uy, <span class="hljs-number">1</span>uy))
+<span class="hljs-keyword">match</span> connection.Connect(helloServer).Data <span class="hljs-keyword">with</span>
+| Some data -&gt; printfn <span class="hljs-string">"The server replied: %s"</span> data
+| None -&gt; printfn <span class="hljs-string">"404 server not found"</span>
+</div></code></pre>
+<h2 id="lists">Lists</h2>
+<p>Lists are another data type that can be defined by using discriminated unions. We can think of a list as either an empty collection, or an element followed by a collection of elements (possibly empty). This element is usually defined as <code>head</code>. We can thus define a list as</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">List</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+| Empty
+| List <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span> * List&lt;<span class="hljs-symbol">'a</span>&gt;
+</div></code></pre>
+<p>Since the cases of a discriminated union are actually functions, it is possible to define custom operators to construct each case of the union. In F# the type for lists is defined as:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">List</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+| ([])
+| (::) <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span> * List&lt;<span class="hljs-symbol">'a</span>&gt;
+</div></code></pre>
+<p>and it is automatically included, like <code>Option</code>. This is quite useful since we can use the operator <code>::</code> in a pattern matching case to extract the list head as <code>x :: xs</code>, and the symbol <code>[]</code> for the empty list. Lists can also be built by giving a list expression, like <code>[1;3;-8;7;2]</code>. Note that lists in functional programming are <em>immutable</em>, unlike their counterpart in OO programming. This means that it is not possible to set the value of their elements but only to read them. Another important operator in lists is the <em>concatenation</em> operator <code>@</code>. This operator takes two lists as input and merges them into one. For instance the expression :</p>
+<pre><code class="language-fsharp"><div>[<span class="hljs-number">3</span>;<span class="hljs-number">5</span>;<span class="hljs-number">1</span>;<span class="hljs-number">2</span>] @ [<span class="hljs-number">1</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">1</span>]
+</div></code></pre>
+<p>results into <code>[3;5;1;2;1;3;4;1]</code>.</p>
+<p>Functions on lists are generally recursive, for example the following code computes the length of a list:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> length (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : int =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | [] -&gt; <span class="hljs-number">0</span>
+  | _ :: xs -&gt; <span class="hljs-number">1</span> + (length xs)
+</div></code></pre>
+<p>Note that in the second case of the pattern we choose to use the wildcard symbol for the head of the list, since it is not required to compute the length. The tail of the list <code>xs</code></p>
+<p><strong>Example</strong></p>
+<p>Let us compute the sum of the elements of a list. The base case of the recursion is when we have an empty list, whose elements add to 0. The recursive step will call <code>sum</code> on the tail of the list and add the result to the element in the head.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> sum (l : List&lt;int&gt;) : int =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | [] -&gt; <span class="hljs-number">0</span>
+  | x :: xs -&gt; x + (sum xs)
+</div></code></pre>
+<p><strong>Example</strong></p>
+<p>Let us implement the function <code>unzip</code> that, given a list <code>l</code> of pairs, creates a pair of lists <code>l1</code> and <code>l2</code>, where <code>l1</code> contains all the elements in the first item of the pairs in <code>l</code> and <code>l2</code> contains all the elements in the second item of the pairs in <code>l</code>.</p>
+<p>Let us start by reasoning on the type signatures of the function: the input list is a list of pairs. There is no restriction on the specific types of the elements of the pairs, so we use two generic types, which means <code>List&lt;'a * 'b&gt;</code>. The function returns a pair of lists, where the first one contains all the elements in the first item of each pair and the second all the elements in the second item. This means that the return type of the function is <code>List&lt;'a&gt; * List&lt;'b&gt;</code>.</p>
+<p>The function is implemented recursively: the base case is of course an empty list, for which we return a pair of empty lists. The recursive case applies <code>unzip</code> to the tail of the list. This results in a pair of lists <code>l1</code> and <code>l2</code>. After this step has been computed we insert the first element of the pair in the head in front of <code>l1</code> and the second element in the front of <code>l2</code>.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> unzip (l : List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | [] -&gt; ([],[])
+  | (x,y) :: xs -&gt;
+      <span class="hljs-keyword">let</span> l1,l2 = unzip xs
+      x :: l1,y :: l2
+</div></code></pre>
+<p>Note the use of pattern matching to explicitly extract the pair in the head of the list, and also in the binding to explicitly bind to separate variables the two lists computed by the recursive step.</p>
+<p><strong>Example</strong></p>
+<p>Let us consider a list where each element can be either an atomic element or a nested list. We want to implement a function that flattens the elements of this list into a list with just one layer. For instance <code>[3;5;[4;3;[2;1;3];1];3;4;[1;2;3];6]</code> becomes <code>[3;5;4;3;2;1;3;1;3;4;1;2;3;6]</code>. Unfortunately in F# elements of a list are homogeneous, meaning that they must have the same type. Achieving our purpose requires to define a polymorphic type that can be either an atomic element or a nested list:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">ListElement</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+| Element <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span>
+| NestedList <span class="hljs-keyword">of</span> List&lt;ListElement&lt;<span class="hljs-symbol">'a</span>&gt;&gt;
+</div></code></pre>
+<p>Note that <code>NestedList</code> can recursively contain other nested lists, so the type definition is recursive.</p>
+<p>Our <code>flatten</code> function will take as input a <code>List&lt;ListElement&lt;'a&gt;&gt;</code>, so that each element can be either a simple element or a nested list. It will return simply <code>List&lt;'a&gt;</code>, because, after it runs, all the elements will be at the same level of nesting. The base case of the recursion is an empty list, which will simply return an empty list. The recursive case must decide what to do depending on whether the head is a simple element or a nested list. In the case of a simple element we use pattern matching on both the list and the polymorhpic type <code>ListElement&lt;'a&gt;</code> to extract the content of <code>Element</code>. We recursively flatten the tail of the list and then we prepend the content of <code>Element</code> to it. The case of a nested list is slightly more complex: we apply pattern matching on the head of the list extracting the list itself from the polymorphic type. Whe then recursively flatten the nested list, we flatten the tail , and finally we concatenate the head flattened list with the flattened tail.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> flatten (l : List&lt;ListElement&lt;<span class="hljs-symbol">'a</span>&gt;&gt; ) : List&lt;<span class="hljs-symbol">'a</span>&gt; =
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | [] -&gt; []
+  | Element x :: xs -&gt; x :: (flatten xs)
+  | NestedList nested :: xs -&gt;
+      <span class="hljs-keyword">let</span> nestedFlatten = flatten nested
+      nestedFlatten @ (flatten xs)
+</div></code></pre>
+<h2 id="tanks-20-with-polymorphism">Tanks 2.0 with Polymorphism</h2>
+<p>In this section we refactor the implementation of <em>Tanks</em> given in the previous unit. We left pending the problem of letting fight each other tanks with 1 gun or with 2. At this point one solution would be to simply add a list of weapons to a tank instead of using two different types of tanks. This solution is, unfortunately, not optimal, because what we want to achieve is allowing only 1 or 2 weapons in a tank. Of course one could think of implementing a runtime check that forbids a list longer than 2, but this is again a bad solution because it would cause a runtime exception. By using polymorphism we can achieve the same result with a static check, which happens at compile time, thus completely preventing the generation of programs containing wrong tank configurations.</p>
+<p>We start by refactoring the record <code>Gun</code> to directly contain a method to fire a weapon, which was initially defined by the <code>Tank</code> record:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Gun</span> </span>=
+  {
+    Name : string
+    Penetration : float
+    Damage : float
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(name: string, penetration : float, damage : float) =
+      { Name = name; Penetration = penetration; Damage = damage }
+    <span class="hljs-keyword">member</span> this.Shoot(tank : TankKind) =
+      <span class="hljs-keyword">if</span> this.Penetration &gt; tank.Armor <span class="hljs-keyword">then</span>
+        <span class="hljs-keyword">let</span> t = tank.Damage this.Damage
+        printfn <span class="hljs-string">"%s shoots %s causing %f damage --&gt; HEALTH: %f"</span>
+          this.Name
+          tank.Name
+          this.Damage
+          t.Health
+        t
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">let</span> t = tank.Scratch this.Penetration
+        printfn <span class="hljs-string">"%s shoots %s causing %f penetration --&gt; ARMOUR: %f"</span>
+          this.Name
+          tank.Name
+          this.Penetration
+          t.Armor
+        t
+</div></code></pre>
+<p>The <code>Tank</code> and <code>Tank2Weapons</code> will now contain only a property to define when they are destroyed:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">and</span> Tank =
+  {
+    Name : string
+    Weapon : Gun
+    Armor : float
+    Health : float
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(name :string, weapon : Gun, armor : float, health : float) =
+      {
+        Name = name
+        Weapon = weapon
+        Armor = armor
+        Health = health
+      }
+    <span class="hljs-keyword">member</span> this.IsDead = this.Health &lt;= <span class="hljs-number">0.0</span>
+
+<span class="hljs-keyword">and</span> Tank2Weapons =
+  {
+    SecondaryWeapon       : Gun
+    Base                  : Tank
+  }
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create (weapon : Gun,tank : Tank) =
+      {
+        SecondaryWeapon = weapon
+        Base = tank
+      }
+    <span class="hljs-keyword">member</span> this.IsDead = this.Base.Health &lt;= <span class="hljs-number">0.0</span>
+</div></code></pre>
+<p>We now define a polymorphic type to express the fact that we can have either tanks with one weapon or two:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">and</span> TankKind =
+| Tank <span class="hljs-keyword">of</span> Tank
+| Tank2Weapons <span class="hljs-keyword">of</span> Tank2Weapons
+...
+</div></code></pre>
+<p>This type will contain a series of utility properties to extract information about the tank independently of its kind, and a method that implements the logic of the fight, between two tanks of any kind.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">and</span> TankKind =
+| Tank <span class="hljs-keyword">of</span> Tank
+| Tank2Weapons <span class="hljs-keyword">of</span> Tank2Weapons
+<span class="hljs-keyword">with</span>
+  <span class="hljs-keyword">member</span> this.Name =
+    <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
+    | Tank t -&gt; t.Name
+    | Tank2Weapons t -&gt; t.Base.Name
+  <span class="hljs-keyword">member</span> this.Health =
+      <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
+      | Tank t -&gt; t.Health
+      | Tank2Weapons t -&gt; t.Base.Health
+  <span class="hljs-keyword">member</span> this.Armor =
+    <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
+    | Tank t -&gt; t.Armor
+    | Tank2Weapons t -&gt; t.Base.Armor
+  <span class="hljs-keyword">member</span> this.Damage(damage : float) : TankKind =
+    <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
+    | Tank t -&gt;
+        Tank { t <span class="hljs-keyword">with</span> Health = t.Health - damage }
+    | Tank2Weapons t -&gt;
+        Tank2Weapons { t <span class="hljs-keyword">with</span> Base = { t.Base <span class="hljs-keyword">with</span> Health = t.Base.Health - damage } }
+  <span class="hljs-keyword">member</span> this.Scratch(damage : float) : TankKind =
+    <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
+    | Tank t -&gt;
+        Tank { t <span class="hljs-keyword">with</span> Armor = t.Armor - damage }
+    | Tank2Weapons t -&gt;
+        Tank2Weapons { t <span class="hljs-keyword">with</span> Base = { t.Base <span class="hljs-keyword">with</span> Armor = t.Base.Armor - damage } }
+  <span class="hljs-keyword">member</span> this.Fight(tank : TankKind) : TankKind * TankKind =
+    <span class="hljs-keyword">let</span> outcome (loser : TankKind) (winner : TankKind) =
+      printfn <span class="hljs-string">"%s: KABOOOM!!! %s wins"</span> loser.Name winner.Name
+      <span class="hljs-keyword">if</span> this = loser <span class="hljs-keyword">then</span>
+        this,tank
+      <span class="hljs-keyword">else</span>
+        tank,this
+    <span class="hljs-keyword">match</span> this,tank <span class="hljs-keyword">with</span>
+    | Tank t1,Tank t2 -&gt;
+        <span class="hljs-keyword">if</span> t1.IsDead <span class="hljs-keyword">then</span>
+          outcome this tank
+        <span class="hljs-keyword">elif</span> t2.IsDead <span class="hljs-keyword">then</span>
+          outcome tank this
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">let</span> tank1 = t1.Weapon.Shoot(tank)
+          <span class="hljs-keyword">let</span> tank2 = t2.Weapon.Shoot(this)
+          tank1.Fight tank2
+    | Tank t1,Tank2Weapons t2
+    | Tank2Weapons t2, Tank t1 -&gt;
+        <span class="hljs-keyword">if</span> t1.IsDead <span class="hljs-keyword">then</span>
+          outcome this tank
+        <span class="hljs-keyword">elif</span> t2.IsDead <span class="hljs-keyword">then</span>
+          outcome tank this
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">let</span> tank2 = t1.Weapon.Shoot(tank)
+          <span class="hljs-keyword">let</span> tank1 = t2.Base.Weapon.Shoot(this)
+          <span class="hljs-keyword">let</span> tank1 = t2.SecondaryWeapon.Shoot(tank1)
+          tank1.Fight tank2
+    | Tank2Weapons t1, Tank2Weapons t2 -&gt;
+        <span class="hljs-keyword">if</span> t1.IsDead <span class="hljs-keyword">then</span>
+          outcome this tank
+        <span class="hljs-keyword">elif</span> t2.IsDead <span class="hljs-keyword">then</span>
+          outcome tank this
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">let</span> tank2 = t1.Base.Weapon.Shoot(tank)
+          <span class="hljs-keyword">let</span> tank2 = t1.SecondaryWeapon.Shoot(tank2)
+          <span class="hljs-keyword">let</span> tank1 = t2.Base.Weapon.Shoot(this)
+          <span class="hljs-keyword">let</span> tank1 = t2.SecondaryWeapon.Shoot(tank1)
+          tank1.Fight tank2
+</div></code></pre>
+<p>The method will use pattern matching to determine what kind of tank combination we currently have. This is needed because a tank with one weapon will shoot only once, while a tank with two weapons will shoot twice, one for each weapon. So, for instance, in the case of a tank with one weapon fighting a tank with two weapons, we will let the first tank shoot once, and then the second twice. Also notice the use of pattern matching to merge the logic of <code>Tank</code> fighting <code>Tank2Weapons</code> and the symmetric case of a <code>Tank2Weapons</code> fighting a <code>Tank</code> into a single case. Be careful because, in this case, the following pattern would produce a compilation error</p>
+<pre><code class="language-fsharp"><div>| Tank t1,Tank2Weapons t2
+| Tank2Weapons t1, Tank t2 -&gt; ...
+</div></code></pre>
+<p>because <code>t1</code> would be in one case be of type <code>Tank</code> and in the other of type <code>Tank2Weapons</code>. The same applies to <code>t2</code>.</p>
+
+    </body>
+    </html>

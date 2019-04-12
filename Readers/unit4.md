@@ -20,7 +20,7 @@ The `compose` function is actually so central to functional programming, that it
 let compose = (>>)
 ```
 
-> Notice that the `(>>)` operator, which visually resembles an arrow or a sort of pipeline, comes from the mathematical function composition operator $f \circ g$ (or $f \cdot g$), which is meant to represent the analogous to multiplication, but for functions. To respect this analogy with mathematics, languages like Haskell use the `.` operator as function composition, which F\# has kept for object and field lookup in order to maintain the similarity to C\#, C, C++, and Java.
+> Notice that the `(>>)` operator, which visually resembles an arrow or a sort of pipeline, comes from the mathematical function composition operator $g \circ f$ (or $g \cdot f$), which is meant to represent the analogous to multiplication, but for functions. Notice that the mathematical notation is not very handy for programmers, as the order of execution will go from right to left, and for this reason `(>>)` flips the order. To respect this analogy with mathematics, languages like Haskell use the `.` operator as function composition, which F\# has kept for object and field lookup in order to maintain the similarity to C\#, C, C++, and Java.
 > The identity of function composition is `id`, both in F\# and in mathematics. `f >> id == id >> f == f`.
 
 We could play around with function composition as follows\:

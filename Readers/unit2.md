@@ -1,4 +1,4 @@
-# Types in Functional Programming
+# Unit 2 - Types in Functional Programming
 
 In Unit 1 we introduced an untyped formulation of lambda calculus, which is the foundational model of functional programming. We then proceeded to translate the constructs of lambda calculus into the functional programming language F\# without focusing on types. In this chapter we introduce a statically typed version of lambda calculus and then we show how its usage in F\#. We then proceed to define basic data structures in F\#
 

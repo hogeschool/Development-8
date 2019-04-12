@@ -1,4 +1,4 @@
-﻿module Lesson3
+﻿module Lesson2
 
 type Gun =
   {
@@ -103,7 +103,8 @@ with
           let tank1 = t1.Weapon.Shoot(tank)
           let tank2 = t2.Weapon.Shoot(this)
           tank1.Fight tank2
-    | Tank t1,Tank2Weapons t2 ->
+    | Tank t1,Tank2Weapons t2
+    | Tank2Weapons t2, Tank t1 ->
         if t1.IsDead then
           outcome this tank
         elif t2.IsDead then
@@ -112,16 +113,6 @@ with
           let tank2 = t1.Weapon.Shoot(tank)
           let tank1 = t2.Base.Weapon.Shoot(this)
           let tank1 = t2.SecondaryWeapon.Shoot(tank1)
-          tank1.Fight tank2
-    | Tank2Weapons t1,Tank t2 ->
-        if t1.IsDead then
-          outcome this tank
-        elif t2.IsDead then
-          outcome tank this
-        else
-          let tank2 = t1.Base.Weapon.Shoot(tank)
-          let tank2 = t1.SecondaryWeapon.Shoot(tank2)
-          let tank1 = t2.Weapon.Shoot(this)
           tank1.Fight tank2
     | Tank2Weapons t1, Tank2Weapons t2 ->
         if t1.IsDead then
