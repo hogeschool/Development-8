@@ -15,25 +15,15 @@ let nestedList = [
       Element -8
     ])]
 
-let tree = 
-  Node(3,[
-    Node(5, [Empty])
-    Node(1, [
-      Node(1, [Empty])
-      Node(3, [
-        Node(8, [Empty])
-      ])
-    ])
-    Node(4, [
-      Node(6, [Empty])
-    ])
-    Node(2, [Empty])
-  ])
 
 [<EntryPoint>]
 let main argv =
-  
   printfn "%A" (unzip [(3,5);(2,6);(4,-1);(3,-5)])
   printfn "%A" (flatten nestedList)
   printfn "%A" (tree.Fold (fun s x -> sprintf "%s | %d" s x) "")
+  printfn "%s" (binaryTree.Fold (fun s x -> sprintf "%s | %d" s x.Entry.Key) "" )
+  let binaryTree1 = binaryTree.Remove(3)
+  printfn "%s" (binaryTree1.Fold (fun s x -> sprintf "%s | %d" s x.Entry.Key) "" )
+  let shouldTakeUmbrella = weatherTree.Classify weatherData2
+  printfn "%A" shouldTakeUmbrella
   0
