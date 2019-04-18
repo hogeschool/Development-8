@@ -1,7 +1,5 @@
 ﻿module Lesson5
 
-open System
-
 type Tree<'a> =
 | Empty
 | Node of 'a * List<Tree<'a>>
