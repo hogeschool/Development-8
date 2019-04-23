@@ -2,7 +2,7 @@
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <title>Polymorphism in Functional Programming</title>
+        <title>Unit 3 - Polymorphism in Functional Programming</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
@@ -21,7 +21,7 @@
         <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
     </head>
     <body>
-        <h1 id="polymorphism-in-functional-programming">Polymorphism in Functional Programming</h1>
+        <h1 id="unit-3---polymorphism-in-functional-programming">Unit 3 - Polymorphism in Functional Programming</h1>
 <p>In Unit2 we introduced the typed lambda-calculus and show its application in the type system of F#. We then proceeded to study built-in advanced types such as tuples and records. We concluded the unit by showing how to implement inheritance in functional programming through the use of immutable records and presented a complex case study. In this unit we show how to implement polymorphism in a functional programming language.</p>
 <h2 id="discriminated-unions">Discriminated Unions</h2>
 <p>In F# it is possible to specify a type as a discriminated union, which is essentially a type that can be constructed in multiple ways. In F# this can be achieved by using the following syntax</p>
@@ -444,6 +444,97 @@ Informally, this case of the union is checking if <code>student1</code> contains
 | Tank2Weapons t1, Tank t2 -&gt; ...
 </div></code></pre>
 <p>because <code>t1</code> would be in one case be of type <code>Tank</code> and in the other of type <code>Tank2Weapons</code>. The same applies to <code>t2</code>.</p>
+<h1 id="exercises">Exercises</h1>
+<h2 id="exercise-1">Exercise 1</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> last (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : Option&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that returns the last element of a list. The function should handle appropriately the case of an empty list given as input.</p>
+<h2 id="exercise-2">Exercise 2</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> rev (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that creates a list containing the elements of <code>l</code> in reversed order.</p>
+<h2 id="exercise-3">Exercise 3</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> append (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that creates a list containing all the elements of <code>l2</code> after those in <code>l1</code>.</p>
+<h2 id="exercise-4">Exercise 4</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> nth (n : int) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : Option&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that returns the element in position <code>n</code> in <code>l</code>. The function must handle appropriately the case where the index is invalid.</p>
+<h2 id="exercise-5">Exercise 5</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> palindrome (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : bool = ...
+</div></code></pre>
+<p>that detects if a list is palindrome. A list is palindrome if it is equal to its inverse.</p>
+<h2 id="exercise-6">Exercise 6</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> compress (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that removes consecutive occurences of the same element in <code>l</code>. For example compressing <code>[a;a;a;a;b;b;c;c;b]</code> result in <code>[a;b;c;b]</code>.</p>
+<h2 id="exercise-7">Exercise 7</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> caesarCypher (l : List&lt;char&gt;) (shift : number) : List&lt;char&gt; = ...
+</div></code></pre>
+<p>The Caesar's cypher take a text, represented as a list of characters, and shifts all the letters (so only if the character is an alphabetical character) in it up by the number of position specied by shift. If the letter goes past z it restarts from a. You can assume that all the text is in lower-case letter. For instance:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> shift <span class="hljs-symbol">'c</span>' <span class="hljs-number">5</span>  = h
+<span class="hljs-keyword">let</span> shift <span class="hljs-symbol">'y</span>' <span class="hljs-number">5</span>  = d
+</div></code></pre>
+<p>The ASCII code for a specic character can be obtained by using the conversion function <code>int</code> on a value of type <code>char</code>.</p>
+<p><strong>Advanced</strong>
+Support also upper-case letters.</p>
+<h2 id="exercise-8">Exercise 8</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> splitAt (i : int) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that splits the list into two lists, the rst one containing all the elements of <code>l</code> from position 0 to position <code>i</code> included, and the second one containing all the remaining elements. The two resulting lists are returned in a tuple. For example <code>split 3 [3;5;4;-1;2;2] = ([3;5;4;-1],[2;2])</code>.</p>
+<h2 id="exercise-9">Exercise 9</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> merge  (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that merges together two <strong>sorted</strong> lists into a single sorted list.</p>
+<h2 id="exercise-10">Exercise 10</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mergeSort (l: List&lt;<span class="hljs-symbol">'a</span>&gt;): List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>implement the Merge Sort algorithm. The Merge Sort returns the list itself when the list has
+only one element. Otherwise it splits l in two lists, one containing the elements between position 0 and <code>l.Length / 2</code>, the other containing the elements from <code>l.Length / 2 + 1</code> until the end. Merge Sort is called recursively on the two lists. After this step use the function <code>merge</code> above to merge the two sorted lists.</p>
+<h2 id="exercise-11">Exercise 11</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> eval (expr : Expr) : Expr
+</div></code></pre>
+<p>The function allows to evaluate arithmetic expressions. An arithmetic expression is dened as
+a discriminated union with the following cases:</p>
+<ul>
+<li>An atomic value. This is just a number</li>
+<li>The sum of two expressions.</li>
+<li>The dierence of two expressions.</li>
+<li>The product of two expressions.</li>
+<li>The division of two expressions.</li>
+</ul>
+<p>The function eval for an atomic value simply returns the atomic value. For the other cases
+it simply evaluates recursively the arguments of the operator and then combine the two results
+together. For example, evaluating the sum of two expressions <code>expr1 + expr2</code> recursively evaluates <code>expr1</code> and <code>expr2</code> and then sum ups the two atomic values together. The other operators behave analogously.</p>
+<h2 id="exercise-12">Exercise 12</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> eval (expr : Expr) (stack : List&lt;string * float&gt;) : Expr = ...
+</div></code></pre>
+<p>Extend the previous version of the function <code>eval</code> by supporting also variables. Variables are another case of the union. Evaluating a variable means looking it up in the stack. A stack is a list of tuples mapping a variable name to its value. If the lookup is successful <code>eval</code> returns the value of the variable, otherwise it throws an error.</p>
+<h2 id="exercise-13">Exercise 13</h2>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> run (program : List&lt;Statement&gt;) (stack : List&lt;string * float&gt;) : List&lt;string * number&gt; = ...
+</div></code></pre>
+<p>The function interprets a program from a small imperative language that can consists of the following statements, expressed as a discriminated union.</p>
+<ul>
+<li>Variable assignment. A variable assignment contains two arguments: the name of the variable,
+and an expression that is used to assign a value to it. First the expression must be evaluated and then, if the variable already exists in stack, its value is updated, otherwise we add the
+variable name and the value in stack.</li>
+<li>Print to output. This data structure contains an expression, which is evaluated and then
+prints the value on the console.</li>
+</ul>
+<p>The evaluation stops when the list of statements is empty.</p>
 
     </body>
     </html>

@@ -505,4 +505,140 @@ The method will use pattern matching to determine what kind of tank combination 
 ```
 because `t1` would be in one case be of type `Tank` and in the other of type `Tank2Weapons`. The same applies to `t2`.
 
+# Exercises
+
+## Exercise 1
+
+Implement a function
+
+```fsharp
+let last (l : List<'a>) : Option<'a> = ...
+```
+that returns the last element of a list. The function should handle appropriately the case of an empty list given as input.
+
+## Exercise 2
+
+Implement a function
+
+```fsharp
+let rev (l : List<'a>) : List<'a> = ...
+```
+that creates a list containing the elements of `l` in reversed order.
+
+## Exercise 3
+
+Implement a function
+
+```fsharp
+let append (l1 : List<'a>) (l2 : List<'a>) : List<'a> = ...
+```
+that creates a list containing all the elements of `l2` after those in `l1`.
+
+## Exercise 4
+
+Implement a function
+
+```fsharp
+let nth (n : int) (l : List<'a>) : Option<'a> = ...
+```
+that returns the element in position `n` in `l`. The function must handle appropriately the case where the index is invalid.
+
+## Exercise 5
+
+Implement a function
+
+```fsharp
+let palindrome (l : List<'a>) : bool = ...
+```
+that detects if a list is palindrome. A list is palindrome if it is equal to its inverse.
+
+## Exercise 6
+
+Implement a function
+```fsharp
+let compress (l : List<'a>) : List<'a> = ...
+```
+that removes consecutive occurences of the same element in `l`. For example compressing `[a;a;a;a;b;b;c;c;b]` result in `[a;b;c;b]`.
+
+## Exercise 7
+
+Implement a function
+```fsharp
+let caesarCypher (l : List<char>) (shift : number) : List<char> = ...
+```
+The Caesar's cypher take a text, represented as a list of characters, and shifts all the letters (so only if the character is an alphabetical character) in it up by the number of position specied by shift. If the letter goes past z it restarts from a. You can assume that all the text is in lower\-case letter. For instance:
+
+```fsharp
+let shift 'c' 5  = h
+let shift 'y' 5  = d
+```
+
+The ASCII code for a specic character can be obtained by using the conversion function `int` on a value of type `char`.
+
+**Advanced**
+Support also upper\-case letters.
+
+## Exercise 8
+
+Implement a function
+```fsharp
+let splitAt (i : int) (l : List<'a>) : List<'a> * List<'a> = ...
+```
+that splits the list into two lists, the rst one containing all the elements of `l` from position 0 to position `i` included, and the second one containing all the remaining elements. The two resulting lists are returned in a tuple. For example `split 3 [3;5;4;-1;2;2] = ([3;5;4;-1],[2;2])`.
+
+## Exercise 9
+
+Implement a function
+```fsharp
+let merge  (l1 : List<'a>) (l2 : List<'a>) : List<'a> = ...
+```
+that merges together two **sorted** lists into a single sorted list.
+
+## Exercise 10
+
+Implement a function
+```fsharp
+let mergeSort (l: List<'a>): List<'a> = ...
+```
+implement the Merge Sort algorithm. The Merge Sort returns the list itself when the list has
+only one element. Otherwise it splits l in two lists, one containing the elements between position 0 and `l.Length / 2`, the other containing the elements from `l.Length / 2 + 1` until the end. Merge Sort is called recursively on the two lists. After this step use the function `merge` above to merge the two sorted lists.
+
+## Exercise 11
+
+Implement a function
+```fsharp
+let eval (expr : Expr) : Expr
+```
+The function allows to evaluate arithmetic expressions. An arithmetic expression is dened as
+a discriminated union with the following cases:
+
+- An atomic value. This is just a number
+- The sum of two expressions.
+- The dierence of two expressions.
+- The product of two expressions.
+- The division of two expressions.
+
+The function eval for an atomic value simply returns the atomic value. For the other cases
+it simply evaluates recursively the arguments of the operator and then combine the two results
+together. For example, evaluating the sum of two expressions `expr1 + expr2` recursively evaluates `expr1` and `expr2` and then sum ups the two atomic values together. The other operators behave analogously.
+
+## Exercise 12
+Implement a function
+```fsharp
+let eval (expr : Expr) (stack : List<string * float>) : Expr = ...
+```
+Extend the previous version of the function `eval` by supporting also variables. Variables are another case of the union. Evaluating a variable means looking it up in the stack. A stack is a list of tuples mapping a variable name to its value. If the lookup is successful `eval` returns the value of the variable, otherwise it throws an error.
+
+## Exercise 13
+```fsharp
+let run (program : List<Statement>) (stack : List<string * float>) : List<string * number> = ...
+```
+The function interprets a program from a small imperative language that can consists of the following statements, expressed as a discriminated union.
+- Variable assignment. A variable assignment contains two arguments: the name of the variable,
+and an expression that is used to assign a value to it. First the expression must be evaluated and then, if the variable already exists in stack, its value is updated, otherwise we add the
+variable name and the value in stack.
+- Print to output. This data structure contains an expression, which is evaluated and then
+prints the value on the console.
+
+The evaluation stops when the list of statements is empty.
 

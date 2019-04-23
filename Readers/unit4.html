@@ -316,6 +316,43 @@ Composition makes it possible to build complex abstractions and large programs b
 <pre><code class="language-fsharp"><div>zip: List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt;
 </div></code></pre>
 <p>Implement a series of SQL operators (<code>SELECT</code>, <code>WHERE</code>, <code>ORDERBY</code>, <code>AGGREGATE</code>) via higher order functions. Hint: <code>SELECT == map</code>, <code>WHERE == filter</code>.</p>
+<h1 id="exercises-1">Exercises</h1>
+<h2 id="exercise-1">Exercise 1</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapFold (f : <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'b</span>&gt; = ...
+</div></code></pre>
+<p>implementing <code>map</code> for lists using only <code>fold</code>.</p>
+<h2 id="exercise-2">Exercise 2</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> filterFold (f : <span class="hljs-symbol">'a</span> -&gt; bool) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>implementing <code>filter</code> for lists using only <code>fold</code>.</p>
+<h2 id="exercise-3">Exercise 3</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> flatten (l : List&lt;List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
+</div></code></pre>
+<p>that flattens a list of lists into a single list using <code>fold</code>.</p>
+<h2 id="exercise-4">Exercise 4</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2 (f : List&lt;<span class="hljs-symbol">'a</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>) : Option&lt;List&lt;<span class="hljs-symbol">'c</span>&gt;&gt; = ...
+</div></code></pre>
+<p>that applies <code>f</code> to two lists of equal length <code>l1</code> and <code>l2</code>. If the two lists have different length it return <code>None</code>.</p>
+<h2 id="exercise-5">Exercise 5</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> fold2 (f : 'state -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; 'state) (init : 'state) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>&gt;) : Option&lt;'state&gt; = ...
+</div></code></pre>
+<p>that folds two lists of equal length. If the length is different than <code>None</code> is returned.</p>
+<h2 id="exercise-6">Exercise 6</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> zip (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>&gt;) : Option&lt;List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'a</span>&gt;&gt; = ...
+</div></code></pre>
+<p>that take two lists with the same length and creates a list of pairs containing the elements that are in the same position from both lists. Implement this function by using normal recursion and then by using <code>fold2</code>.</p>
+<h2 id="exercise-7">Exercise 7</h2>
+<p>Implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2Safe (f : List&lt;<span class="hljs-symbol">'a</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>) : List&lt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;
+</div></code></pre>
+<p>that applies the function <code>f</code> to the elements in the same position of two lists <code>l1</code> and <code>l2</code>, possibly with different length. If an element of one list does not have a correspondent element in the second list, then the function returns <code>None</code>.</p>
+<p><strong>Example:</strong> Summing the elements of <code>[1;2;3;4]</code> and <code>[4;5]</code> with <code>map2Safe</code> returns <code>[Some(5);Some(7);None;None]</code></p>
 
     </body>
     </html>

@@ -462,3 +462,57 @@ zip: List<'a> * List<'b> -> List<'a * 'b>
 ```
 
 Implement a series of SQL operators (`SELECT`, `WHERE`, `ORDERBY`, `AGGREGATE`) via higher order functions. Hint: `SELECT == map`, `WHERE == filter`.
+
+# Exercises
+
+## Exercise 1
+
+Implement a function
+```fsharp
+let mapFold (f : 'a -> 'b) (l : List<'a>) : List<'b> = ...
+```
+implementing `map` for lists using only `fold`.
+
+## Exercise 2
+Implement a function
+```fsharp
+let filterFold (f : 'a -> bool) (l : List<'a>) : List<'a> = ...
+```
+implementing `filter` for lists using only `fold`.
+
+## Exercise 3
+Implement a function
+```fsharp
+let flatten (l : List<List<'a>) : List<'a> = ...
+```
+that flattens a list of lists into a single list using `fold`.
+
+## Exercise 4
+Implement a function
+```fsharp
+let map2 (f : List<'a> -> List<'b> -> 'c) (l1 : List<'a>) (l2 : List<'b) : Option<List<'c>> = ...
+```
+that applies `f` to two lists of equal length `l1` and `l2`. If the two lists have different length it return `None`.
+
+## Exercise 5
+Implement a function
+```fsharp
+let fold2 (f : 'state -> 'a -> 'b -> 'state) (init : 'state) (l1 : List<'a>) (l2 : List<'b>) : Option<'state> = ...
+```
+that folds two lists of equal length. If the length is different than `None` is returned.
+
+## Exercise 6
+Implement a function
+```fsharp
+let zip (l1 : List<'a>) (l2 : List<'b>) : Option<List<'a * 'a>> = ...
+```
+that take two lists with the same length and creates a list of pairs containing the elements that are in the same position from both lists. Implement this function by using normal recursion and then by using `fold2`.
+
+## Exercise 7
+Implement a function
+```fsharp
+let map2Safe (f : List<'a> -> List<'b> -> 'c) (l1 : List<'a>) (l2 : List<'b) : List<Option<'c>>
+```
+that applies the function `f` to the elements in the same position of two lists `l1` and `l2`, possibly with different length. If an element of one list does not have a correspondent element in the second list, then the function returns `None`.
+
+**Example:** Summing the elements of `[1;2;3;4]` and `[4;5]` with `map2Safe` returns `[Some(5);Some(7);None;None]`

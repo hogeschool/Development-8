@@ -2,7 +2,7 @@
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <title>Introduction to functional programming</title>
+        <title>Unit 1 - Introduction to functional programming</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
@@ -12,7 +12,7 @@
 </style>
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
                 font-size: 14px;
                 line-height: 1.6;
             }
@@ -21,7 +21,7 @@
         <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
     </head>
     <body>
-        <h1 id="introduction-to-functional-programming">Introduction to functional programming</h1>
+        <h1 id="unit-1---introduction-to-functional-programming">Unit 1 - Introduction to functional programming</h1>
 <p>Functional programming is a programming paradigm that is profoundly different from the imperative paradigm. This programming paradigm grants additional properties on the code that help the programmer to write code that is maintainable and correct. For this reason also imperative languages widely used in the industry have been including functional programming construct during the last decades: C#, C++, Java, Javascript, Typescript all provide means of writing programs in terms  of functional programming abstractions, and some of them even integrated type systems that are as expressive as those of Haskell or CamL. It is evident that functional programming trascendended the role of a tool used only by researchers and pioneers of programming and is becoming more and more a reality in the industry.</p>
 <p>The goal of this unit is to show the reader a comparison between the model of imperative programming, which was explained during the Development courses of the first year, and the functional paradigm. We then proceed to define the semantics of a functional programming language, namely F#, and we present its main features.</p>
 <h2 id="imperative-programming-vs-functional-programming">Imperative programming vs functional programming</h2>
@@ -167,6 +167,12 @@ f <span class="hljs-number">3</span>
 <p>will be 2 and not 4. An alternative syntax to defining abstractions is the following:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> inc x = x + <span class="hljs-number">1</span>
 inc <span class="hljs-number">3</span>
+</div></code></pre>
+<p>In F# it is also possible to define custom <code>operators</code>. This is achieved by putting a sequence of symbols between brackets after the <code>let</code> keyword:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> (&gt;&gt;=) x y = ...
+</div></code></pre>
+<p>This means that the function can then be called by using the syntax</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> res = x &gt;&gt;= y
 </div></code></pre>
 <h2 id="conditionals">Conditionals</h2>
 <p>Conditionals in functional programming have a different semantics then in imperative programming. In the previous courses of development we saw that imperative languages support two different kinds of conditionals: one is a conditional <em>statement</em> and one is a conditional <em>expression</em>. Since in functional programming we have no state, the only supported conditional is the conditional expression. F# support a conditional expression with the syntax:</p>

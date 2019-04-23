@@ -2,7 +2,7 @@
     <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <title>Types in Functional Programming</title>
+        <title>Unit 2 - Types in Functional Programming</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
@@ -12,7 +12,7 @@
 </style>
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
                 font-size: 14px;
                 line-height: 1.6;
             }
@@ -21,7 +21,7 @@
         <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
     </head>
     <body>
-        <h1 id="types-in-functional-programming">Types in Functional Programming</h1>
+        <h1 id="unit-2---types-in-functional-programming">Unit 2 - Types in Functional Programming</h1>
 <p>In Unit 1 we introduced an untyped formulation of lambda calculus, which is the foundational model of functional programming. We then proceeded to translate the constructs of lambda calculus into the functional programming language F# without focusing on types. In this chapter we introduce a statically typed version of lambda calculus and then we show how its usage in F#. We then proceed to define basic data structures in F#</p>
 <h2 id="typed-lambda-calculus">Typed Lambda Calculus</h2>
 <p>In this section we present the typing rules for lambda-calculus. As we have seen in the previous unit, lambda-calculus is made of the following main components: variables, abstractions, and function applications.</p>
@@ -186,6 +186,35 @@ For instance, consider the tuples <code>let t1 = (1,3,5)</code> and <code>let t2
 <span class="hljs-keyword">let</span> l2 = { UserName = <span class="hljs-string">"awesomeuser@aw.us"</span> ; Password = <span class="hljs-string">"supersecretkey"</span>; Address = <span class="hljs-string">"155.34.21.105"</span> }
 <span class="hljs-keyword">let</span> test = l1 = l2
 </div></code></pre>
+<h2 id="recursive-type-definitions">Recursive type definitions</h2>
+<p>Like for functions, types are normally visible if they are declared before the line in which we are trying to use them. For instance the following code will produce a type error:</p>
+<pre><code class="language-fsharp"><div>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">A</span> </span>= 
+  {
+    X : int
+    Y : B <span class="hljs-comment">//this generate a compilation error</span>
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">B</span> </span>=
+  {
+    X : A
+    Y : string
+  }
+</div></code></pre>
+<p>In the definition of <code>A</code> we are trying to use a field of type <code>B</code> that is declared below. What we want to achieve is a recursive type definition. This can be expressed in F# by replacing the keyword <code>type</code> in <code>B</code> with <code>and</code> :</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">A</span> </span>= 
+  {
+    X : int
+    Y : B
+  }
+
+<span class="hljs-keyword">and</span> B =
+  {
+    X : A
+    Y : string
+  }
+</div></code></pre>
+<p>All types that are declared with the <code>and</code> keyword in place of <code>type</code> are visible before the line of their declaration.</p>
 <h2 id="case-study-tanks-and-guns">Case Study: Tanks and Guns</h2>
 <p>In this section we present a small case study to show the usage of records. Let us assume that we want to model an entity <code>Tank</code> defined by name, speed, weapon, armor, and health. Each tank weapon is a gun defined by name, penetration power, and damage. A tank can shoot a shell at another tank with its gun, with the following effect: if the gun penetration is higher than the target armour then the health of the target is reduced by the weapon damage. Otherwise the amount of armour is decreased by the gun penetration. Let us first define the records for guns and tanks:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Gun</span> </span>=
