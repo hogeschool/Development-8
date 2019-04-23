@@ -83,7 +83,7 @@ and BinarySearchTree<'k, 'v> when 'k : comparison =
 ```
 We now proceed to implement the operations on the dictionary, i.e. `find`, `add`, and `remove`.
 
-## Element Lookup
+### Element Lookup
 
 The lookup in a binary search tree searches for a key in the tree and returns the corresponding value in the entry. It also might fail to retrieve the given key, so the return type is `Option<'v>`. The function is defined recursively\: if the tree is empty then the lookup fails returning `None`. Otherwise we check if the key in the current node is the one we are looking for. If it is, then we return it encapsulated inside the case `Some` of `Option`. Otherwise if the key we are looking for is smaller then we recursively look in the left sub\-tree, otherwise we look to the right. This recursive process will stop as soon as we either find the key we are looking for or we reach an empty sub\-tree\:
 
@@ -100,7 +100,7 @@ member this.TryFind(key : 'k) : Option<'v> =
       node.Right.TryFind key
 ```
 
-## Adding an Element
+### Adding an Element
 
 Adding an element requires finding the proper place to position the new node in the binary search tree in order not to break the binary search property. Note that, being the data structure immutable, `Add` will never modify the existing tree but rather return a new tree that contains also the new entry to be added. The procedure is again recursive\: if we are in an empty tree then we just return a new node with an empty left and right sub\-tree. If the entry that we want to add is already there (i.e. the key already exists), we replace it. Thus we return a new node with the new entry and having the right and left sub\-tree of the old node. Otherwise if the key of the entry to be added is less than the key in the current node, then we recursively call `Add` on the left sub\-tree and we return a new node with the same entity and right sub\-tree as the current one, but having as left sub\-tree the result of the recursive call to `Add`. Otherwise we do the opposite\: we recursively call `Add` on the right sub\-tree and we create a new node containing the entry and the left sub\-tree of the current one, but as right sub\-tree the result of `Add`. This recursive process ends as soon as `Add` will be called with an empty sub\-tree.
 
@@ -115,3 +115,194 @@ match this with
     else
       Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Add(entry)))
 ```
+
+### Deleting an Element
+
+Deleting an element is more complex and requires to consider three different cases:
+1. We delete from an empty tree. This is a base case that has no effect whatsoever. This case may happen when the tree is really empty or when the recursive delete fails to find the entry that we want to delete. In that case the delete has no effect.
+2. We delete a node with two empty sub\-trees as children.
+3. We delete a node where only one of the two sub\-trees is non\-empty.
+4. We delete a node where both sub\-trees are non\-empty.
+
+Again, keep in mind that this is an immutable representation, so we never modify the current tree but we rather return a copy of it without the element that we are deleting. The function is recurisive and looks at the key stored in the current root. If the key is not matched we use the binary search property to recursively call `Remove` on one of the sub\-trees. We than use the result of `Remove` to build a new binary tree that contains a modified version of one of the children without the element that we want to delete. If the key matches the one stored in the root the we proceed with the deletion.
+
+Case 2 requires simply to return an empty tree, since the current level has no sub\-trees. 
+Case 3 requires simply to return the non\-empty child sub\-tree.
+Case 4 requires first finds the leftmost node in the right sub\-tree, which we call `rightmostNode`. Equivalently it would also be possible to give an implementation where we find the rightmost node in the left sub\-tree. We then recursively call remove on this node, obtaining a new binary tree called `newLeft`. Note that, with such node, we surely fall in one of the previous two cases. We then create a new node at the current having as root `rightmostNode`, as left child `newLeft`, and as right child the same right sub\-tree of the current level.
+
+```fsharp
+member this.Remove(key : 'k) =
+  let rec getRightMostElement (tree : BinarySearchTree<'k, 'v>) =
+    match tree with
+    | Node ({ Entry = _; Left = _; Right = Empty } as node) -> node
+    | Node ({ Entry = _; Left = _; Right = right }) -> getRightMostElement right
+        
+  match this with
+  | Empty -> Empty
+  | Node node ->
+      if node.Entry.Key = key then
+        match node.Left,node.Right with
+        | Empty,Empty -> Empty
+        | Node tree,Empty
+        | Empty, Node tree -> Node tree
+        | Node _, Node _ ->
+            let rightMostNode = getRightMostElement node.Left
+            let newLeft = node.Left.Remove(rightMostNode.Entry.Key)
+            Node (BinaryNode.Create(rightMostNode.Entry, newLeft, node.Right))
+      elif key < node.Entry.Key then
+        Node (BinaryNode.Create(node.Entry,node.Left.Remove key,node.Right))
+      else
+        Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
+```
+
+## Decision trees
+
+A hierarchical structure often used in artificial intelligent is decision trees. Let us consider a set of data points made of different features. Each feature has a label (name) and a value that can be either discrete or continuous. Each data point can belong to a different class that describes it. A decision tree is a data structure that, given a data point as input, is able to classify it, i.e. to decide to what class it belongs. In this section we only learn, for simplicity, how to implement the data structure representing a decision tree and how to implement the classification function, but in artificial intelligence decision trees can be generated, so that their structure is not hard\-coded but rather learnt from a training set of data points. In the picture below you find a deicision tree that is able to decide for you if you should bring your umbrella depending on the weather condition\:
+
+![](Images/decision_tree.png)
+
+A decision tree containts two kinds of nodes\: a node containing a decision to make, and a node containing an outcome, which basically decides to what class assigning a data point. Each decision node contains a series of predicates that are tested in order to decide what path we need to follow to reach a su-tree, that can be itself another decision or a simple outcome. Outcome nodes only specify a belonging class and do not have children.
+
+Let us start by defining a data structure for a data point. This is simply a record containing its label and value\:
+
+```fsharp
+type Feature<'a> =
+  {
+    Label : string
+    Value : 'a
+  }
+  with
+    static member Create(lable, value) =
+      {
+        Label = lable
+        Value = value
+      }
+```
+
+A decision node has two components\: one is the lable of the feature that we are going to evaluate with that decision, and the other is a list of pairs, which we call paths, made of a predicate and a decision sub\-tree.
+
+```fsharp
+type Decision<'a, '_class> =
+  {
+    Label : string
+    Paths : List<('a -> bool) * DecisionTree<'a,'_class>> 
+  }
+  with
+    static member Create(label : string, paths : List<('a -> bool) * DecisionTree<'a,'_class>>) =
+      {
+        Label = label
+        Paths = paths
+      }
+```
+Every time we reach a decision node, we find the feature in the data point matching the label, and then we test its value against the predicate of each path. As soon as the predicate is satisfied, we recursively call the classification algorithm on the corresponding sub\-tree. We can now define a node in the decision tree as a polymorphic type that is either an `Outcome` or a `Decision`\:
+
+```fsharp
+and DecisionTree<'a, '_class> =
+| Outcome of '_class
+| Decision of Decision<'a,'_class>
+``` 
+We can now start implementing the classification method. This method takes as input a data point, which we can model as a `Map` where the key is the name of a feature and the value its corresponding value. The method checks the current root node and behaves according to the following cases\:
+
+1. If the node is an `Outcome`, then we simply return the class contained in it.
+2. If the node is a `Decision`, then we try to find in the data point a feature with the same label of the decision. If this process fails, then the data point is malformed and we return `None`. If we succeed then we test the predicate contained in each path. If all predicates fail to match then it is not possible to classify the data point according to the decision rules. If one of the predicate evaluates to `true`, then we recursively call `Classify` on the corresponding sub\-tree.
+
+```fsharp
+member this.Classify (features : Map<string,'a>) =
+  match this with
+  | Outcome _class -> Some _class
+  | Decision decision ->
+      match 
+        features |>
+        Map.tryFind(decision.Label) with
+      | Some value ->
+          match
+            decision.Paths |>
+            List.tryFind(fun (condition,_) -> condition value) with
+          | Some(_,tree) -> tree.Classify features
+          | None -> None
+      | None -> None
+```
+
+In order to test this, let us use the weather decision tree shown in the picture above. We need to define an extra auxiliary type to describe the possible values that a weather feature can have\:
+
+```fsharp
+type WeatherFeature =
+| Sunny 
+| Rainy 
+| Cloudy
+| Bool of bool
+| Float of float
+```
+
+The class can be simply represented by a `boolean` value, since it can only be `yes` or `no`. We can then hard\-code the structure of the represented tree, which will have type `DecisionTree<WeatherFeature,bool>`\:
+
+```fsharp
+let weatherTree =
+  Decision(
+    Decision.Create(
+      "Weather",
+      [
+        (fun v -> v = Rainy),Decision(
+          Decision.Create(
+            "Wind",
+            [
+              (fun v -> v = (Bool true)),Outcome false
+              (fun v -> v = (Bool false)),
+                Decision(
+                  Decision.Create(
+                    "Car",
+                    [
+                      (fun v -> v = (Bool true)),Outcome false
+                      (fun v -> v = (Bool false)),Decision(
+                        Decision.Create(
+                          "Distance",
+                          [
+                            (fun v -> 
+                              match v with 
+                              | Float x when x >= 500.0 -> true
+                              | _ -> false),Outcome true
+                            (fun _ -> true),Decision(
+                              Decision.Create(
+                                "Hood",
+                                [
+                                  (fun v -> v = (Bool true)),Outcome false
+                                  (fun v -> v = (Bool false)),Outcome true
+                                ]
+                              )
+                            )
+                          ]
+                        ))
+                    ]
+                  )
+                )
+            ]
+          )
+        )
+        (fun v -> v = Sunny),Outcome false
+        (fun v -> v = Cloudy),Decision(
+          Decision.Create(
+            "Hood",
+            [
+              (fun v -> v = (Bool true)),Outcome false
+              (fun v -> v = (Bool false)),Outcome true
+            ]
+          )
+        )
+      ])
+    )
+```
+
+and test it with the following data point\:
+
+```fsharp
+let weatherData =
+  [
+    "Weather",Rainy
+    "Wind",Bool false
+    "Car",Bool false
+    "Distance",Float 350.5
+    "Hood", Bool false
+  ] |> Map.ofList
+```
+
+which will lead to `yes` as outcome.

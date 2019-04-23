@@ -24,6 +24,6 @@ let main argv =
   printfn "%s" (binaryTree.Fold (fun s x -> sprintf "%s | %d" s x.Entry.Key) "" )
   let binaryTree1 = binaryTree.Remove(3)
   printfn "%s" (binaryTree1.Fold (fun s x -> sprintf "%s | %d" s x.Entry.Key) "" )
-  let shouldTakeUmbrella = weatherTree.Classify weatherData2
+  let shouldTakeUmbrella = weatherTree.Classify weatherData
   printfn "%A" shouldTakeUmbrella
   0
