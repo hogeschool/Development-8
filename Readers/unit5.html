@@ -147,12 +147,12 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
 </div></code></pre>
 <h2 id="decision-trees">Decision trees</h2>
 <p>A hierarchical structure often used in artificial intelligent is decision trees. Let us consider a set of data points made of different features. Each feature has a label (name) and a value that can be either discrete or continuous. Each data point can belong to a different class that describes it. A decision tree is a data structure that, given a data point as input, is able to classify it, i.e. to decide to what class it belongs. In this section we only learn, for simplicity, how to implement the data structure representing a decision tree and how to implement the classification function, but in artificial intelligence decision trees can be generated, so that their structure is not hard-coded but rather learnt from a training set of data points. In the picture below you find a deicision tree that is able to decide for you if you should bring your umbrella depending on the weather condition:</p>
-<p><img src="file:///Images/decision_tree.png" alt=""></p>
+<p><img src="file:///c:\Users\GiacF\Documents\GitHub\Development-8\Readers\Images\decision_tree.png" alt=""></p>
 <p>A decision tree containts two kinds of nodes: a node containing a decision to make, and a node containing an outcome, which basically decides to what class assigning a data point. Each decision node contains a series of predicates that are tested in order to decide what path we need to follow to reach a su-tree, that can be itself another decision or a simple outcome. Outcome nodes only specify a belonging class and do not have children.</p>
 <p>Let us start by defining a data structure for a data point. This is simply a record containing its label and value:</p>
-<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Feature</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Feature</span>&lt;<span class="hljs-title">'a</span>, <span class="hljs-title">'label</span>&gt; </span>=
   {
-    Label : string
+    Label : 'label
     Value : <span class="hljs-symbol">'a</span>
   }
   <span class="hljs-keyword">with</span>
@@ -162,23 +162,25 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
         Value = value
       }
 </div></code></pre>
-<p>A decision node has two components: one is the lable of the feature that we are going to evaluate with that decision, and the other is a list of pairs, which we call paths, made of a predicate and a decision sub-tree.</p>
-<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Decision</span>&lt;<span class="hljs-title">'a</span>, <span class="hljs-title">'_class</span>&gt; </span>=
+<p>Note that we use a generic type <code>'label</code> for the label itself to ensure type safety when building a decision tree, so that it is not possible to provide an invalid label.
+A decision node has two components: one is the lable of the feature that we are going to evaluate with that decision, and the other is a list of pairs, which we call paths, made of a predicate and a decision sub-tree.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Decision</span>&lt;<span class="hljs-title">'a</span>, <span class="hljs-title">'label</span>, <span class="hljs-title">'_class</span>&gt; <span class="hljs-title">when</span> '<span class="hljs-title">label</span> : <span class="hljs-title">comparison</span> </span>=
   {
-    Label : string
-    Paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>,'_class&gt;&gt; 
+    Label : 'label
+    Paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;&gt; 
   }
   <span class="hljs-keyword">with</span>
-    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(label : string, paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>,'_class&gt;&gt;) =
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(label : 'label, paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;&gt;) =
       {
         Label = label
         Paths = paths
       }
 </div></code></pre>
-<p>Every time we reach a decision node, we find the feature in the data point matching the label, and then we test its value against the predicate of each path. As soon as the predicate is satisfied, we recursively call the classification algorithm on the corresponding sub-tree. We can now define a node in the decision tree as a polymorphic type that is either an <code>Outcome</code> or a <code>Decision</code>:</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">and</span> DecisionTree&lt;<span class="hljs-symbol">'a</span>, '_class&gt; =
+<p>Note that we use the type constraint <code>'label : comparison</code> because later we need to perform a comparison on the type <code>'label</code>.
+Every time we reach a decision node, we find the feature in the data point matching the label, and then we test its value against the predicate of each path. As soon as the predicate is satisfied, we recursively call the classification algorithm on the corresponding sub-tree. We can now define a node in the decision tree as a polymorphic type that is either an <code>Outcome</code> or a <code>Decision</code>:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">and</span> DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt; <span class="hljs-keyword">when</span> 'label : comparison =
 | Outcome <span class="hljs-keyword">of</span> '_class
-| Decision <span class="hljs-keyword">of</span> Decision&lt;<span class="hljs-symbol">'a</span>,'_class&gt;
+| Decision <span class="hljs-keyword">of</span> Decision&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;
 </div></code></pre>
 <p>We can now start implementing the classification method. This method takes as input a data point, which we can model as a <code>Map</code> where the key is the name of a feature and the value its corresponding value. The method checks the current root node and behaves according to the following cases:</p>
 <ol>
@@ -200,6 +202,7 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
           | None -&gt; None
       | None -&gt; None
 </div></code></pre>
+<p>Now it should appear clear why the type constraint on <code>'label</code> has been enforced: using the function <code>tryFind</code> for <code>Map</code> (not for <code>List</code>) requires that the generic type <code>'T</code> of the list is comparable, because <code>Map</code> is implemented as a search tree.</p>
 <p>In order to test this, let us use the weather decision tree shown in the picture above. We need to define an extra auxiliary type to describe the possible values that a weather feature can have:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">WeatherFeature</span> </span>=
 | Sunny 
@@ -274,6 +277,41 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
   ] |&gt; Map.ofList
 </div></code></pre>
 <p>which will lead to <code>yes</code> as outcome.</p>
+<h1 id="exercises">Exercises</h1>
+<h2 id="exercise-1">Exercise 1</h2>
+<p>Represent a graph <code>Graph&lt;'a&gt;</code> as a set of nodes containing a value of type <code>'a</code>, and a sequence of adjacent nodes.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Node</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+  {
+    Value <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span>
+    Neighbours <span class="hljs-keyword">of</span> List&lt;Node&lt;<span class="hljs-symbol">'a</span>&gt;&gt;
+  }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Graph</span>&lt;<span class="hljs-title">'a</span>&gt; </span>= List&lt;Node&lt;<span class="hljs-symbol">'a</span>&gt;&gt;
+</div></code></pre>
+<p>Implement a function <code>dfsMap</code></p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsMap (f : <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : Graph&lt;<span class="hljs-symbol">'b</span>&gt;
+</div></code></pre>
+<p>that applies the function <code>f</code> to the content of each node in the graph by visiting them in the depth-first order. Given a node <code>N</code>, the depth-first traversal of a graph first recursively visit all the unvisited nodes adjent to <code>N</code> and then it visits <code>N</code> itself.</p>
+<h2 id="exericse-2">Exericse 2</h2>
+<p>With the same graph definition given above, implement a function</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsFold (f : <span class="hljs-symbol">'s</span> -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'s</span>) (accumulator : <span class="hljs-symbol">'s</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : <span class="hljs-symbol">'s</span> 
+</div></code></pre>
+<p>that visits each node of the graph using the depth-first traversal. When visting a node, the function <code>f</code> is run by passing the current value of <code>accumulator</code> and the content of the node, and it returns the updated value of the accumulator. After that the accumulator is returned. Remember that the DFT will try to recursively fold on the unvisited neighbours before running <code>f</code> on the current node.</p>
+<h2 id="exercise-3">Exercise 3</h2>
+<p>A finite-state automaton is defined as a graph, where each node contains a function <code>f</code> to execute. This function takes as input a generic state of type <code>'state</code> and runs the function <code>f</code> of the node that changes the state. The neighbourse of a node are a series of pairs, made by a transition condition on the state, and a neighbour that will be visited if the predicate returns to true. Moreover, there are two special nodes, the starting state, which contains only one transition to a single node, and the empty node, which contains no transitions but multiple nodes are allowed to transition to it. The starting state is unique, while there can be multiple end states. Given the type definition for a FSA:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">'state</span>&gt; </span>=
+  {
+    Action          : 'state -&gt; 'state
+    Transitions     : List&lt;('state -&gt; bool) * FSANode&lt;'state&gt;&gt;
+  }
+
+<span class="hljs-keyword">and</span> FSANode&lt;'state&gt; =
+| End
+| Node <span class="hljs-keyword">of</span> Node&lt;'state&gt;
+</div></code></pre>
+<p>implement a function that, given an initial state, runs the finite-state automaton and returns a final state when it reaches an <code>End</code> node.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> run (fsa : Node&lt;'state&gt;) : 'state
+</div></code></pre>
 
     </body>
     </html>

@@ -111,35 +111,42 @@ type WeatherFeature =
 | Bool of bool
 | Float of float
 
-type Feature<'a> =
+type WeatherLabel =
+| Weather
+| Wind
+| Hood
+| Car
+| Distance
+
+type Feature<'a, 'label> =
   {
-    Label : string
+    Label : 'label
     Value : 'a
   }
   with
-    static member Create(lable, value) =
+    static member Create(label : 'label, value) =
       {
-        Label = lable
+        Label = label
         Value = value
       }
 
-type Decision<'a, '_class> =
+type Decision<'a, 'label, '_class> when 'label : comparison =
   {
-    Label : string
-    Paths : List<('a -> bool) * DecisionTree<'a,'_class>> 
+    Label : 'label
+    Paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>> 
   }
   with
-    static member Create(label : string, paths : List<('a -> bool) * DecisionTree<'a,'_class>>) =
+    static member Create(label : 'label, paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>>) =
       {
         Label = label
         Paths = paths
       }
 
-and DecisionTree<'a, '_class> =
+and DecisionTree<'a, 'label, '_class> when 'label : comparison =
 | Outcome of '_class
-| Decision of Decision<'a,'_class>
+| Decision of Decision<'a, 'label, '_class>
 with
-  member this.Classify (features : Map<string,'a>) =
+  member this.Classify (features : Map<'label,'a>) =
     match this with
     | Outcome _class -> Some _class
     | Decision decision ->
@@ -183,22 +190,22 @@ let binaryTree =
 let weatherTree =
   Decision(
     Decision.Create(
-      "Weather",
+      Weather,
       [
         (fun v -> v = Rainy),Decision(
           Decision.Create(
-            "Wind",
+            Wind,
             [
               (fun v -> v = (Bool true)),Outcome false
               (fun v -> v = (Bool false)),
                 Decision(
                   Decision.Create(
-                    "Car",
+                    Car,
                     [
                       (fun v -> v = (Bool true)),Outcome false
                       (fun v -> v = (Bool false)),Decision(
                         Decision.Create(
-                          "Distance",
+                          Distance,
                           [
                             (fun v -> 
                               match v with 
@@ -206,7 +213,7 @@ let weatherTree =
                               | _ -> false),Outcome true
                             (fun _ -> true),Decision(
                               Decision.Create(
-                                "Hood",
+                                Hood,
                                 [
                                   (fun v -> v = (Bool true)),Outcome false
                                   (fun v -> v = (Bool false)),Outcome true
@@ -224,7 +231,7 @@ let weatherTree =
         (fun v -> v = Sunny),Outcome false
         (fun v -> v = Cloudy),Decision(
           Decision.Create(
-            "Hood",
+            Hood,
             [
               (fun v -> v = (Bool true)),Outcome false
               (fun v -> v = (Bool false)),Outcome true
@@ -236,20 +243,20 @@ let weatherTree =
 
 let weatherData =
   [
-    "Weather",Rainy
-    "Wind",Bool false
-    "Car",Bool false
-    "Distance",Float 350.5
-    "Hood", Bool false
+    Weather,Rainy
+    Wind,Bool false
+    Car,Bool false
+    Distance,Float 350.5
+    Hood, Bool false
   ] |> Map.ofList
 
 let weatherData2 =
   [
-    "Weather",Cloudy
-    "Wind",Bool false
-    "Car",Bool false
-    "Distance",Float 350.5
-    "Hood", Bool true
+    Weather,Cloudy
+    Wind,Bool false
+    Car,Bool false
+    Distance,Float 350.5
+    Hood, Bool true
   ] |> Map.ofList
             
 

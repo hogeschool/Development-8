@@ -446,23 +446,6 @@ This goes on to show that functions really are just like all other datatypes in 
 > The ability to compose constructs according to our will, without artificial limitations imposed by the language, is crucial, and more often than not underestimated in its impact when building high quality software.
 > Composition makes it possible to build complex abstractions and large programs by leveraging the power of all the tried\-and\-tested functions and other components that we have already built and tested. Few tools offer the ability that (pure, referentially transparent) functional languages have to build components in isolation, test them, compose them, and obtain flawlessly working programs as a direct result, leading beginning practitioners of functional programming to believe that "programming in [insert functional language here] simply _works_, without bugs!".
 
-## Exercises
-Implement functions with the following signatures\:
-
-```fsharp
-map2 : ('a -> 'b -> 'c) -> List<'a * 'b> -> List<'c>
-```
-
-```fsharp
-map2' : ('a -> 'b -> 'c) -> List<'a> * List<'b> -> List<'c>
-```
-
-```fsharp
-zip: List<'a> * List<'b> -> List<'a * 'b>
-```
-
-Implement a series of SQL operators (`SELECT`, `WHERE`, `ORDERBY`, `AGGREGATE`) via higher order functions. Hint: `SELECT == map`, `WHERE == filter`.
-
 # Exercises
 
 ## Exercise 1

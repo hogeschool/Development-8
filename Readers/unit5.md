@@ -166,9 +166,9 @@ A decision tree containts two kinds of nodes\: a node containing a decision to m
 Let us start by defining a data structure for a data point. This is simply a record containing its label and value\:
 
 ```fsharp
-type Feature<'a> =
+type Feature<'a, 'label> =
   {
-    Label : string
+    Label : 'label
     Value : 'a
   }
   with
@@ -178,28 +178,29 @@ type Feature<'a> =
         Value = value
       }
 ```
-
+Note that we use a generic type `'label` for the label itself to ensure type safety when building a decision tree, so that it is not possible to provide an invalid label.
 A decision node has two components\: one is the lable of the feature that we are going to evaluate with that decision, and the other is a list of pairs, which we call paths, made of a predicate and a decision sub\-tree.
 
 ```fsharp
-type Decision<'a, '_class> =
+type Decision<'a, 'label, '_class> when 'label : comparison =
   {
-    Label : string
-    Paths : List<('a -> bool) * DecisionTree<'a,'_class>> 
+    Label : 'label
+    Paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>> 
   }
   with
-    static member Create(label : string, paths : List<('a -> bool) * DecisionTree<'a,'_class>>) =
+    static member Create(label : 'label, paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>>) =
       {
         Label = label
         Paths = paths
       }
 ```
+Note that we use the type constraint `'label : comparison` because later we need to perform a comparison on the type `'label`.
 Every time we reach a decision node, we find the feature in the data point matching the label, and then we test its value against the predicate of each path. As soon as the predicate is satisfied, we recursively call the classification algorithm on the corresponding sub\-tree. We can now define a node in the decision tree as a polymorphic type that is either an `Outcome` or a `Decision`\:
 
 ```fsharp
-and DecisionTree<'a, '_class> =
+and DecisionTree<'a, 'label, '_class> when 'label : comparison =
 | Outcome of '_class
-| Decision of Decision<'a,'_class>
+| Decision of Decision<'a, 'label, '_class>
 ``` 
 We can now start implementing the classification method. This method takes as input a data point, which we can model as a `Map` where the key is the name of a feature and the value its corresponding value. The method checks the current root node and behaves according to the following cases\:
 
@@ -222,6 +223,7 @@ member this.Classify (features : Map<string,'a>) =
           | None -> None
       | None -> None
 ```
+Now it should appear clear why the type constraint on `'label` has been enforced\: using the function `tryFind` for `Map` (not for `List`) requires that the generic type `'T` of the list is comparable, because `Map` is implemented as a search tree. 
 
 In order to test this, let us use the weather decision tree shown in the picture above. We need to define an extra auxiliary type to describe the possible values that a weather feature can have\:
 
@@ -306,3 +308,57 @@ let weatherData =
 ```
 
 which will lead to `yes` as outcome.
+
+# Exercises
+
+## Exercise 1
+Represent a graph `Graph<'a>` as a set of nodes containing a value of type `'a`, and a sequence of adjacent nodes. 
+
+```fsharp
+type Node<'a> =
+  {
+    Value of 'a
+    Neighbours of List<Node<'a>>
+  }
+
+type Graph<'a> = List<Node<'a>>
+```
+
+
+Implement a function `dfsMap`
+
+```fsharp
+let dfsMap (f : 'a -> 'b) (graph : Graph<'a>) : Graph<'b>
+```
+
+that applies the function `f` to the content of each node in the graph by visiting them in the depth\-first order. Given a node `N`, the depth\-first traversal of a graph first recursively visit all the unvisited nodes adjent to `N` and then it visits `N` itself.
+
+## Exericse 2
+With the same graph definition given above, implement a function
+
+```fsharp
+let dfsFold (f : 's -> 'a -> 's) (accumulator : 's) (graph : Graph<'a>) : 's 
+```
+
+that visits each node of the graph using the depth\-first traversal. When visting a node, the function `f` is run by passing the current value of `accumulator` and the content of the node, and it returns the updated value of the accumulator. After that the accumulator is returned. Remember that the DFT will try to recursively fold on the unvisited neighbours before running `f` on the current node.
+
+## Exercise 3
+A finite\-state automaton is defined as a graph, where each node contains a function `f` to execute. This function takes as input a generic state of type `'state` and runs the function `f` of the node that changes the state. The neighbourse of a node are a series of pairs, made by a transition condition on the state, and a neighbour that will be visited if the predicate returns to true. Moreover, there are two special nodes, the starting state, which contains only one transition to a single node, and the empty node, which contains no transitions but multiple nodes are allowed to transition to it. The starting state is unique, while there can be multiple end states. Given the type definition for a FSA\:
+
+```fsharp
+type State<'state> =
+  {
+    Action          : 'state -> 'state
+    Transitions     : List<('state -> bool) * FSANode<'state>>
+  }
+
+and FSANode<'state> =
+| End
+| Node of Node<'state>
+```
+
+implement a function that, given an initial state, runs the finite-state automaton and returns a final state when it reaches an `End` node.
+
+```fsharp
+let run (fsa : Node<'state>) : 'state
+```
