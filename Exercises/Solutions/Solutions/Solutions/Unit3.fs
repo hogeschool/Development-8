@@ -1,134 +1,102 @@
 ﻿module Unit3
 
+let rec last (l : List<'a>) : Option<'a> =
+  match l with
+  | [] -> None
+  | [x] -> Some x
+  | _ :: xs -> last xs
 
-open System
+let rec append (l1 : List<'a>) (l2 : List<'a>) : List<'a> =
+  match l1,l2 with
+  | [],l2 -> l2
+  | x :: xs,l2 -> x :: (append xs l2)
 
-let r = Random()
-
-let clamp min max value =
-  if value < min then
-    min
-  elif value > max then
-    max
+let rec nth (n : int) (l : List<'a>) : Option<'a> =
+  if n < 0 then
+    None
+  elif n = 0 then
+    Some l.Head
   else
-    value
+    nth (n - 1) l.Tail
 
-let minCoord = -50.0
-let maxCoord = 50.0
+let rec rev (l : List<'a>) : List<'a> = 
+  match l with
+  | [] -> []
+  | x :: xs -> (rev xs) @ [x] //alternatively call append (rev xs) [x]
 
-let randomCoord min max =
-  min + (r.NextDouble() * (max - min))
+let palindrome (l : List<'a>) : bool =
+  (rev l) = l
 
-type Point2D =
-  {
-    Position : (float * float)
-  }
-  with
-    static member Create(x : float,y : float) = { Position = (x,y) }
-    static member CreateRandom(min : float,max : float) = Point2D.Create(randomCoord min max,randomCoord min max)
-    member this.X = fst this.Position
-    member this.Y = snd this.Position
-    member this.Distance(point : Point2D) =
-      Math.Sqrt((this.X - this.X) * (this.X - this.X) + (this.Y - this.Y) * (this.Y - this.Y))
-      
-
-
-type Blob =
-  {
-    Position : Point2D
-    Size     : int
-    Eaten    : bool
-  }
-  with
-    static member Create() = 
-      { Position = Point2D.CreateRandom(minCoord,maxCoord)
-        Size = r.Next(1,6)
-        Eaten = false
-      }
-    member this.Speed = (float this.Size) / 10.0
-    member this.Up = { this with Position = Point2D.Create(this.Position.X, clamp minCoord maxCoord (this.Position.Y + this.Speed)) }
-    member this.Down = { this with Position = Point2D.Create(this.Position.X, clamp minCoord maxCoord (this.Position.Y - this.Speed)) }
-    member this.Left = { this with Position = Point2D.Create(clamp minCoord maxCoord (this.Position.X - this.Speed), this.Position.Y) }
-    member this.Right = { this with Position = Point2D.Create(clamp minCoord maxCoord (this.Position.X + this.Speed), this.Position.Y) }
-    member this.Move() =
-      let choice = r.Next(0,4)
-      if choice = 0 then
-        this.Up
-      elif choice = 1 then
-        this.Down
-      elif choice = 2 then
-        this.Left
-      elif choice = 3 then
-        this.Right
+let rec compress (l : List<'a>) : List<'a> =
+  match l with
+  | [] -> []
+  | [x] -> [x]
+  | x :: y :: xs ->
+      if x = y then
+        compress (y :: xs)
       else
-        this
-    member this.Eat(blobs : List<Blob>) : Blob * List<Blob> =
-      match blobs with
-      | [] -> this,blobs
-      | blob :: otherBlobs ->
-          if this.Position.Distance(blob.Position) < 5.0 && this.Size >= blob.Size then
-            let finalBlob,eatenBlobs = { this with Size = this.Size + 1 }.Eat otherBlobs  
-            finalBlob,{ blob with Eaten = true } :: eatenBlobs
-          else
-            let finalBlob,eatenBlobs = this.Eat otherBlobs
-            finalBlob,blob :: eatenBlobs
+        x :: (compress (y :: xs))
 
-type World =
-  {
-    Blobs     : List<Blob>
-    Ticks     : int
-  }
-  with
-    static member Create(ticks : int) =
-      {
-        Blobs = []
-        Ticks = ticks
-      }
-    member this.UpdateBlobs() =
-      let rec filterBlobs blobs =
-        match blobs with
-        | [] -> []
-        | blob :: otherBlobs ->
-          if blob.Eaten then
-            filterBlobs otherBlobs
-          else
-            blob :: (filterBlobs otherBlobs)
-      let rec eat (eatingBlobs : List<Blob>) (blobs : List<Blob>) =
-        match eatingBlobs with
-        | [] -> blobs
-        | blob :: otherBlobs ->
-            let currentBlob,eatenBlobs = blob.Eat(otherBlobs)
-            let aliveBlobs = filterBlobs (currentBlob :: eatenBlobs)
-            let eatingBlobs = filterBlobs otherBlobs
-            eat eatingBlobs aliveBlobs
+let rec caesarCypher (l : List<char>) (shift : int) : List<char> =
+  let shiftChar (c : char) (shift : int) =
+    let charCode = int c
+    if (charCode >= 97 && charCode <= 122) then
+      (((int c) - 97) + shift) % 26 + 97 |> char
+    else
+      c
 
-      { this with Blobs = eat this.Blobs this.Blobs }
-      
+  match l with
+  | [] -> []
+  | x :: xs -> (shiftChar x shift) :: (caesarCypher xs shift)
 
-    member this.Run() =
-      if this.Ticks <= 0 then
-        printfn "%A" this
-        this
+let rec splitAt (i : int) (l : List<'a>) : List<'a> * List<'a> =
+  match l with
+  | [] -> [],[]
+  | x :: xs ->
+      if i = 0 then
+        [],x :: xs
       else
-        if this.Ticks % 100 = 0 then
-          printfn "=======Tick: %d =======\n\nBLOBS LEFT: %d \n\n%A" 
-            this.Ticks 
-            this.Blobs.Length 
-            this
-        let world = this.UpdateBlobs()
-        {
-          Blobs = 
-            if r.NextDouble() < 0.25 && this.Ticks % 20 = 0 then 
-              Blob.Create() :: world.Blobs
-            else 
-              world.Blobs
-          Ticks = world.Ticks - 1
-        }.Run()
+        let left,right = splitAt (i - 1) xs
+        x :: left,right
 
-let test() =
-  let w = World.Create(1000)
-  w.Run()
+let rec merge (l1 : List<'a>) (l2 : List<'a>) : List<'a> =
+  match l1,l2 with
+  | [],l
+  | l,[] -> l
+  | x :: xs,y :: ys ->
+      if x <= y then
+        x :: (merge xs (y :: ys))
+      else
+        y :: (merge (x :: xs) ys)
 
-        
+let rec mergeSort (l : List<'a>) : List<'a> =
+  match l with
+  | [] -> []
+  | [x] -> [x]
+  | _ ->
+    let m = l.Length / 2
+    let l1,l2 = splitAt m l
+    let sortedL1 = mergeSort l1
+    let sortedL2 = mergeSort l2
+    merge sortedL1 sortedL2
 
-      
+
+let testUnit3() =
+  let l1 = [-1;0;2;3;5;6]
+  let l2 = [0;1;2;5;7;23]
+  let rl = [0;1;1;2;3;3;3;2;3;4;4;4;5;0;0;0;0;0]
+  let ul = [5;0;-1;3;2;3;-25;5]
+  let aeneid = "Arma virumque cano, Troiae qui primum ab oris"
+  printfn "%A" (last l1)
+  printfn "%A" (append l1 l2)
+  printfn "%A" (rev l1)
+  printfn "%A" (compress rl)
+  printfn "%A" (
+    caesarCypher (
+      aeneid.ToLower().ToCharArray() |> 
+      Array.toList) 3 |> 
+      List.map string |> 
+      List.fold (+) "")
+  printfn "%A" (splitAt 6 rl)
+  printfn "%A" (merge l1 l2)
+  printfn "%A" (mergeSort ul)

@@ -473,14 +473,16 @@ that flattens a list of lists into a single list using `fold`.
 ## Exercise 4
 Implement a function
 ```fsharp
-let map2 (f : List<'a> -> List<'b> -> 'c) (l1 : List<'a>) (l2 : List<'b) : Option<List<'c>> = ...
+let map2 (f :  a -> 'b -> 'c) (l1 : List<'a>) 
+  (l2 : List<'b) : Option<List<'c>> = ...
 ```
 that applies `f` to two lists of equal length `l1` and `l2`. If the two lists have different length it return `None`.
 
 ## Exercise 5
 Implement a function
 ```fsharp
-let fold2 (f : 'state -> 'a -> 'b -> 'state) (init : 'state) (l1 : List<'a>) (l2 : List<'b>) : Option<'state> = ...
+let fold2 (f : 'state -> 'a -> 'b -> 'state) (init : 'state) 
+  (l1 : List<'a>) (l2 : List<'b>) : Option<'state> = ...
 ```
 that folds two lists of equal length. If the length is different than `None` is returned.
 
@@ -494,7 +496,8 @@ that take two lists with the same length and creates a list of pairs containing 
 ## Exercise 7
 Implement a function
 ```fsharp
-let map2Safe (f : List<'a> -> List<'b> -> 'c) (l1 : List<'a>) (l2 : List<'b) : List<Option<'c>>
+let map2Safe (f : List<'a> -> List<'b> -> 'c) (l1 : List<'a>) 
+  (l2 : List<'b) : List<Option<'c>>
 ```
 that applies the function `f` to the elements in the same position of two lists `l1` and `l2`, possibly with different length. If an element of one list does not have a correspondent element in the second list, then the function returns `None`.
 

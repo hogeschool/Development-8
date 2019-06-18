@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <title>Unit 4 – Advanced Functions</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
         <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
@@ -21,9 +21,9 @@
         <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
     </head>
     <body>
-        <h1 id="unit-4-%E2%80%93-advanced-functions">Unit 4 – Advanced Functions</h1>
+        <h1 id="Unit-4-%E2%80%93-Advanced-Functions">Unit 4 – Advanced Functions</h1>
 <p>In this unit, we study the various function operators available in F#. We will start with basic function manipulation operators, and then move on to important design patterns that make use of these operators.</p>
-<h2 id="function-composition-pipe-operator">Function composition, pipe operator</h2>
+<h2 id="Function-composition-pipe-operator">Function composition, pipe operator</h2>
 <p>Functions in F# are not more special than, say, integers or strings. Just like these simple data types can be defined, manipulated in expressions, transformed, taken as parameters from functions, and be returned as parameters, so can functions. This means that <em>functions may accept as parameters, and return as result, other functions</em>. A function that accepts another function as parameter is called a <em>higher order function</em> (HOF), and a function that returns a function is known as <em>curried</em>.</p>
 <blockquote>
 <p>This characteristic of supporting higher order and curried functions, which was originally typical of cutting-edge functional languages, has been widely recognized to be a fundamental aspect of high quality software engineering, and is now found in most modern programming languages. In this, F# has played an important historical role: the adoption of functional constructs in the mainstream began many years ago in C#, directly integrating F# innovations and know-how. From C#, &quot;lambda functions&quot; spread to other languages, from C++ to Java and more, finally becoming an absolute requirement. Of course other languages helped popularize these concepts, among others JavaScript played a very large role next to C#, in shaping software engineering as we understand it nowadays.</p>
@@ -69,7 +69,7 @@ The identity of function composition is <code>id</code>, both in F# and in mathe
 <span class="hljs-keyword">let</span> square n = repeat n (row n &gt;&gt; newline)
 </div></code></pre>
 <p>Notice that neither <code>row 3</code>, nor <code>square 5</code> would be pictures. They are both functions, waiting to be either composed with other rendering functions, or invoked with an initial string to render from (<code>square 5 &quot;&quot;</code>).</p>
-<h2 id="hof-design-patterns">HOF design patterns</h2>
+<h2 id="HOF-design-patterns">HOF design patterns</h2>
 <p>Higher order functions can be assembled along standard design patterns which arise very commonly in most data structures.</p>
 <h3 id="map"><code>map</code></h3>
 <p>A very powerful, and the most common design pattern when it comes to higher order and curried functions is <code>map</code> over a data structure. <code>map</code> performs a transformation of the <em>content</em> of a data structure, without altering the structure itself. We often refer to <code>map</code> as a <em>structure-preserving transformation</em>.</p>
@@ -105,14 +105,14 @@ mapOption double (Some <span class="hljs-number">3</span>) -&gt; Some <span clas
 mapList incr [<span class="hljs-number">1</span>;<span class="hljs-number">3</span>;<span class="hljs-number">5</span>] -&gt; [<span class="hljs-number">2</span>;<span class="hljs-number">4</span>;<span class="hljs-number">6</span>]
 mapList double [<span class="hljs-number">1</span>;<span class="hljs-number">3</span>;<span class="hljs-number">5</span>] -&gt; [<span class="hljs-number">2</span>;<span class="hljs-number">6</span>;<span class="hljs-number">10</span>]
 </div></code></pre>
-<h2 id="composing-multiple-maps">Composing multiple <code>map</code>'s</h2>
+<h2 id="Composing-multiple-maps">Composing multiple <code>map</code>'s</h2>
 <p>It is possible to combine different <code>map</code> functions together. We can combine them by simply invoking them in a nested fashion, by explicitly specifying the content transformation:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapListOption f = mapList (mapOption f)
 </div></code></pre>
 <p>Of course declaring a parameter <code>f</code> just to pass it along is not very pretty, as it clutters code without really adding anything interesting or particularly informative. Fortunately, function composition comes to the rescue, because we can simply compose (look out for the inverted order!) the two mapping functions as follows:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapListOption = mapOption &gt;&gt; mapList
 </div></code></pre>
-<h2 id="non-structure-preserving-transformations-filter">Non-structure-preserving transformations: <code>filter</code></h2>
+<h2 id="Non-structure-preserving-transformations-filter">Non-structure-preserving transformations: <code>filter</code></h2>
 <p><code>map</code> is not the only common design pattern in functional programming. Another transformation that frequently arises, but only when dealing with a dynamic collection, is <code>filter</code>, which removes elements from a collection based on some predicate.</p>
 <p><code>filter</code> on an <code>Option</code> would check whether or not there is an element, and it respects the predicate. In all other cases, the element is discarded from the collection:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> filterOption p l =
@@ -162,7 +162,7 @@ foldList None minOption [<span class="hljs-number">1</span>;<span class="hljs-nu
 <span class="hljs-keyword">let</span> filterList p l =
   foldList [] (<span class="hljs-keyword">fun</span> x xs -&gt; <span class="hljs-keyword">if</span> p x <span class="hljs-keyword">then</span> x::xs <span class="hljs-keyword">else</span> xs)
 </div></code></pre>
-<h2 id="partial-application-curry-and-uncurry">Partial application, curry, and uncurry</h2>
+<h2 id="Partial-application-curry-and-uncurry">Partial application, curry, and uncurry</h2>
 <p>Currying is the technique which lets functions return other functions. It is very commonly encountered in functional programming languages such as F#, whenever a function takes its parameters one at a time. For example, consider a function that adds two numbers together:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> add x y = x + y
 </div></code></pre>
@@ -213,7 +213,7 @@ f <span class="hljs-number">-3</span> -&gt; <span class="hljs-number">-6</span>
 <span class="hljs-keyword">let</span> p2 = { name=<span class="hljs-string">"Alex"</span>; surname=<span class="hljs-string">"Pomaré"</span> } |&gt; janeify
 <span class="hljs-keyword">let</span> p3 = { name=<span class="hljs-string">"Mandingo"</span>; surname=<span class="hljs-string">"Siffredi"</span> }
 </div></code></pre>
-<h2 id="function-records">Function records</h2>
+<h2 id="Function-records">Function records</h2>
 <p>We can combine all we have seen so far in a powerful design pattern, known as type-classes, where we define a record of functions over some generic datatype in order to implement something that somewhat resembles an interface in object-oriented languages.</p>
 <blockquote>
 <p>Be careful! While it is true that type-classes can be used in order to simulate interfaces, they also support quite a lot more than object-oriented languages interfaces. For example, type-classes allow us to define static methods, constructors, and operators, which interfaces do not support because of their requirement of at least one instance of the implementing class (the instance that will become <code>this</code> in the concrete implementation).</p>
@@ -274,7 +274,7 @@ f <span class="hljs-number">-3</span> -&gt; <span class="hljs-number">-6</span>
 <pre><code class="language-fsharp"><div>printfn <span class="hljs-string">"%A"</span> (genericProgram studentPerson { Name=<span class="hljs-string">"Jack"</span>; Surname=<span class="hljs-string">"Lantern"</span>; Birthday=System.DateTime(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1985</span>); StudyPoints=<span class="hljs-number">120</span>} )
 printfn <span class="hljs-string">"%A"</span> (genericProgram managerPerson { name=<span class="hljs-string">"John"</span>; surname=<span class="hljs-string">"Connor"</span>; birthday=System.DateTime(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1965</span>); company=<span class="hljs-string">"Microsoft"</span>; salary=<span class="hljs-number">150000</span>} )
 </div></code></pre>
-<h2 id="composition-of-functions-and-types">Composition of functions and types</h2>
+<h2 id="Composition-of-functions-and-types">Composition of functions and types</h2>
 <p>Functions have a type. The function from <code>'a</code> to <code>'b</code> is called <code>'a -&gt; 'b</code>. Types built with the function <code>-&gt;</code> operator can be mixed with all other type constructions.</p>
 <p>For example, we could define a function that takes as input a list of curried functions, and invokes them all with the same arguments (thus multiple times). A first implementation to do this could be:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> applyMany : (List&lt;<span class="hljs-symbol">'a</span>-&gt;<span class="hljs-symbol">'b</span>-&gt;<span class="hljs-symbol">'c</span>&gt; -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;) = <span class="hljs-keyword">fun</span> l a b -&gt;
@@ -307,49 +307,43 @@ printfn <span class="hljs-string">"%A"</span> (genericProgram managerPerson { na
 <p>The ability to compose constructs according to our will, without artificial limitations imposed by the language, is crucial, and more often than not underestimated in its impact when building high quality software.
 Composition makes it possible to build complex abstractions and large programs by leveraging the power of all the tried-and-tested functions and other components that we have already built and tested. Few tools offer the ability that (pure, referentially transparent) functional languages have to build components in isolation, test them, compose them, and obtain flawlessly working programs as a direct result, leading beginning practitioners of functional programming to believe that &quot;programming in [insert functional language here] simply <em>works</em>, without bugs!&quot;.</p>
 </blockquote>
-<h2 id="exercises">Exercises</h2>
-<p>Implement functions with the following signatures:</p>
-<pre><code class="language-fsharp"><div>map2 : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; <span class="hljs-symbol">'c</span>) -&gt; List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;
-</div></code></pre>
-<pre><code class="language-fsharp"><div>map2' : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; <span class="hljs-symbol">'c</span>) -&gt; List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'c</span>&gt;
-</div></code></pre>
-<pre><code class="language-fsharp"><div>zip: List&lt;<span class="hljs-symbol">'a</span>&gt; * List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'b</span>&gt;
-</div></code></pre>
-<p>Implement a series of SQL operators (<code>SELECT</code>, <code>WHERE</code>, <code>ORDERBY</code>, <code>AGGREGATE</code>) via higher order functions. Hint: <code>SELECT == map</code>, <code>WHERE == filter</code>.</p>
-<h1 id="exercises-1">Exercises</h1>
-<h2 id="exercise-1">Exercise 1</h2>
+<h1 id="Exercises">Exercises</h1>
+<h2 id="Exercise-1">Exercise 1</h2>
 <p>Implement a function</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> mapFold (f : <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'b</span>&gt; = ...
 </div></code></pre>
 <p>implementing <code>map</code> for lists using only <code>fold</code>.</p>
-<h2 id="exercise-2">Exercise 2</h2>
+<h2 id="Exercise-2">Exercise 2</h2>
 <p>Implement a function</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> filterFold (f : <span class="hljs-symbol">'a</span> -&gt; bool) (l : List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
 </div></code></pre>
 <p>implementing <code>filter</code> for lists using only <code>fold</code>.</p>
-<h2 id="exercise-3">Exercise 3</h2>
+<h2 id="Exercise-3">Exercise 3</h2>
 <p>Implement a function</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> flatten (l : List&lt;List&lt;<span class="hljs-symbol">'a</span>&gt;) : List&lt;<span class="hljs-symbol">'a</span>&gt; = ...
 </div></code></pre>
 <p>that flattens a list of lists into a single list using <code>fold</code>.</p>
-<h2 id="exercise-4">Exercise 4</h2>
+<h2 id="Exercise-4">Exercise 4</h2>
 <p>Implement a function</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2 (f : List&lt;<span class="hljs-symbol">'a</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>) : Option&lt;List&lt;<span class="hljs-symbol">'c</span>&gt;&gt; = ...
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2 (f :  a -&gt; <span class="hljs-symbol">'b</span> -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) 
+  (l2 : List&lt;<span class="hljs-symbol">'b</span>) : Option&lt;List&lt;<span class="hljs-symbol">'c</span>&gt;&gt; = ...
 </div></code></pre>
 <p>that applies <code>f</code> to two lists of equal length <code>l1</code> and <code>l2</code>. If the two lists have different length it return <code>None</code>.</p>
-<h2 id="exercise-5">Exercise 5</h2>
+<h2 id="Exercise-5">Exercise 5</h2>
 <p>Implement a function</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> fold2 (f : 'state -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; 'state) (init : 'state) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>&gt;) : Option&lt;'state&gt; = ...
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> fold2 (f : 'state -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span> -&gt; 'state) (init : 'state) 
+  (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>&gt;) : Option&lt;'state&gt; = ...
 </div></code></pre>
 <p>that folds two lists of equal length. If the length is different than <code>None</code> is returned.</p>
-<h2 id="exercise-6">Exercise 6</h2>
+<h2 id="Exercise-6">Exercise 6</h2>
 <p>Implement a function</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> zip (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>&gt;) : Option&lt;List&lt;<span class="hljs-symbol">'a</span> * <span class="hljs-symbol">'a</span>&gt;&gt; = ...
 </div></code></pre>
 <p>that take two lists with the same length and creates a list of pairs containing the elements that are in the same position from both lists. Implement this function by using normal recursion and then by using <code>fold2</code>.</p>
-<h2 id="exercise-7">Exercise 7</h2>
+<h2 id="Exercise-7">Exercise 7</h2>
 <p>Implement a function</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2Safe (f : List&lt;<span class="hljs-symbol">'a</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) (l2 : List&lt;<span class="hljs-symbol">'b</span>) : List&lt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> map2Safe (f : List&lt;<span class="hljs-symbol">'a</span>&gt; -&gt; List&lt;<span class="hljs-symbol">'b</span>&gt; -&gt; <span class="hljs-symbol">'c</span>) (l1 : List&lt;<span class="hljs-symbol">'a</span>&gt;) 
+  (l2 : List&lt;<span class="hljs-symbol">'b</span>) : List&lt;Option&lt;<span class="hljs-symbol">'c</span>&gt;&gt;
 </div></code></pre>
 <p>that applies the function <code>f</code> to the elements in the same position of two lists <code>l1</code> and <code>l2</code>, possibly with different length. If an element of one list does not have a correspondent element in the second list, then the function returns <code>None</code>.</p>
 <p><strong>Example:</strong> Summing the elements of <code>[1;2;3;4]</code> and <code>[4;5]</code> with <code>map2Safe</code> returns <code>[Some(5);Some(7);None;None]</code></p>
