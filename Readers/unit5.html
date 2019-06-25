@@ -3,10 +3,10 @@
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <title>Unit 5 - Advanced (hierarchical) data structures</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+        
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        
         <style>
 .task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
 </style>
@@ -18,12 +18,12 @@
             }
         </style>
         
-        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
     </head>
     <body>
-        <h1 id="unit-5---advanced-hierarchical-data-structures">Unit 5 - Advanced (hierarchical) data structures</h1>
+        <h1 id="Unit-5---Advanced-hierarchical-data-structures">Unit 5 - Advanced (hierarchical) data structures</h1>
 <p>In this unit, we discuss the definition and management of operations around hierarchical data structures. In preivous courses, these data structures were discussed in their mutable version. In this course we explore their immutable implementation, in order to prevent side effects that could happen when updating the references or trying to use <code>null</code> values in the mutable implementation. We will start by explaining the implementation of generic trees, and then we will implement binary search trees. We conclude this section by showing how to implement decision trees, that are a popular data structure used in machine learning.</p>
-<h2 id="trees">Trees</h2>
+<h2 id="Trees">Trees</h2>
 <p>A tree can be recursively defined as either an empty tree, or a node containing data and a sequence of subtrees (children). This means that its type definition will be both polymorphic and recursive:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Tree</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
 | Empty
@@ -46,7 +46,7 @@
       subtrees |&gt;
       List.fold (<span class="hljs-keyword">fun</span> s tree -&gt; tree.Fold f s) state1
 </div></code></pre>
-<h2 id="binary-search-trees">Binary Search Trees</h2>
+<h2 id="Binary-Search-Trees">Binary Search Trees</h2>
 <p>A binary search tree is a data structure that can be used to implement a dictionary. This means that each node stores an element identified by a unique key and a value. Each node can also has two sub-trees as children. The keys stored in the root of the left sub-tree are all smaller than the key in the current node, and the keys in the right sub-tree are all greater. We start by defining a type to describe the key-value pair stored as element in the node:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Entry</span>&lt;<span class="hljs-title">'k</span>,<span class="hljs-title">'v</span>&gt; </span>=
   {
@@ -85,7 +85,7 @@
 | Node <span class="hljs-keyword">of</span> BinaryNode&lt;<span class="hljs-symbol">'k</span>, <span class="hljs-symbol">'v</span>&gt;
 </div></code></pre>
 <p>We now proceed to implement the operations on the dictionary, i.e. <code>find</code>, <code>add</code>, and <code>remove</code>.</p>
-<h3 id="element-lookup">Element Lookup</h3>
+<h3 id="Element-Lookup">Element Lookup</h3>
 <p>The lookup in a binary search tree searches for a key in the tree and returns the corresponding value in the entry. It also might fail to retrieve the given key, so the return type is <code>Option&lt;'v&gt;</code>. The function is defined recursively: if the tree is empty then the lookup fails returning <code>None</code>. Otherwise we check if the key in the current node is the one we are looking for. If it is, then we return it encapsulated inside the case <code>Some</code> of <code>Option</code>. Otherwise if the key we are looking for is smaller then we recursively look in the left sub-tree, otherwise we look to the right. This recursive process will stop as soon as we either find the key we are looking for or we reach an empty sub-tree:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.TryFind(key : <span class="hljs-symbol">'k</span>) : Option&lt;<span class="hljs-symbol">'v</span>&gt; =
   <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
@@ -98,7 +98,7 @@
     <span class="hljs-keyword">else</span>
       node.Right.TryFind key
 </div></code></pre>
-<h3 id="adding-an-element">Adding an Element</h3>
+<h3 id="Adding-an-Element">Adding an Element</h3>
 <p>Adding an element requires finding the proper place to position the new node in the binary search tree in order not to break the binary search property. Note that, being the data structure immutable, <code>Add</code> will never modify the existing tree but rather return a new tree that contains also the new entry to be added. The procedure is again recursive: if we are in an empty tree then we just return a new node with an empty left and right sub-tree. If the entry that we want to add is already there (i.e. the key already exists), we replace it. Thus we return a new node with the new entry and having the right and left sub-tree of the old node. Otherwise if the key of the entry to be added is less than the key in the current node, then we recursively call <code>Add</code> on the left sub-tree and we return a new node with the same entity and right sub-tree as the current one, but having as left sub-tree the result of the recursive call to <code>Add</code>. Otherwise we do the opposite: we recursively call <code>Add</code> on the right sub-tree and we create a new node containing the entry and the left sub-tree of the current one, but as right sub-tree the result of <code>Add</code>. This recursive process ends as soon as <code>Add</code> will be called with an empty sub-tree.</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
   | Empty -&gt; Node(BinaryNode.Create(entry, Empty, Empty))
@@ -110,7 +110,7 @@
     <span class="hljs-keyword">else</span>
       Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Add(entry)))
 </div></code></pre>
-<h3 id="deleting-an-element">Deleting an Element</h3>
+<h3 id="Deleting-an-Element">Deleting an Element</h3>
 <p>Deleting an element is more complex and requires to consider three different cases:</p>
 <ol>
 <li>We delete from an empty tree. This is a base case that has no effect whatsoever. This case may happen when the tree is really empty or when the recursive delete fails to find the entry that we want to delete. In that case the delete has no effect.</li>
@@ -145,7 +145,7 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
       <span class="hljs-keyword">else</span>
         Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
 </div></code></pre>
-<h2 id="decision-trees">Decision trees</h2>
+<h2 id="Decision-trees">Decision trees</h2>
 <p>A hierarchical structure often used in artificial intelligent is decision trees. Let us consider a set of data points made of different features. Each feature has a label (name) and a value that can be either discrete or continuous. Each data point can belong to a different class that describes it. A decision tree is a data structure that, given a data point as input, is able to classify it, i.e. to decide to what class it belongs. In this section we only learn, for simplicity, how to implement the data structure representing a decision tree and how to implement the classification function, but in artificial intelligence decision trees can be generated, so that their structure is not hard-coded but rather learnt from a training set of data points. In the picture below you find a deicision tree that is able to decide for you if you should bring your umbrella depending on the weather condition:</p>
 <p><img src="file:///c:\Users\GiacF\Documents\GitHub\Development-8\Readers\Images\decision_tree.png" alt=""></p>
 <p>A decision tree containts two kinds of nodes: a node containing a decision to make, and a node containing an outcome, which basically decides to what class assigning a data point. Each decision node contains a series of predicates that are tested in order to decide what path we need to follow to reach a su-tree, that can be itself another decision or a simple outcome. Outcome nodes only specify a belonging class and do not have children.</p>
@@ -215,22 +215,22 @@ Every time we reach a decision node, we find the feature in the data point match
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> weatherTree =
   Decision(
     Decision.Create(
-      <span class="hljs-string">"Weather"</span>,
+      Weather,
       [
         (<span class="hljs-keyword">fun</span> v -&gt; v = Rainy),Decision(
           Decision.Create(
-            <span class="hljs-string">"Wind"</span>,
+            Wind,
             [
               (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">true</span>)),Outcome <span class="hljs-keyword">false</span>
               (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">false</span>)),
                 Decision(
                   Decision.Create(
-                    <span class="hljs-string">"Car"</span>,
+                    Car,
                     [
                       (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">true</span>)),Outcome <span class="hljs-keyword">false</span>
                       (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">false</span>)),Decision(
                         Decision.Create(
-                          <span class="hljs-string">"Distance"</span>,
+                          Distance,
                           [
                             (<span class="hljs-keyword">fun</span> v -&gt; 
                               <span class="hljs-keyword">match</span> v <span class="hljs-keyword">with</span> 
@@ -238,7 +238,7 @@ Every time we reach a decision node, we find the feature in the data point match
                               | _ -&gt; <span class="hljs-keyword">false</span>),Outcome <span class="hljs-keyword">true</span>
                             (<span class="hljs-keyword">fun</span> _ -&gt; <span class="hljs-keyword">true</span>),Decision(
                               Decision.Create(
-                                <span class="hljs-string">"Hood"</span>,
+                                Hood,
                                 [
                                   (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">true</span>)),Outcome <span class="hljs-keyword">false</span>
                                   (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">false</span>)),Outcome <span class="hljs-keyword">true</span>
@@ -256,7 +256,7 @@ Every time we reach a decision node, we find the feature in the data point match
         (<span class="hljs-keyword">fun</span> v -&gt; v = Sunny),Outcome <span class="hljs-keyword">false</span>
         (<span class="hljs-keyword">fun</span> v -&gt; v = Cloudy),Decision(
           Decision.Create(
-            <span class="hljs-string">"Hood"</span>,
+            Hood,
             [
               (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">true</span>)),Outcome <span class="hljs-keyword">false</span>
               (<span class="hljs-keyword">fun</span> v -&gt; v = (Bool <span class="hljs-keyword">false</span>)),Outcome <span class="hljs-keyword">true</span>
@@ -269,16 +269,16 @@ Every time we reach a decision node, we find the feature in the data point match
 <p>and test it with the following data point:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> weatherData =
   [
-    <span class="hljs-string">"Weather"</span>,Rainy
-    <span class="hljs-string">"Wind"</span>,Bool <span class="hljs-keyword">false</span>
-    <span class="hljs-string">"Car"</span>,Bool <span class="hljs-keyword">false</span>
-    <span class="hljs-string">"Distance"</span>,Float <span class="hljs-number">350.5</span>
-    <span class="hljs-string">"Hood"</span>, Bool <span class="hljs-keyword">false</span>
+    Weather,Rainy
+    Wind,Bool <span class="hljs-keyword">false</span>
+    Car,Bool <span class="hljs-keyword">false</span>
+    Distance,Float <span class="hljs-number">350.5</span>
+    Hood, Bool <span class="hljs-keyword">false</span>
   ] |&gt; Map.ofList
 </div></code></pre>
 <p>which will lead to <code>yes</code> as outcome.</p>
-<h1 id="exercises">Exercises</h1>
-<h2 id="exercise-1">Exercise 1</h2>
+<h1 id="Exercises">Exercises</h1>
+<h2 id="Exercise-1">Exercise 1</h2>
 <p>Represent a graph <code>Graph&lt;'a&gt;</code> as a set of nodes containing a value of type <code>'a</code>, and a sequence of adjacent nodes.</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Node</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
   {
@@ -292,12 +292,12 @@ Every time we reach a decision node, we find the feature in the data point match
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsMap (f : <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : Graph&lt;<span class="hljs-symbol">'b</span>&gt;
 </div></code></pre>
 <p>that applies the function <code>f</code> to the content of each node in the graph by visiting them in the depth-first order. Given a node <code>N</code>, the depth-first traversal of a graph first recursively visit all the unvisited nodes adjent to <code>N</code> and then it visits <code>N</code> itself.</p>
-<h2 id="exericse-2">Exericse 2</h2>
+<h2 id="Exericse-2">Exericse 2</h2>
 <p>With the same graph definition given above, implement a function</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsFold (f : <span class="hljs-symbol">'s</span> -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'s</span>) (accumulator : <span class="hljs-symbol">'s</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : <span class="hljs-symbol">'s</span> 
 </div></code></pre>
 <p>that visits each node of the graph using the depth-first traversal. When visting a node, the function <code>f</code> is run by passing the current value of <code>accumulator</code> and the content of the node, and it returns the updated value of the accumulator. After that the accumulator is returned. Remember that the DFT will try to recursively fold on the unvisited neighbours before running <code>f</code> on the current node.</p>
-<h2 id="exercise-3">Exercise 3</h2>
+<h2 id="Exercise-3">Exercise 3</h2>
 <p>A finite-state automaton is defined as a graph, where each node contains a function <code>f</code> to execute. This function takes as input a generic state of type <code>'state</code> and runs the function <code>f</code> of the node that changes the state. The neighbourse of a node are a series of pairs, made by a transition condition on the state, and a neighbour that will be visited if the predicate returns to true. Moreover, there are two special nodes, the starting state, which contains only one transition to a single node, and the empty node, which contains no transitions but multiple nodes are allowed to transition to it. The starting state is unique, while there can be multiple end states. Given the type definition for a FSA:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">'state</span>&gt; </span>=
   {

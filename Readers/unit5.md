@@ -242,22 +242,22 @@ The class can be simply represented by a `boolean` value, since it can only be `
 let weatherTree =
   Decision(
     Decision.Create(
-      "Weather",
+      Weather,
       [
         (fun v -> v = Rainy),Decision(
           Decision.Create(
-            "Wind",
+            Wind,
             [
               (fun v -> v = (Bool true)),Outcome false
               (fun v -> v = (Bool false)),
                 Decision(
                   Decision.Create(
-                    "Car",
+                    Car,
                     [
                       (fun v -> v = (Bool true)),Outcome false
                       (fun v -> v = (Bool false)),Decision(
                         Decision.Create(
-                          "Distance",
+                          Distance,
                           [
                             (fun v -> 
                               match v with 
@@ -265,7 +265,7 @@ let weatherTree =
                               | _ -> false),Outcome true
                             (fun _ -> true),Decision(
                               Decision.Create(
-                                "Hood",
+                                Hood,
                                 [
                                   (fun v -> v = (Bool true)),Outcome false
                                   (fun v -> v = (Bool false)),Outcome true
@@ -283,7 +283,7 @@ let weatherTree =
         (fun v -> v = Sunny),Outcome false
         (fun v -> v = Cloudy),Decision(
           Decision.Create(
-            "Hood",
+            Hood,
             [
               (fun v -> v = (Bool true)),Outcome false
               (fun v -> v = (Bool false)),Outcome true
@@ -299,11 +299,11 @@ and test it with the following data point\:
 ```fsharp
 let weatherData =
   [
-    "Weather",Rainy
-    "Wind",Bool false
-    "Car",Bool false
-    "Distance",Float 350.5
-    "Hood", Bool false
+    Weather,Rainy
+    Wind,Bool false
+    Car,Bool false
+    Distance,Float 350.5
+    Hood, Bool false
   ] |> Map.ofList
 ```
 
