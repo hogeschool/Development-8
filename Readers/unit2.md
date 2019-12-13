@@ -22,7 +22,6 @@ Finally, when we encounter a function application, we simply make sure that the 
 
 $check((f \; x),T) \Rightarrow (t_2,T) \text{ when } check(f,T) \Rightarrow (t_1 \rightarrow t_2) \text{ and } check(x,T) \Rightarrow t_1$
 
-
 ## Type Annotation in F\#
 
 Type checking in F\# follows the same basics rules defined in the previous section. Type annotation of bindings can be achieved with the following syntax:
@@ -99,6 +98,22 @@ let add (x : int) (y : int) : int = x + y
  ```
 
  This means that the function `stringify` is generic with respect to the type parameter `'a`. Note that the language distinguishes between non\-generic and generic types by checking if they are preceeded by an apostrophe, thus `'string` denotes a generic type called `'string` and `string` (without the apostrophe) is the built\-in type for strings.
+
+**Example**
+
+Complete the type annotations for the following program (the implementation details are hidden for brevity).
+
+```fsharp
+let foo (x : int) (s : string) : int = ...
+let (z : ___) = foo 5
+```
+Remember that the definition of `foo` is equivalent to `fun (x : int) -> (s : string) -> ...`. According to the typing rules of lambda calculus, in order to determine the type of `foo`, we have to type check the body of the function after adding the parameter to the type declaration. This results in having T = { x := int }. In order to get the full type of this function, we need to recursively type check its body, which is itself another lambda\: `(s : string) -> ...`. Now, since the text says that the body of the function is not provided, we can safely assume that is correctly formed, so that the type checking of the body succeeds and returns `int`, as provided in the function declaration `let foo (x : int) (s : string) : int`. According to the second type rule of lambda calculus, this lambda has thus type `string -> int`. Then the body of `fun (x : int) -> (s : string) -> ...` has type `string -> int`, and the full type of the function becomes `int -> string -> int`.
+
+At this point we can determine the type of the binding in the second line. This binding contains the result of a partial application of `foo`. According to the third type rule of lambda calculus, we have to make sure that the argument passed in the call matches the type of the parameter in the definition of the function. Since, they are both `int`, this succeeds. At this point the resulting type is the type of the body of the lambda, i.e. the type of `(s : string) -> ...`. We have already determined its type above, which is `string -> int`, which is also the type of the binding `z`.
+
+You can notice that, when we partially apply a function, the effect is that we remove the type of each argument that is passed from the "arrow" type, and what is left is the resulting type. For instance, the full type of the function `foo` was `int -> string -> int` and we passed only one argument in the call, so we remove the `int` part in the full type and we are left with `string -> int`. If we passed two arguments in the call, then we would have to remove both `int` and `string`, and we would be left with just `int`.
+
+
 
 ## Basic Data Structures in F\#
 

@@ -295,7 +295,7 @@ let rec length (l : List<'a>) : int =
   | _ :: xs -> 1 + (length xs)
 ```
 
-Note that in the second case of the pattern we choose to use the wildcard symbol for the head of the list, since it is not required to compute the length. The tail of the list `xs`
+Note that in the second case of the pattern we choose to use the wildcard symbol for the head of the list, since it is not required to compute the length.
 
 **Example**
 
