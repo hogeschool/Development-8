@@ -1,8 +1,10 @@
 <!DOCTYPE html>
     <html>
     <head>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <meta charset="UTF-8">
         <title>Unit 5 - Advanced (hierarchical) data structures</title>
+        <style>
+</style>
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
@@ -19,11 +21,12 @@
         </style>
         
         
+        
     </head>
-    <body>
-        <h1 id="Unit-5---Advanced-hierarchical-data-structures">Unit 5 - Advanced (hierarchical) data structures</h1>
+    <body class="vscode-light">
+        <h1 id="unit-5---advanced-hierarchical-data-structures">Unit 5 - Advanced (hierarchical) data structures</h1>
 <p>In this unit, we discuss the definition and management of operations around hierarchical data structures. In preivous courses, these data structures were discussed in their mutable version. In this course we explore their immutable implementation, in order to prevent side effects that could happen when updating the references or trying to use <code>null</code> values in the mutable implementation. We will start by explaining the implementation of generic trees, and then we will implement binary search trees. We conclude this section by showing how to implement decision trees, that are a popular data structure used in machine learning.</p>
-<h2 id="Trees">Trees</h2>
+<h2 id="trees">Trees</h2>
 <p>A tree can be recursively defined as either an empty tree, or a node containing data and a sequence of subtrees (children). This means that its type definition will be both polymorphic and recursive:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Tree</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
 | Empty
@@ -46,7 +49,7 @@
       subtrees |&gt;
       List.fold (<span class="hljs-keyword">fun</span> s tree -&gt; tree.Fold f s) state1
 </div></code></pre>
-<h2 id="Binary-Search-Trees">Binary Search Trees</h2>
+<h2 id="binary-search-trees">Binary Search Trees</h2>
 <p>A binary search tree is a data structure that can be used to implement a dictionary. This means that each node stores an element identified by a unique key and a value. Each node can also has two sub-trees as children. The keys stored in the root of the left sub-tree are all smaller than the key in the current node, and the keys in the right sub-tree are all greater. We start by defining a type to describe the key-value pair stored as element in the node:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Entry</span>&lt;<span class="hljs-title">'k</span>,<span class="hljs-title">'v</span>&gt; </span>=
   {
@@ -85,7 +88,7 @@
 | Node <span class="hljs-keyword">of</span> BinaryNode&lt;<span class="hljs-symbol">'k</span>, <span class="hljs-symbol">'v</span>&gt;
 </div></code></pre>
 <p>We now proceed to implement the operations on the dictionary, i.e. <code>find</code>, <code>add</code>, and <code>remove</code>.</p>
-<h3 id="Element-Lookup">Element Lookup</h3>
+<h3 id="element-lookup">Element Lookup</h3>
 <p>The lookup in a binary search tree searches for a key in the tree and returns the corresponding value in the entry. It also might fail to retrieve the given key, so the return type is <code>Option&lt;'v&gt;</code>. The function is defined recursively: if the tree is empty then the lookup fails returning <code>None</code>. Otherwise we check if the key in the current node is the one we are looking for. If it is, then we return it encapsulated inside the case <code>Some</code> of <code>Option</code>. Otherwise if the key we are looking for is smaller then we recursively look in the left sub-tree, otherwise we look to the right. This recursive process will stop as soon as we either find the key we are looking for or we reach an empty sub-tree:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.TryFind(key : <span class="hljs-symbol">'k</span>) : Option&lt;<span class="hljs-symbol">'v</span>&gt; =
   <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
@@ -98,7 +101,7 @@
     <span class="hljs-keyword">else</span>
       node.Right.TryFind key
 </div></code></pre>
-<h3 id="Adding-an-Element">Adding an Element</h3>
+<h3 id="adding-an-element">Adding an Element</h3>
 <p>Adding an element requires finding the proper place to position the new node in the binary search tree in order not to break the binary search property. Note that, being the data structure immutable, <code>Add</code> will never modify the existing tree but rather return a new tree that contains also the new entry to be added. The procedure is again recursive: if we are in an empty tree then we just return a new node with an empty left and right sub-tree. If the entry that we want to add is already there (i.e. the key already exists), we replace it. Thus we return a new node with the new entry and having the right and left sub-tree of the old node. Otherwise if the key of the entry to be added is less than the key in the current node, then we recursively call <code>Add</code> on the left sub-tree and we return a new node with the same entity and right sub-tree as the current one, but having as left sub-tree the result of the recursive call to <code>Add</code>. Otherwise we do the opposite: we recursively call <code>Add</code> on the right sub-tree and we create a new node containing the entry and the left sub-tree of the current one, but as right sub-tree the result of <code>Add</code>. This recursive process ends as soon as <code>Add</code> will be called with an empty sub-tree.</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
   | Empty -&gt; Node(BinaryNode.Create(entry, Empty, Empty))
@@ -110,7 +113,7 @@
     <span class="hljs-keyword">else</span>
       Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Add(entry)))
 </div></code></pre>
-<h3 id="Deleting-an-Element">Deleting an Element</h3>
+<h3 id="deleting-an-element">Deleting an Element</h3>
 <p>Deleting an element is more complex and requires to consider three different cases:</p>
 <ol>
 <li>We delete from an empty tree. This is a base case that has no effect whatsoever. This case may happen when the tree is really empty or when the recursive delete fails to find the entry that we want to delete. In that case the delete has no effect.</li>
@@ -145,9 +148,9 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
       <span class="hljs-keyword">else</span>
         Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
 </div></code></pre>
-<h2 id="Decision-trees">Decision trees</h2>
+<h2 id="decision-trees">Decision trees</h2>
 <p>A hierarchical structure often used in artificial intelligent is decision trees. Let us consider a set of data points made of different features. Each feature has a label (name) and a value that can be either discrete or continuous. Each data point can belong to a different class that describes it. A decision tree is a data structure that, given a data point as input, is able to classify it, i.e. to decide to what class it belongs. In this section we only learn, for simplicity, how to implement the data structure representing a decision tree and how to implement the classification function, but in artificial intelligence decision trees can be generated, so that their structure is not hard-coded but rather learnt from a training set of data points. In the picture below you find a deicision tree that is able to decide for you if you should bring your umbrella depending on the weather condition:</p>
-<p><img src="file:///c:\Users\GiacF\Documents\GitHub\Development-8\Readers\Images\decision_tree.png" alt=""></p>
+<p><img src="file:///c:\Users\Francesco\Documents\GitHub\Development-8\Readers\Images\decision_tree.png" alt=""></p>
 <p>A decision tree containts two kinds of nodes: a node containing a decision to make, and a node containing an outcome, which basically decides to what class assigning a data point. Each decision node contains a series of predicates that are tested in order to decide what path we need to follow to reach a su-tree, that can be itself another decision or a simple outcome. Outcome nodes only specify a belonging class and do not have children.</p>
 <p>Let us start by defining a data structure for a data point. This is simply a record containing its label and value:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Feature</span>&lt;<span class="hljs-title">'a</span>, <span class="hljs-title">'label</span>&gt; </span>=
@@ -277,40 +280,76 @@ Every time we reach a decision node, we find the feature in the data point match
   ] |&gt; Map.ofList
 </div></code></pre>
 <p>which will lead to <code>yes</code> as outcome.</p>
-<h1 id="Exercises">Exercises</h1>
-<h2 id="Exercise-1">Exercise 1</h2>
-<p>Represent a graph <code>Graph&lt;'a&gt;</code> as a set of nodes containing a value of type <code>'a</code>, and a sequence of adjacent nodes.</p>
-<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Node</span>&lt;<span class="hljs-title">'a</span>&gt; </span>=
+<h2 id="graphs">Graphs</h2>
+<p>A Graph is a set of nodes and edges (oriented or not) that connect pairs of nodes. In previous courses you have seen that graphs can be represented as an adjacency matrix or adjacency list. Of course, also in functional programming it would be possible to represent a graph through an adjacency matrix with nested lits of <code>float</code> values. In this section we explore a way of representing graphs in functional programming similar to adjacency lists. We start by defining an edge as (notice that we consider an oriented graph):</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Edge</span>&lt;<span class="hljs-title">'a</span>,<span class="hljs-title">'b</span>&gt; </span>=
   {
-    Value <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span>
-    Neighbours <span class="hljs-keyword">of</span> List&lt;Node&lt;<span class="hljs-symbol">'a</span>&gt;&gt;
+    Origin        : <span class="hljs-symbol">'a</span>
+    Destination   : <span class="hljs-symbol">'a</span>
+    Weight        : Option&lt;<span class="hljs-symbol">'b</span>&gt;
   }
-
-<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Graph</span>&lt;<span class="hljs-title">'a</span>&gt; </span>= List&lt;Node&lt;<span class="hljs-symbol">'a</span>&gt;&gt;
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(origin : <span class="hljs-symbol">'a</span>,destination : <span class="hljs-symbol">'a</span>,weight : Option&lt;<span class="hljs-symbol">'b</span>&gt;) =
+      {
+        Origin = origin
+        Destination = destination
+        Weight = weight
+      }
 </div></code></pre>
-<p>Implement a function <code>dfsMap</code></p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsMap (f : <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : Graph&lt;<span class="hljs-symbol">'b</span>&gt;
-</div></code></pre>
-<p>that applies the function <code>f</code> to the content of each node in the graph by visiting them in the depth-first order. Given a node <code>N</code>, the depth-first traversal of a graph first recursively visit all the unvisited nodes adjent to <code>N</code> and then it visits <code>N</code> itself.</p>
-<h2 id="Exericse-2">Exericse 2</h2>
-<p>With the same graph definition given above, implement a function</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> dfsFold (f : <span class="hljs-symbol">'s</span> -&gt; <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'s</span>) (accumulator : <span class="hljs-symbol">'s</span>) (graph : Graph&lt;<span class="hljs-symbol">'a</span>&gt;) : <span class="hljs-symbol">'s</span> 
-</div></code></pre>
-<p>that visits each node of the graph using the depth-first traversal. When visting a node, the function <code>f</code> is run by passing the current value of <code>accumulator</code> and the content of the node, and it returns the updated value of the accumulator. After that the accumulator is returned. Remember that the DFT will try to recursively fold on the unvisited neighbours before running <code>f</code> on the current node.</p>
-<h2 id="Exercise-3">Exercise 3</h2>
-<p>A finite-state automaton is defined as a graph, where each node contains a function <code>f</code> to execute. This function takes as input a generic state of type <code>'state</code> and runs the function <code>f</code> of the node that changes the state. The neighbourse of a node are a series of pairs, made by a transition condition on the state, and a neighbour that will be visited if the predicate returns to true. Moreover, there are two special nodes, the starting state, which contains only one transition to a single node, and the empty node, which contains no transitions but multiple nodes are allowed to transition to it. The starting state is unique, while there can be multiple end states. Given the type definition for a FSA:</p>
-<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">'state</span>&gt; </span>=
+<p>This gives a generic representation of an edge, where the nodes can have any time and so does the weight. It leaves also the choice of whether to have a weight for an edge at all or not.
+A graph can now be defined as a record containing simply a list of edges:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Graph</span>&lt;<span class="hljs-title">'a</span>,<span class="hljs-title">'b</span>&gt; <span class="hljs-title">when</span> '<span class="hljs-title">a</span> : <span class="hljs-title">equality</span> </span>=
   {
-    Action          : 'state -&gt; 'state
-    Transitions     : List&lt;('state -&gt; bool) * FSANode&lt;'state&gt;&gt;
+    Edges     : List&lt;Edge&lt;<span class="hljs-symbol">'a</span>,<span class="hljs-symbol">'b</span>&gt;&gt;
   }
-
-<span class="hljs-keyword">and</span> FSANode&lt;'state&gt; =
-| End
-| Node <span class="hljs-keyword">of</span> Node&lt;'state&gt;
+  <span class="hljs-keyword">with</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(edges : List&lt;Edge&lt;<span class="hljs-symbol">'a</span>,<span class="hljs-symbol">'b</span>&gt;&gt;) = { Edges = edges }
 </div></code></pre>
-<p>implement a function that, given an initial state, runs the finite-state automaton and returns a final state when it reaches an <code>End</code> node.</p>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> run (fsa : Node&lt;'state&gt;) : 'state
+<p>Notice that we are enforcing a type constraint <code>equality</code> on <code>'a</code> because we will need it for the methods that we will implement below.
+One of the first things that is missing from this implementation is the nodes stored in the graph. In order to determine the nodes from the edges, we can fold along the list of edges and accumulate the nodes of each edge in a list. Of course this could introduce duplicates, as two adjacent edges will always share a node, so that will be added twice. Before adding a node we thus check whether it is already in the accumulator or not.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Nodes =
+  this.Edges |&gt;
+  List.fold(
+    <span class="hljs-keyword">fun</span> nodes edge -&gt;
+      <span class="hljs-keyword">let</span> nodes1 = 
+        <span class="hljs-keyword">if</span> 
+          nodes |&gt; 
+          List.contains edge.Origin 
+        <span class="hljs-keyword">then</span> 
+          nodes 
+        <span class="hljs-keyword">else</span>  
+          edge.Origin :: nodes
+      <span class="hljs-keyword">let</span> nodes1 = 
+        <span class="hljs-keyword">if</span> 
+          nodes1 |&gt; List.contains edge.Destination 
+        <span class="hljs-keyword">then</span> 
+          nodes1 
+        <span class="hljs-keyword">else</span> 
+          edge.Destination :: nodes1
+      nodes1
+  ) []
+</div></code></pre>
+<blockquote>
+<p>Notice that <code>Nodes</code> is implemented as a .NET property (properties are the same as in C#). Properties in F# records can be defined as methods with the same syntax without parameters. This will define a read-only property.</p>
+</blockquote>
+<blockquote>
+<p>We could have used the F# <code>Set</code> data type which automatically handles duplicates for us. If you do so, further operations on <code>Nodes</code> should use the <code>Seq</code> module instead of <code>List</code>.</p>
+</blockquote>
+<p>Another useful method, is finding the neighbours given a node. In order to do so, we must find all the edges in the graph that have the input node as origin. After this we can map the list to output only the destinations, which are the nodes adjacent to the input one.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Neighbours(node : <span class="hljs-symbol">'a</span>) : List&lt;<span class="hljs-symbol">'a</span>&gt; =
+  this.Edges |&gt; 
+  List.filter(<span class="hljs-keyword">fun</span> e -&gt; e.Origin = node) |&gt;
+  List.map(<span class="hljs-keyword">fun</span> e -&gt; e.Destination)
+</div></code></pre>
+<p>At this point we are ready to implement some more complex operations on graphs. We can define a <code>Map</code> on the graph, which applies a mapping function to each node in the graph and returns a graph with the result of the function application to each node. This simply requires to map each edge, applying the function to both <code>Origin</code> and <code>Destination</code>, and then re-creating a new edge with the result of the function application to both nodes.</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Map (f : <span class="hljs-symbol">'a</span> -&gt; 'a1) : Graph&lt;'a1,<span class="hljs-symbol">'b</span>&gt;  =
+  <span class="hljs-keyword">let</span> mappedEdges =
+    this.Edges |&gt; 
+    List.map(<span class="hljs-keyword">fun</span> e -&gt; Edge.Create(f e.Origin,f e.Destination,e.Weight))
+</div></code></pre>
+<p>Finally we can define <code>fold</code> on a graph, which iterates through all the nodes and updates an accumulator after running a function that takes as input both a node and the current accumulator. This only requires to fold the list of nodes with the given function and accumulator. Conveniently, we have already implemented a property that extracts all the nodes in the graph, thus the implementation of <code>fold</code> is simply:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Fold (f : 'state -&gt; <span class="hljs-symbol">'a</span> -&gt; 'state) (init : 'state) =
+  this.Nodes |&gt; List.fold f init
 </div></code></pre>
 
     </body>

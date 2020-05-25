@@ -309,56 +309,86 @@ let weatherData =
 
 which will lead to `yes` as outcome.
 
-# Exercises
+## Graphs
 
-## Exercise 1
-Represent a graph `Graph<'a>` as a set of nodes containing a value of type `'a`, and a sequence of adjacent nodes. 
+A Graph is a set of nodes and edges (oriented or not) that connect pairs of nodes. In previous courses you have seen that graphs can be represented as an adjacency matrix or adjacency list. Of course, also in functional programming it would be possible to represent a graph through an adjacency matrix with nested lits of `float` values. In this section we explore a way of representing graphs in functional programming similar to adjacency lists. We start by defining an edge as (notice that we consider an oriented graph)\:
 
 ```fsharp
-type Node<'a> =
+type Edge<'a,'b> =
   {
-    Value of 'a
-    Neighbours of List<Node<'a>>
+    Origin        : 'a
+    Destination   : 'a
+    Weight        : Option<'b>
   }
-
-type Graph<'a> = List<Node<'a>>
+  with
+    static member Create(origin : 'a,destination : 'a,weight : Option<'b>) =
+      {
+        Origin = origin
+        Destination = destination
+        Weight = weight
+      }
 ```
-
-
-Implement a function `dfsMap`
-
+This gives a generic representation of an edge, where the nodes can have any time and so does the weight. It leaves also the choice of whether to have a weight for an edge at all or not.
+A graph can now be defined as a record containing simply a list of edges:
 ```fsharp
-let dfsMap (f : 'a -> 'b) (graph : Graph<'a>) : Graph<'b>
-```
-
-that applies the function `f` to the content of each node in the graph by visiting them in the depth\-first order. Given a node `N`, the depth\-first traversal of a graph first recursively visit all the unvisited nodes adjent to `N` and then it visits `N` itself.
-
-## Exericse 2
-With the same graph definition given above, implement a function
-
-```fsharp
-let dfsFold (f : 's -> 'a -> 's) (accumulator : 's) (graph : Graph<'a>) : 's 
-```
-
-that visits each node of the graph using the depth\-first traversal. When visting a node, the function `f` is run by passing the current value of `accumulator` and the content of the node, and it returns the updated value of the accumulator. After that the accumulator is returned. Remember that the DFT will try to recursively fold on the unvisited neighbours before running `f` on the current node.
-
-## Exercise 3
-A finite\-state automaton is defined as a graph, where each node contains a function `f` to execute. This function takes as input a generic state of type `'state` and runs the function `f` of the node that changes the state. The neighbourse of a node are a series of pairs, made by a transition condition on the state, and a neighbour that will be visited if the predicate returns to true. Moreover, there are two special nodes, the starting state, which contains only one transition to a single node, and the empty node, which contains no transitions but multiple nodes are allowed to transition to it. The starting state is unique, while there can be multiple end states. Given the type definition for a FSA\:
-
-```fsharp
-type State<'state> =
+type Graph<'a,'b> when 'a : equality =
   {
-    Action          : 'state -> 'state
-    Transitions     : List<('state -> bool) * FSANode<'state>>
+    Edges     : List<Edge<'a,'b>>
   }
-
-and FSANode<'state> =
-| End
-| Node of Node<'state>
+  with
+    static member Create(edges : List<Edge<'a,'b>>) = { Edges = edges }
 ```
-
-implement a function that, given an initial state, runs the finite-state automaton and returns a final state when it reaches an `End` node.
+Notice that we are enforcing a type constraint `equality` on `'a` because we will need it for the methods that we will implement below.
+One of the first things that is missing from this implementation is the nodes stored in the graph. In order to determine the nodes from the edges, we can fold along the list of edges and accumulate the nodes of each edge in a list. Of course this could introduce duplicates, as two adjacent edges will always share a node, so that will be added twice. Before adding a node we thus check whether it is already in the accumulator or not.
 
 ```fsharp
-let run (fsa : Node<'state>) : 'state
+member this.Nodes =
+  this.Edges |>
+  List.fold(
+    fun nodes edge ->
+      let nodes1 = 
+        if 
+          nodes |> 
+          List.contains edge.Origin 
+        then 
+          nodes 
+        else  
+          edge.Origin :: nodes
+      let nodes1 = 
+        if 
+          nodes1 |> List.contains edge.Destination 
+        then 
+          nodes1 
+        else 
+          edge.Destination :: nodes1
+      nodes1
+  ) []
+```
+>Notice that `Nodes` is implemented as a .NET property (properties are the same as in C#). Properties in F# records can be defined as methods with the same syntax without parameters. This will define a read-only property.
+
+>We could have used the F# `Set` data type which automatically handles duplicates for us. If you do so, further operations on `Nodes` should use the `Seq` module instead of `List`.
+
+Another useful method, is finding the neighbours given a node. In order to do so, we must find all the edges in the graph that have the input node as origin. After this we can map the list to output only the destinations, which are the nodes adjacent to the input one.
+
+```fsharp
+member this.Neighbours(node : 'a) : List<'a> =
+  this.Edges |> 
+  List.filter(fun e -> e.Origin = node) |>
+  List.map(fun e -> e.Destination)
+```
+
+At this point we are ready to implement some more complex operations on graphs. We can define a `Map` on the graph, which applies a mapping function to each node in the graph and returns a graph with the result of the function application to each node. This simply requires to map each edge, applying the function to both `Origin` and `Destination`, and then re-creating a new edge with the result of the function application to both nodes.
+
+```fsharp
+member this.Map (f : 'a -> 'a1) : Graph<'a1,'b>  =
+  let mappedEdges =
+    this.Edges |> 
+    List.map(fun e -> Edge.Create(f e.Origin,f e.Destination,e.Weight))
+```
+
+Finally we can define `fold` on a graph, which iterates through all the nodes and updates an accumulator after running a function that takes as input both a node and the current accumulator. This only requires to fold the list of nodes with the given function and accumulator. Conveniently, we have already implemented a property that extracts all the nodes in the graph, thus the implementation of `fold` is simply\:
+
+```fsharp
+member this.Fold (f : 'state -> 'a -> 'state) (init : 'state) =
+  this.Nodes |> List.fold f init
 ```
