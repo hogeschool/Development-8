@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "e94+9GiiuGEFUmIBVRwGNaoBDWH9eOTilMJD3IoNI7nhRbjiVkQPKVJXw7gUrLCnNhfm5M3evUHO+v/u2yFp3Q==",
+  "dgSpecHash": "wtsP4sasQxLnpE54cXqrtfnoxPp03KDa5rzCjGNFCam8lb10tUKXKVeV+U1FNqd3ALkOw3OksO9A6Te5uNSqFg==",
   "success": true,
   "projectFilePath": "C:\\Users\\Francesco\\Documents\\GitHub\\Development-8\\Lessons\\Lessons.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Francesco\\.nuget\\packages\\fsharp.core\\4.7.0\\fsharp.core.4.7.0.nupkg.sha512",
+    "C:\\Users\\Francesco\\.nuget\\packages\\fsharp.core\\4.7.1\\fsharp.core.4.7.1.nupkg.sha512",
     "C:\\Users\\Francesco\\.nuget\\packages\\microsoft.netcore.app\\2.1.0\\microsoft.netcore.app.2.1.0.nupkg.sha512",
     "C:\\Users\\Francesco\\.nuget\\packages\\microsoft.netcore.dotnetapphost\\2.1.0\\microsoft.netcore.dotnetapphost.2.1.0.nupkg.sha512",
     "C:\\Users\\Francesco\\.nuget\\packages\\microsoft.netcore.dotnethostpolicy\\2.1.0\\microsoft.netcore.dotnethostpolicy.2.1.0.nupkg.sha512",

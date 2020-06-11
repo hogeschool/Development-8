@@ -14,7 +14,7 @@
 </style>
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
                 font-size: 14px;
                 line-height: 1.6;
             }
@@ -128,25 +128,27 @@ Case 4 requires first finds the leftmost node in the right sub-tree, which we ca
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Remove(key : <span class="hljs-symbol">'k</span>) =
   <span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> getRightMostElement (tree : BinarySearchTree&lt;<span class="hljs-symbol">'k</span>, <span class="hljs-symbol">'v</span>&gt;) =
     <span class="hljs-keyword">match</span> tree <span class="hljs-keyword">with</span>
-    | Node ({ Entry = _; Left = _; Right = Empty } <span class="hljs-keyword">as</span> node) -&gt; node
-    | Node ({ Entry = _; Left = _; Right = right }) -&gt; getRightMostElement right
+    | Node ({ Entry = _; Left = _; Right = Empty } <span class="hljs-keyword">as</span> node) -&gt; 
+        node
+    | Node ({ Entry = _; Left = _; Right = right }) -&gt; 
+        getRightMostElement right
         
   <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
   | Empty -&gt; Empty
   | Node node -&gt;
-      <span class="hljs-keyword">if</span> node.Entry.Key = key <span class="hljs-keyword">then</span>
-        <span class="hljs-keyword">match</span> node.Left,node.Right <span class="hljs-keyword">with</span>
-        | Empty,Empty -&gt; Empty
-        | Node tree,Empty
-        | Empty, Node tree -&gt; Node tree
-        | Node _, Node _ -&gt;
-            <span class="hljs-keyword">let</span> rightMostNode = getRightMostElement node.Left
-            <span class="hljs-keyword">let</span> newLeft = node.Left.Remove(rightMostNode.Entry.Key)
-            Node (BinaryNode.Create(rightMostNode.Entry, newLeft, node.Right))
-      <span class="hljs-keyword">elif</span> key &lt; node.Entry.Key <span class="hljs-keyword">then</span>
-        Node (BinaryNode.Create(node.Entry,node.Left.Remove key,node.Right))
-      <span class="hljs-keyword">else</span>
-        Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
+    <span class="hljs-keyword">if</span> node.Entry.Key = key <span class="hljs-keyword">then</span>
+      <span class="hljs-keyword">match</span> node.Left,node.Right <span class="hljs-keyword">with</span>
+      | Empty,Empty -&gt; Empty
+      | Node tree,Empty
+      | Empty, Node tree -&gt; Node tree
+      | Node _, Node _ -&gt;
+          <span class="hljs-keyword">let</span> rightMostNode = getRightMostElement node.Left
+          <span class="hljs-keyword">let</span> newLeft = node.Left.Remove(rightMostNode.Entry.Key)
+          Node (BinaryNode.Create(rightMostNode.Entry, newLeft, node.Right))
+    <span class="hljs-keyword">elif</span> key &lt; node.Entry.Key <span class="hljs-keyword">then</span>
+      Node (BinaryNode.Create(node.Entry,node.Left.Remove key,node.Right))
+    <span class="hljs-keyword">else</span>
+      Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
 </div></code></pre>
 <h2 id="decision-trees">Decision trees</h2>
 <p>A hierarchical structure often used in artificial intelligent is decision trees. Let us consider a set of data points made of different features. Each feature has a label (name) and a value that can be either discrete or continuous. Each data point can belong to a different class that describes it. A decision tree is a data structure that, given a data point as input, is able to classify it, i.e. to decide to what class it belongs. In this section we only learn, for simplicity, how to implement the data structure representing a decision tree and how to implement the classification function, but in artificial intelligence decision trees can be generated, so that their structure is not hard-coded but rather learnt from a training set of data points. In the picture below you find a deicision tree that is able to decide for you if you should bring your umbrella depending on the weather condition:</p>
@@ -173,7 +175,10 @@ A decision node has two components: one is the lable of the feature that we are 
     Paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;&gt; 
   }
   <span class="hljs-keyword">with</span>
-    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(label : 'label, paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;&gt;) =
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">member</span> Create(
+      label : 'label, 
+      paths : List&lt;(<span class="hljs-symbol">'a</span> -&gt; bool) * DecisionTree&lt;<span class="hljs-symbol">'a</span>, 'label, '_class&gt;&gt;
+    ) =
       {
         Label = label
         Paths = paths
@@ -190,7 +195,7 @@ Every time we reach a decision node, we find the feature in the data point match
 <li>If the node is an <code>Outcome</code>, then we simply return the class contained in it.</li>
 <li>If the node is a <code>Decision</code>, then we try to find in the data point a feature with the same label of the decision. If this process fails, then the data point is malformed and we return <code>None</code>. If we succeed then we test the predicate contained in each path. If all predicates fail to match then it is not possible to classify the data point according to the decision rules. If one of the predicate evaluates to <code>true</code>, then we recursively call <code>Classify</code> on the corresponding sub-tree.</li>
 </ol>
-<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Classify (features : Map&lt;string,<span class="hljs-symbol">'a</span>&gt;) =
+<pre><code class="language-fsharp"><div><span class="hljs-keyword">member</span> this.Classify (features : Map&lt;'label,<span class="hljs-symbol">'a</span>&gt;) =
   <span class="hljs-keyword">match</span> this <span class="hljs-keyword">with</span>
   | Outcome _class -&gt; Some _class
   | Decision decision -&gt;
@@ -214,7 +219,15 @@ Every time we reach a decision node, we find the feature in the data point match
 | Bool <span class="hljs-keyword">of</span> bool
 | Float <span class="hljs-keyword">of</span> float
 </div></code></pre>
-<p>The class can be simply represented by a <code>boolean</code> value, since it can only be <code>yes</code> or <code>no</code>. We can then hard-code the structure of the represented tree, which will have type <code>DecisionTree&lt;WeatherFeature,bool&gt;</code>:</p>
+<p>and the possible labels:</p>
+<pre><code class="language-fsharp"><div><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">WeatherLabel</span> </span>=
+| Weather
+| Wind
+| Hood
+| Car
+| Distance
+</div></code></pre>
+<p>The class can be simply represented by a <code>boolean</code> value, since it can only be <code>yes</code> or <code>no</code>. We can then hard-code the structure of the represented tree, which will have type <code>DecisionTree&lt;WeatherFeature,WeatherLabel,bool&gt;</code>:</p>
 <pre><code class="language-fsharp"><div><span class="hljs-keyword">let</span> weatherTree =
   Decision(
     Decision.Create(

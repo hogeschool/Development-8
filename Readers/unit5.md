@@ -134,25 +134,27 @@ Case 4 requires first finds the leftmost node in the right sub\-tree, which we c
 member this.Remove(key : 'k) =
   let rec getRightMostElement (tree : BinarySearchTree<'k, 'v>) =
     match tree with
-    | Node ({ Entry = _; Left = _; Right = Empty } as node) -> node
-    | Node ({ Entry = _; Left = _; Right = right }) -> getRightMostElement right
+    | Node ({ Entry = _; Left = _; Right = Empty } as node) -> 
+        node
+    | Node ({ Entry = _; Left = _; Right = right }) -> 
+        getRightMostElement right
         
   match this with
   | Empty -> Empty
   | Node node ->
-      if node.Entry.Key = key then
-        match node.Left,node.Right with
-        | Empty,Empty -> Empty
-        | Node tree,Empty
-        | Empty, Node tree -> Node tree
-        | Node _, Node _ ->
-            let rightMostNode = getRightMostElement node.Left
-            let newLeft = node.Left.Remove(rightMostNode.Entry.Key)
-            Node (BinaryNode.Create(rightMostNode.Entry, newLeft, node.Right))
-      elif key < node.Entry.Key then
-        Node (BinaryNode.Create(node.Entry,node.Left.Remove key,node.Right))
-      else
-        Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
+    if node.Entry.Key = key then
+      match node.Left,node.Right with
+      | Empty,Empty -> Empty
+      | Node tree,Empty
+      | Empty, Node tree -> Node tree
+      | Node _, Node _ ->
+          let rightMostNode = getRightMostElement node.Left
+          let newLeft = node.Left.Remove(rightMostNode.Entry.Key)
+          Node (BinaryNode.Create(rightMostNode.Entry, newLeft, node.Right))
+    elif key < node.Entry.Key then
+      Node (BinaryNode.Create(node.Entry,node.Left.Remove key,node.Right))
+    else
+      Node (BinaryNode.Create(node.Entry,node.Left,node.Right.Remove key))
 ```
 
 ## Decision trees
@@ -188,7 +190,10 @@ type Decision<'a, 'label, '_class> when 'label : comparison =
     Paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>> 
   }
   with
-    static member Create(label : 'label, paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>>) =
+    static member Create(
+      label : 'label, 
+      paths : List<('a -> bool) * DecisionTree<'a, 'label, '_class>>
+    ) =
       {
         Label = label
         Paths = paths
@@ -208,7 +213,7 @@ We can now start implementing the classification method. This method takes as in
 2. If the node is a `Decision`, then we try to find in the data point a feature with the same label of the decision. If this process fails, then the data point is malformed and we return `None`. If we succeed then we test the predicate contained in each path. If all predicates fail to match then it is not possible to classify the data point according to the decision rules. If one of the predicate evaluates to `true`, then we recursively call `Classify` on the corresponding sub\-tree.
 
 ```fsharp
-member this.Classify (features : Map<string,'a>) =
+member this.Classify (features : Map<'label,'a>) =
   match this with
   | Outcome _class -> Some _class
   | Decision decision ->
@@ -236,7 +241,17 @@ type WeatherFeature =
 | Float of float
 ```
 
-The class can be simply represented by a `boolean` value, since it can only be `yes` or `no`. We can then hard\-code the structure of the represented tree, which will have type `DecisionTree<WeatherFeature,bool>`\:
+and the possible labels\:
+```fsharp
+type WeatherLabel =
+| Weather
+| Wind
+| Hood
+| Car
+| Distance
+```
+
+The class can be simply represented by a `boolean` value, since it can only be `yes` or `no`. We can then hard\-code the structure of the represented tree, which will have type `DecisionTree<WeatherFeature,WeatherLabel,bool>`\:
 
 ```fsharp
 let weatherTree =
