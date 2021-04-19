@@ -1,2 +1,0 @@
-Adapt the sample of tanks to use function records.
-Adapt the sample of tanks to use unions.
