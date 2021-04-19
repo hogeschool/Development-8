@@ -248,8 +248,17 @@ type R =
 As said above, records are immutable, so it is not possible to directly update their fields. In order obtain the same effect of a field update, we must create a new record where all the values of the fields that are left untouched by the update are initialized by reading the corresponding values in the original record, and all the updated fields are initialized with the new value. For instance, let us consider the `LoginInfo` above, and suppose that you need to change the server address, that would require the following steps\:
 
 ```fsharp
-let oldLogin = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address = "155.34.21.105" }
-let newLogin = { UserName = oldLogin.UserName; Password = oldLogin.Password; Address = "165.40.69.69" } 
+let oldLogin = 
+  { 
+    UserName = "awesomeuser@aw.us"  
+    Password = "supersecretkey"
+    Address = "155.34.21.105" }
+let newLogin = 
+  { 
+    UserName = oldLogin.UserName
+    Password = oldLogin.Password
+    Address = "165.40.69.69" 
+  } 
 ```
 You can immediately notice that this operation becomes quite cumbersome when updating just a small number of fields of records with many fields. For this reason, the following shortcut is available\:
 
@@ -265,7 +274,12 @@ let newRecord =
 This will make a copy of oldRecord and initialize the fields `f1`,`f2`, ..., `fk` with the specified values, while the others simply contain the values from `oldRecord`. The concrete example above becomes then \:
 
 ```fsharp
-let oldLogin = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address = "155.34.21.105" }
+let oldLogin = 
+  { 
+    UserName = "awesomeuser@aw.us"
+    Password = "supersecretkey"
+    Address = "155.34.21.105"
+  }
 let newLogin =
   {oldLogin with
       Address = "165.40.69.69"
@@ -278,8 +292,18 @@ Since the semantics of functional programming languages do not rely on a shared 
 For instance, consider the tuples `let t1 = (1,3,5)` and `let t2 = (1,3,-5)`\: in this case F\# will compare the first component of `t1` with the first component of `t2`, which passes the test. Then it will compare the second component of `t1` with the second of `t2`, passing the test as well. Finally, the third components are compared, which returns `false` because of course 5 and -5 are different. The same is done for the fields of a record. Notice that, since tuple components and record fields can contain complex data structures, this procedure is recursive, i.e. if the component/field is a tuple or a record then the structural equality is recursively applied on their values. For instance, the value in `test` in the following code is `true`\:
 
 ```fsharp
-let l1 = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address = "155.34.21.105" }
-let l2 = { UserName = "awesomeuser@aw.us" ; Password = "supersecretkey"; Address = "155.34.21.105" }
+let l1 = 
+  { 
+    UserName = "awesomeuser@aw.us" 
+    Password = "supersecretkey"
+    Address = "155.34.21.105" 
+  }
+let l2 = 
+  { 
+    UserName = "awesomeuser@aw.us"
+    Password = "supersecretkey"
+    Address = "155.34.21.105"
+  }
 let test = l1 = l2
 ```
 
@@ -555,7 +579,7 @@ The attentive reader will notice that now we have a design problem\: we can let 
 # Exercises
 
 ## Exercise 1
-Model a point in the space as a record `Point2D` containing a field `Position`, which is a tuple of type `float * float`. Define two different constructors for this point\: the first creates a point given 2 coordinates `x` and `y` taken as input. The second creates a random point whose coordinates are between two parameters `min` and `max` taken as input. In order to generate a random number you can open `System` and instantiate as global binding an instance of `Random` class\:
+Model a point in the space as a record `Point2D` containing a field `Position`, which is a tuple of type `float * float`. Define two different constructor methods for this point\: the first creates a point given 2 coordinates `x` and `y` taken as input. The second creates a random point whose coordinates are between two parameters `min` and `max` taken as input. In order to generate a random number you can open `System` and instantiate as global binding an instance of `Random` class\:
 
 ```fsharp
 let r = Random()
@@ -576,4 +600,4 @@ Extend the `Blob` record by adding a method `Move` that takes no arguments and r
 
 ## Exercise 5
 
-Create a reconrd `World` that contains two blobs and a field `Tick`. `World` contains a constructor, which takes a number of ticks and creates two blobs, and a method `Run` that takes no parameters and move the blobs around for as many ticks as specified by `World`.
+Create a record `World` that contains two blobs and a field `Tick`. `World` contains a constructor, which takes a number of ticks and creates two blobs, and a method `Run` that takes no parameters and move the blobs around for as many ticks as specified by `World`.
