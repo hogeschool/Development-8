@@ -55,7 +55,7 @@ interface Tuple<a, b> {
 }}\\
 
 \exercise{
-  \functionEx{eval}{(expr1: Expr): Expr}{
+  \functionEx{eval}{(expr1: Expr): number}{
   The function allows to evaluate arithmetic expressions. An arithmetic expression is defined as a discriminated union with the following cases:
   
   \begin{itemize}[noitemsep]
@@ -70,7 +70,7 @@ interface Tuple<a, b> {
 }}\\
 
 \exercise{
-  \functionEx{eval}{(expr1: Expr) => (stack: List<Tuple<string, number>>): Expr}{
+  \functionEx{eval}{(expr1: Expr) => (stack: List<Tuple<string, number>>): number}{
   Extend the previous version of the function \texttt{eval} by supporting also variables. Variables are another case of the union. Evaluating a variable means looking it up in the \texttt{stack}. A \texttt{stack} is a list of tuple mapping a variable name to its value. If the lookup is successful \texttt{eval} returns the value of the variable, otherwise it throws an error.
 }}\\
 
