@@ -177,7 +177,9 @@ Notice that, while `map` preserves structure (that is, the number of elements in
 
 ```fsharp
 filterList (fun x -> x % 2 == 0) [1;2;3;4;5;6] -> [2;4;6]
-filterList (fun (x:string) -> x.StartsWith "a") ["a"; "aa"; "baa"; "bb"] -> ["a"; "aa"]
+filterList 
+  (fun (x:string) -> x.StartsWith "a") 
+    ["a"; "aa"; "baa"; "bb"] -> ["a"; "aa"]
 ```
 
 
@@ -187,9 +189,15 @@ The most general design pattern, which only applies to data structures with vari
 `fold` is implemented on lists in two different ways, depending on the order in which we want to visit the elements (left\-to\-right or right\-to\-left)\:
 
 ```fsharp
-let rec foldList z f l = match l with [] -> z | x::xs -> f x (foldList z f xs)
+let rec foldList z f l = 
+  match l with
+  | [] -> z 
+  | x::xs -> f x (foldList z f xs)
 
-let rec foldList2 z f l = match l with [] -> z | x::xs -> foldList2 (f z x) f xs
+let rec foldList2 z f l = 
+  match l with 
+  | [] -> z 
+  | x::xs -> foldList2 (f z x) f xs
 ```
 
 We could, for example, use `fold` to add all elements as follows\:
@@ -313,7 +321,7 @@ We can then use these functions to rename some instances of `Person` as follows\
 ```fsharp
 let p1 = { name="Giorgio"; surname="Ruffa" } |> johnify
 let p2 = { name="Alex"; surname="Pomaré" } |> janeify
-let p3 = { name="Mandingo"; surname="Siffredi" }
+let p3 = { name="Clint"; surname="Eastwood" }
 ```
 
 
@@ -389,8 +397,25 @@ let genericProgram (i:IPerson<'p>) (p:'p) =
 We can then call this generic program on both a `Student` and a `Manager`, by providing the actual witnesses `studentPerson` and `managerPerson` respectively\:
 
 ```fsharp
-printfn "%A" (genericProgram studentPerson { Name="Jack"; Surname="Lantern"; Birthday=System.DateTime(2, 3, 1985); StudyPoints=120} )
-printfn "%A" (genericProgram managerPerson { name="John"; surname="Connor"; birthday=System.DateTime(2, 3, 1965); company="Microsoft"; salary=150000} )
+printfn "%A" 
+  (genericProgram studentPerson 
+    { 
+      Name="Jack"
+      Surname="Lantern"
+      Birthday=System.DateTime(2, 3, 1985)
+      StudyPoints=120
+    } 
+  )
+printfn "%A" (
+  genericProgram managerPerson 
+  { 
+    name="John"
+    surname="Connor"
+    birthday=System.DateTime(2, 3, 1965)
+    company="Microsoft"
+    salary=150000
+  } 
+)
 ```
 
 
@@ -416,7 +441,11 @@ We can make the situation even more complex. We could assume that we have a list
 
 ```fsharp
 let applyMany : (List<Option<'a->'b->'c>> -> 'a -> 'b -> List<'c>) = fun l a b ->
-  l |> List.collect (function None -> [] | Some f -> [f])
+  l |> List.collect (
+    function 
+      | None -> [] 
+      | Some f -> [f]
+    )
     |> List.map (fun f -> f a b)
 ```
 
@@ -424,14 +453,24 @@ From a `List` of `Option`'s of functions, we could also choose to only apply the
 
 ```fsharp
 let applyMany : (List<Option<'a->'b->'c>> -> 'a -> 'b -> List<Option<'c>>) = fun l a b ->
-  l |> List.map (function None -> None | Some f -> Some(f a b))
+  l |> List.map (
+    function None -> 
+      None 
+      | Some f -> Some(f a b))
 ```
 
 We could also have the function itself give back a result which might not be there, leading us to two possible implementations, depending on whether or not we wish to filter away the absent functions or results\:
 
 ```fsharp
 let applyMany : (List<Option<'a->'b->Option<'c>>> -> 'a -> 'b -> List<'c>) = fun l a b ->
-  l |> List.collect (function None -> [] | Some f -> match f a b with | None -> [] | Some x -> [x])
+  l |> List.collect (
+    function 
+      None -> [] 
+      | Some f -> 
+          match f a b with 
+          | None -> [] 
+          | Some x -> [x]
+  )
 ```
 
 or
