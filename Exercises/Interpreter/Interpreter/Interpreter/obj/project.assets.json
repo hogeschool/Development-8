@@ -2,56 +2,60 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.1": {
-      "FSharp.Core/4.5.2": {
+      "FSharp.Core/6.0.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard1.6/FSharp.Core.dll": {}
+          "lib/netstandard2.0/FSharp.Core.dll": {}
         },
         "runtime": {
-          "lib/netstandard1.6/FSharp.Core.dll": {}
+          "lib/netstandard2.0/FSharp.Core.dll": {}
         },
         "resource": {
-          "lib/netstandard1.6/cs/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/cs/FSharp.Core.resources.dll": {
             "locale": "cs"
           },
-          "lib/netstandard1.6/de/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/de/FSharp.Core.resources.dll": {
             "locale": "de"
           },
-          "lib/netstandard1.6/en/FSharp.Core.resources.dll": {
-            "locale": "en"
-          },
-          "lib/netstandard1.6/es/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/es/FSharp.Core.resources.dll": {
             "locale": "es"
           },
-          "lib/netstandard1.6/fr/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/fr/FSharp.Core.resources.dll": {
             "locale": "fr"
           },
-          "lib/netstandard1.6/it/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/it/FSharp.Core.resources.dll": {
             "locale": "it"
           },
-          "lib/netstandard1.6/ja/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/ja/FSharp.Core.resources.dll": {
             "locale": "ja"
           },
-          "lib/netstandard1.6/ko/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/ko/FSharp.Core.resources.dll": {
             "locale": "ko"
           },
-          "lib/netstandard1.6/pl/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/pl/FSharp.Core.resources.dll": {
             "locale": "pl"
           },
-          "lib/netstandard1.6/pt-BR/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/pt-BR/FSharp.Core.resources.dll": {
             "locale": "pt-BR"
           },
-          "lib/netstandard1.6/ru/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/ru/FSharp.Core.resources.dll": {
             "locale": "ru"
           },
-          "lib/netstandard1.6/tr/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/tr/FSharp.Core.resources.dll": {
             "locale": "tr"
           },
-          "lib/netstandard1.6/zh-Hans/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/zh-Hans/FSharp.Core.resources.dll": {
             "locale": "zh-Hans"
           },
-          "lib/netstandard1.6/zh-Hant/FSharp.Core.resources.dll": {
+          "lib/netstandard2.0/zh-Hant/FSharp.Core.resources.dll": {
             "locale": "zh-Hant"
+          }
+        },
+        "contentFiles": {
+          "contentFiles/any/any/_._": {
+            "buildAction": "None",
+            "codeLanguage": "any",
+            "copyToOutput": false
           }
         }
       },
@@ -264,56 +268,52 @@
     }
   },
   "libraries": {
-    "FSharp.Core/4.5.2": {
-      "sha512": "Pe3EDp9oBjQ3c3fvZAJsw7XFLHECS3zn3P7MSqsJy3sFYR6jvTgxxnCFeePR1JHiWyZ3bm+RZAjchqVYk61adA==",
+    "FSharp.Core/6.0.1": {
+      "sha512": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw==",
       "type": "package",
-      "path": "fsharp.core/4.5.2",
+      "path": "fsharp.core/6.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "fsharp.core.4.5.2.nupkg.sha512",
+        "Icon.png",
+        "contentFiles/any/netstandard2.0/FSharp.Core.xml",
+        "contentFiles/any/netstandard2.1/FSharp.Core.xml",
+        "fsharp.core.6.0.1.nupkg.sha512",
         "fsharp.core.nuspec",
-        "lib/net45/FSharp.Core.dll",
-        "lib/net45/FSharp.Core.optdata",
-        "lib/net45/FSharp.Core.resources.dll",
-        "lib/net45/FSharp.Core.sigdata",
-        "lib/net45/FSharp.Core.xml",
-        "lib/net45/cs/FSharp.Core.resources.dll",
-        "lib/net45/de/FSharp.Core.resources.dll",
-        "lib/net45/en/FSharp.Core.resources.dll",
-        "lib/net45/es/FSharp.Core.resources.dll",
-        "lib/net45/fr/FSharp.Core.resources.dll",
-        "lib/net45/it/FSharp.Core.resources.dll",
-        "lib/net45/ja/FSharp.Core.resources.dll",
-        "lib/net45/ko/FSharp.Core.resources.dll",
-        "lib/net45/pl/FSharp.Core.resources.dll",
-        "lib/net45/pt-BR/FSharp.Core.resources.dll",
-        "lib/net45/ru/FSharp.Core.resources.dll",
-        "lib/net45/tr/FSharp.Core.resources.dll",
-        "lib/net45/zh-Hans/FSharp.Core.resources.dll",
-        "lib/net45/zh-Hant/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/FSharp.Core.dll",
-        "lib/netstandard1.6/FSharp.Core.optdata",
-        "lib/netstandard1.6/FSharp.Core.sigdata",
-        "lib/netstandard1.6/FSharp.Core.xml",
-        "lib/netstandard1.6/cs/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/de/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/en/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/es/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/fr/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/it/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/ja/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/ko/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/pl/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/pt-BR/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/ru/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/tr/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/zh-Hans/FSharp.Core.resources.dll",
-        "lib/netstandard1.6/zh-Hant/FSharp.Core.resources.dll"
+        "lib/netstandard2.0/FSharp.Core.dll",
+        "lib/netstandard2.0/FSharp.Core.xml",
+        "lib/netstandard2.0/cs/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/de/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/es/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/fr/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/it/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/ja/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/ko/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/pl/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/pt-BR/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/ru/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/tr/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/zh-Hans/FSharp.Core.resources.dll",
+        "lib/netstandard2.0/zh-Hant/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/FSharp.Core.dll",
+        "lib/netstandard2.1/FSharp.Core.xml",
+        "lib/netstandard2.1/cs/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/de/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/es/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/fr/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/it/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/ja/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/ko/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/pl/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/pt-BR/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/ru/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/tr/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/zh-Hans/FSharp.Core.resources.dll",
+        "lib/netstandard2.1/zh-Hant/FSharp.Core.resources.dll"
       ]
     },
     "Microsoft.NETCore.App/2.1.0": {
-      "sha512": "AvT774nTFgU8cYcGO9j1EMwuayKslxqYTurg32HGpWa2hEYNuW2+XgYVVNcZe6Ndbr84QX6fwaOZfd5n+1m2OA==",
+      "sha512": "JNHhG+j5eIhG26+H721IDmwswGUznTwwSuJMFe/08h0X2YarHvA15sVAvUkA/2Sp3W0ENNm48t+J7KTPRqEpfA==",
       "type": "package",
       "path": "microsoft.netcore.app/2.1.0",
       "files": [
@@ -579,7 +579,7 @@
       ]
     },
     "Microsoft.NETCore.DotNetAppHost/2.1.0": {
-      "sha512": "f/47I60Wg3SrveTvnecCQhCZCAMYlUujWF15EQ/AZTqF/54qeEJjbCIAxKcZI8ToUYzSg6JdfrHggsgjCyCE9Q==",
+      "sha512": "vMn8V3GOp/SPOG2oE8WxswzAWZ/GZmc8EPiB3vc2EZ6us14ehXhsvUFXndYopGNSjCa9OdqC6L6xStF1KyUZnw==",
       "type": "package",
       "path": "microsoft.netcore.dotnetapphost/2.1.0",
       "files": [
@@ -593,7 +593,7 @@
       ]
     },
     "Microsoft.NETCore.DotNetHostPolicy/2.1.0": {
-      "sha512": "p50yZYKzhH64lmArJgoKjtvsNehECa+/sAuOQzZh5uDNBTbRKxjN8IXP1e517xdVsgrFcSNxSEVDKZIOWVjGcQ==",
+      "sha512": "vBUwNihtLUVS2HhO6WocYfAktRmfFihm6JB8/sJ53caVW+AelvbnYpfiGzaZDpkWjN6vA3xzOKPu9Vu8Zz3p8Q==",
       "type": "package",
       "path": "microsoft.netcore.dotnethostpolicy/2.1.0",
       "files": [
@@ -607,7 +607,7 @@
       ]
     },
     "Microsoft.NETCore.DotNetHostResolver/2.1.0": {
-      "sha512": "fS9D8a+y55n6mHMbNqgHXaPGkjmpVH9h97OyrBxsCuo3Z8aQaFMJ5xIfmzji2ntUd/3truhMbSgSfIelHOkQpg==",
+      "sha512": "o0PRql5qOHFEY3d1WvzE+T7cMFKtOsWLMg8L1oTeGNnI4u5AzOj8o6AdZT3y2GxFA1DAx7AQ9qZjpCO2/bgZRw==",
       "type": "package",
       "path": "microsoft.netcore.dotnethostresolver/2.1.0",
       "files": [
@@ -621,7 +621,7 @@
       ]
     },
     "Microsoft.NETCore.Platforms/2.1.0": {
-      "sha512": "aSTPL94NloSiQVL5Len8wbjFKOnoAX/vOh3s3DF6g3c7GUUMLCDvnBhmA72M2iN2AedyA8hpr7m89kzSAKUnJQ==",
+      "sha512": "ok+RPAtESz/9MUXeIEz6Lv5XAGQsaNmEYXMsgVALj4D7kqC8gveKWXWXbufLySR2fWrwZf8smyN5RmHu0e4BHA==",
       "type": "package",
       "path": "microsoft.netcore.platforms/2.1.0",
       "files": [
@@ -638,7 +638,7 @@
       ]
     },
     "Microsoft.NETCore.Targets/2.1.0": {
-      "sha512": "etaYwrLZQUS+b3UWTpCnUggd6SQ/ZIkZ5pHnoR7+dIWt/wp2Rv3CvMKOZISsrt7FYCHKwCxfcepuuyEWkQxADg==",
+      "sha512": "x188gIZXOwFXkPXyGavEcPGcR6RGvjFOES2QzskN4gERZjWPN34qhRsZVMC0CLJfQLGSButarcgWxPPM4vmg0w==",
       "type": "package",
       "path": "microsoft.netcore.targets/2.1.0",
       "files": [
@@ -785,61 +785,67 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.1": [
-      "FSharp.Core >= 4.5.2",
+      "FSharp.Core >= 6.0.1",
       "Microsoft.NETCore.App >= 2.1.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GiacF\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "/home/giuseppe/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\GiacF\\Documents\\GitHub\\Development-8\\Exercises\\Interpreter\\Interpreter\\Interpreter\\Interpreter.fsproj",
+      "projectUniqueName": "/home/giuseppe/repos/Development-8/Exercises/Interpreter/Interpreter/Interpreter/Interpreter.fsproj",
       "projectName": "Interpreter",
-      "projectPath": "C:\\Users\\GiacF\\Documents\\GitHub\\Development-8\\Exercises\\Interpreter\\Interpreter\\Interpreter\\Interpreter.fsproj",
-      "packagesPath": "C:\\Users\\GiacF\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\GiacF\\Documents\\GitHub\\Development-8\\Exercises\\Interpreter\\Interpreter\\Interpreter\\obj\\",
+      "projectPath": "/home/giuseppe/repos/Development-8/Exercises/Interpreter/Interpreter/Interpreter/Interpreter.fsproj",
+      "packagesPath": "/home/giuseppe/.nuget/packages/",
+      "outputPath": "/home/giuseppe/repos/Development-8/Exercises/Interpreter/Interpreter/Interpreter/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\GiacF\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/giuseppe/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.1": {
+          "targetAlias": "netcoreapp2.1",
           "projectReferences": {}
         }
       }
     },
     "frameworks": {
       "netcoreapp2.1": {
+        "targetAlias": "netcoreapp2.1",
         "dependencies": {
           "FSharp.Core": {
+            "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[4.5.2, )"
+            "version": "[6.0.1, )",
+            "generatePathProperty": true
           },
           "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
-            "autoReferenced": true
+            "autoReferenced": true,
+            "generatePathProperty": true
           }
         },
         "imports": [
-          "net461"
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
         ],
         "assetTargetFallback": true,
-        "warn": true
+        "warn": true,
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
       }
     }
   }
