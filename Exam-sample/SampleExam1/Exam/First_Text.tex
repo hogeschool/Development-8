@@ -1,0 +1,163 @@
+\centering
+\Huge
+\textbf{Exam procedure}
+\flushleft
+\normalsize
+\examInstruction
+\newpage
+
+\centering
+\Huge
+\textbf{Theoretical part}
+\normalsize
+\flushleft
+
+\section*{Instructions}
+\theoryInstruction
+
+\large
+\textbf{Beta-reduction rules:}
+\normalsize
+
+\vspace{0.5cm}
+\textbf{Variables:}
+\varRule
+
+\textbf{Function application:}
+\lambdaRule
+
+\textbf{Application}
+\applicationRule
+
+
+\vspace{0.5cm}
+\exercise{Given the following untyped lambda-calculus expression:
+
+\begin{equation*}
+(\fun x \; y \rightarrow y) \; (\fun x \rightarrow y \; x)
+\end{equation*}
+
+replace the requested terms with the elements from the expression in the following lambda-calculus rule that evaluates it:
+
+\lambdaRule
+
+\begin{equation*}
+\left \lbrace
+\begin{array}{l}
+  x = \dots \\
+  t = \dots \\
+  u = \dots \\
+  t[x \mapsto u] = \dots
+\end{array} \right.
+\end{equation*}
+}
+
+\vspace{0.5cm}
+\exercise{Given the following untyped lambda-calculus expression:
+
+\begin{equation*}
+(\fun x \; y \rightarrow t \; x) \; (((\fun x \; y \rightarrow y \; x) \; (\fun x \rightarrow x)) \; (\fun x \rightarrow x))
+\end{equation*}
+
+replace the requested terms with the elements from the expression in the following lambda-calculus rule that evaluates it:
+
+\applicationRule
+
+\begin{equation*}
+\left \lbrace
+\begin{array}{l}
+  t = \dots \\
+  u = \dots \\
+  t' = \dots \\
+  u'= \dots \\
+  v = \dots
+\end{array} \right.
+\end{equation*}
+}
+
+\exercise{Complete the missing types (denoted with \texttt{\emptyPlace}) in the following code:
+
+\vspace{0.5cm}
+\texttt{let foo (x : int -> string) (y : int) : string = x y\\
+let (f : \emptyPlace) = foo(fun (x : int) -> string x)}
+}
+
+\vspace{0.5cm}
+\exercise{Complete the missing types (denoted with \texttt{\emptyPlace}) in the following code. The dots denote missing code implementation \textbf{that is omitted for brevity and you do not have to complete}:
+
+\vspace{0.5cm}
+\texttt{let map (f : 'a -> 'b) -> (l : List<'a>) : List<'b> = ... \\
+let (x : \emptyPlace) = map (fun (x : int) -> (string x) + "1")}
+}
+
+\vspace{0.5cm}
+\exercise{
+  Complete the missing types (denoted with \texttt{\emptyPlace}) in the following code. The dots denote missing code implementation \textbf{that is omitted for brevity and you do not have to complete}:
+
+  \vspace{0.5cm}  
+  \texttt{let curry (f : 'a * 'b -> 'c) : 'a -> 'b -> 'c = ...\\
+    let add (x : int, y : int) : int = ...\\
+    let (t : \emptyPlace) = curry add 5
+  }
+}
+
+\newpage
+\centering
+\Huge
+\textbf{Practical part}
+\normalsize
+\flushleft
+
+\section*{Instructions}
+\practicalInstruction
+
+\setcounter{ExerciseCount}{1}
+
+\vspace{0.5cm}
+\exercise{
+  \functionEx{rectangle}{(width : int) (height : int) : string}{
+      that returns a rectangle of asterisks
+      
+      \textbf{Example:} calling \texttt{rectangle 4 6} returns \textbf{in the terminal}:\\ 
+      \texttt{****\\
+        ****\\
+        ****\\
+        ****\\
+        ****\\
+        ****\\
+      }
+    }
+}
+
+\vspace{0.5cm}
+\exercise{
+  \functionEx{suffixes}{(l : List<'a>) : List<List<'a>>}{
+    that returns all the possible suffixes of a list. A suffix of a list is a subset of its elements where a number of the elements has been removed from the front of the list.  The whole list is also considered a suffix of the list itself.
+    
+    \textbf{Example:}\texttt{ suffixes [5; 2; 1; 5] = [[5; 2; 1; 5]; [2; 1; 5]; [1; 5]; [5]; []]}
+}}
+
+\vspace{0.5cm}
+\exercise{
+  \functionEx{nearBy}{(mapObject : MapObject) (objects : List<MapObject>) (radius : float) : List<MapObject>}{
+    For this exercise you can use the method \texttt{Distance} defined in \texttt{Point}. \texttt{MapObject} contains a field of type \texttt{Point}.
+    Consider a list of map objects whose type is defined in the template below and a single map object of the same type. The function \texttt{nearBy} finds all map objects within a specified \texttt{radius} containing the same \texttt{Symbol}.
+  }
+}\\
+
+
+\vspace{0.5cm}
+\exercise{
+  \functionEx{maxBy}{(projection : 'a -> 'b) (l : List<'a>) : Option<'b>}{
+    that, given a projection function that transforms the element of a list, computes the maximum value among the transformed elements. The function returns \texttt{None} if the list is empty.
+    
+    \textbf{Example: } \texttt{maxBy (fun (x,y) -> y) [(1,2);(3,4);(-1,-1)] = Some 4}
+  }
+}\\
+
+\vspace{0.5cm}
+\exercise{
+  \functionEx{allPaths}{(tree : Tree<'a>) : List<List<'a>>}{
+    Given the tree data structure defined in the template below, \texttt{allPaths} compute all possible paths starting from the root of the tree. Remember that the path of a tree is a sequence of adjacent nodes starting from the root and ending up in a leaf. 
+  }
+}

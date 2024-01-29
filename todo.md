@@ -1,0 +1,4 @@
+- [Giuseppe] restructure the repo by year
+- [Saleem & Alessandro] rewrite the modulewijzer with TypeScript and in markdown without graphs and explicitly mentioning generics in Unit4
+- [Giuseppe] finish and add the intro to TS markdown files to the repo
+- [Giuseppe] create theory and practice template exams with all candidate questions à la webdev

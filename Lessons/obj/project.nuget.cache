@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "0l9eNDkVoQvqatVcNhuhS2+2BM21dKC35AP/xTt+zkaB4bdekrQhGTXN9KyCpy/dt9DxWgzPivomgr4BlxLHFA==",
+  "dgSpecHash": "aP7qr937onwxYfdtEnaACTlfrW0fy/Yau3OAvjPaNvVOXa7FqJ2WHwWQy5zYEnfAen1ZmZADZgALDWh6cIogEA==",
   "success": true,
   "projectFilePath": "/home/giuseppe/repos/Development-8/Lessons/Lessons.fsproj",
   "expectedPackageFiles": [
-    "/home/giuseppe/.nuget/packages/fsharp.core/6.0.1/fsharp.core.6.0.1.nupkg.sha512",
+    "/home/giuseppe/.nuget/packages/fsharp.core/7.0.200/fsharp.core.7.0.200.nupkg.sha512",
     "/home/giuseppe/.nuget/packages/microsoft.netcore.app/2.1.0/microsoft.netcore.app.2.1.0.nupkg.sha512",
     "/home/giuseppe/.nuget/packages/microsoft.netcore.dotnetapphost/2.1.0/microsoft.netcore.dotnetapphost.2.1.0.nupkg.sha512",
     "/home/giuseppe/.nuget/packages/microsoft.netcore.dotnethostpolicy/2.1.0/microsoft.netcore.dotnethostpolicy.2.1.0.nupkg.sha512",

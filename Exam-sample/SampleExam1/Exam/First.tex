@@ -1,0 +1,118 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{comment}
+\usepackage{mathpartir}
+\usepackage[top=2cm, bottom=3cm, left=1.5cm, right=1.5cm]{geometry}
+
+\newcommand{\tu}{\textunderscore}
+
+\newcommand{\fun}{\text{fun} \;}
+
+\newcommand{\varRule}{
+  \begin{mathpar}
+    \mprset{flushleft}
+    {x \rightarrow x}
+  \end{mathpar}
+}
+
+\newcommand{\lambdaRule}{
+  \begin{mathpar}
+    \mprset{flushleft}
+    {(\fun x \rightarrow t) \; u \rightarrow t[x \mapsto u]}
+  \end{mathpar}
+}
+
+\newcommand{\applicationRule}{
+  \begin{mathpar}
+    \mprset{flushleft}
+    \text{Given } { t \rightarrow t' \text{ and } u \rightarrow u' \text{ and } t' \; u' \rightarrow v }\\
+    {t \; u \rightarrow v}
+  \end{mathpar}
+}
+
+\newcommand{\theoryInstruction}{
+  \begin{itemize}[noitemsep]
+    \item For this part you are not allowed to use any notes. The relevant formulas are given in the exam if needed.
+    \item Your answers must be written on the official school paper. Everything that is not on the paper will not be graded.
+    \item Each question awards you with 1 point.
+  \end{itemize}
+}
+
+\newcommand{\examInstruction}{
+  \begin{itemize}
+    \item The students begin with the theoretical part.
+    \item The theoretical part lasts 30 minutes.
+    \item The students deliver their answers for the theoretical part on the official school paper when the time expires.
+    \item After the theoretical part is over, the students can start with the practical part.
+    \item It is not possible to use any help other than what can be found in the exam. If a student is caught using other material, the student's exam is immediately stopped and he/she will be reported to the exam commission.
+    \item The final grade is computed as \texttt{score * 10 / 15}.
+  \end{itemize}
+  
+}
+
+\newcommand{\practicalInstruction}{
+  \begin{itemize}[noitemsep]
+    \item In this part you must use the provided exam template on your laptop.
+    \item You can only use the data structures that are defined in the exam templates.
+    \item You cannot use the course materials during the exam.
+    \item You cannot have anything open but the provided exam template, including its source files. This means that catching you with anything else open but the exam template will be reported as fraud/irregularity in the exam, including (but not limited to) other instances of the IDE or different files other than those in the exam template.
+    \item You cannot use ANY imperative statement except printing to the standard output. Imperative constructs include (but are not limited to) variables, loops, classes, records with mutable fields.
+    \item You have to decide whether a function is recursive or not, it will not be specified in the signature. This is because some exercises might be solved with or without recursion.
+    \item You are not allowed to use library functions that provide an immediate answer to the question. For instance, if a question asks the implementation of \texttt{map2} you are not allowed to simply call the function \texttt{List.map2}, which is already built in the F\# standard library.
+    \item When you want to submit your exam, call a teacher who will check your final grade and possibly your work. This can happen only once, meaning that the grade you are assigned after calling a teacher is final.
+    \item The automatic checker will tell you at any time the current score and whether it is correct or not. The score that you see is not final, you can fix your exercises as much as you want until you call for a teacher.
+    \item Teachers have veto power over the result of the checker, meaning that if they spot anything wrong in your submission that the checker was not able to verify (for instance the use of imperative code or library functions that are not allowed), they can adjust the grade accordingly.
+    \item You are not authorized to alter the behaviour of the checker or the \texttt{main} function of the program when submitting the exam, meaning that the provided code must be exactly as given.
+  \end{itemize}
+}
+
+\lstset{
+	tabsize=2,
+	basicstyle=\small\ttfamily,
+	columns=fixed,
+	showstringspaces=false,
+	breaklines=true,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+\newcommand{\courseCode}{INFFPR01-D - Functional programming}
+
+\newcounter{ExerciseCount}
+\setcounter{ExerciseCount}{1}
+
+\newcommand{\functionEx}[3]{
+  Implement a function
+  
+  \vspace{0.15cm}
+  \texttt{let #1 #2 = ...}
+   
+   \vspace{0.15cm}
+   #3
+}
+\newcommand{\emptyPlace}{\tu\tu\tu}
+\newcommand{\exercise}[1]{\noindent \textbf{Exercise \theExerciseCount:}
+  
+  \vspace{0.15cm}
+ #1 \addtocounter{ExerciseCount}{1}
+}
+
+\title{\courseCode}
+\date {  }
+
+
+\begin{document}
+\maketitle
+
+\input{First_Text}
+
+\end{document}
