@@ -57,7 +57,7 @@ Notice that the uncurried version of a function takes both arguments all togethe
 
 ## Records
 
-Recors are finite map of names into values that can optionally define some members. This definition resembles that of Class in a object\-oriented language, but there is a profound difference\: the fields of a record are by default immutable, meaning that it is not possible to change their values directly. In Typescript you can define an `interface` for a record with the following syntax:
+Records are finite map of names into values that can optionally define some members. This definition resembles that of Class in a object\-oriented language, but there is a profound difference\: the fields of a record are by default immutable, meaning that it is not possible to change their values directly. In Typescript you can define an `interface` for a record with the following syntax:
 
 ```ts
 interface R {
