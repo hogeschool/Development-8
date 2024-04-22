@@ -1,0 +1,9 @@
+{
+  "name": "live_coding",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.4.5"
+  }
+}
