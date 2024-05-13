@@ -449,7 +449,7 @@ console.log(`The city of ${city} was founded in ${foundationYear} and is ${dista
 
 In this unit we started by describing the differences between imperative and functional programming. We showed that functional programming involves _stateless computation_ as functional program consists of a sequence of expressions that are evaluated, rather than a sequence of instructions that change a state. We hinted that this has the benefit that the result of a program never depends on the order of evaluation of its expressions or function calls.
 
-We then proceeded to outline the model that embraces all functional programming languages, called _lambda calculus_. In this unit we presented the semantics of the untyped version of this model.
+We then proceeded to outline the model that underpins all functional programming languages, called _lambda calculus_. In this unit we presented the semantics of the untyped version of this model.
 
 We then introduced the programming language Typescript and show how to map constructs from lambda calculus in it.
 
