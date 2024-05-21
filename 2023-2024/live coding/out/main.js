@@ -1,4 +1,9 @@
 "use strict";
+const reduce = (elements) => (id, reducer) => elements.length <= 0 ? id :
+    reduce(elements.slice(1))(reducer([elements[0], id]), reducer);
+const map = (elements) => (f) => reduce(elements)([], ([x, acc]) => [...acc, f(x)]);
+console.log(reduce([1, 2, 3, 4, 5])("", ([x, a]) => `${a}${x}, `));
+console.log(map([1, 2, 3, 4,])(_ => _ + 1));
 const Person = {
     Default: (data) => ({
         ...data, // "with" syntax for quick record copy == "spread" operator
