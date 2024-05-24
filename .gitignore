@@ -8,7 +8,7 @@
 *.toc
 **/bin
 **/obj
-
+*.xml
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
