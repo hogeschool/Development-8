@@ -1,42 +1,263 @@
-type BasicFun<input,output> = (_:input) => output
-type Updater<state> = BasicFun<state, state>
+// type BasicFun<input,output> = (_:input) => output
+// type Updater<state> = BasicFun<state, state>
 
-type Readonlify<T> = { readonly [k in keyof T]:T[k] }
+// type Readonlify<T> = { readonly [k in keyof T]:T[k] }
 
-type PersonData = { name:string, surname:string, age:number }
-type Person = Readonly<{ name:string, surname:string, age:number, aged:BasicFun<number, Person> }>
-type PersonRepository = {
-  Default:BasicFun<PersonData, Person>,
-  Updaters:{ aged:BasicFun<number, Updater<Person>> }
+// type PersonData = { name:string, surname:string, age:number }
+// type Person = { name:string, surname:string, age:number }
+// type PersonRepository = {
+//   Default:BasicFun<PersonData, Person>,
+//   Updaters:{ aged:BasicFun<number, Updater<Person>> }
+// }
+// const Person : PersonRepository = {
+//   Default:(data) => ({
+//     ...data, // "with" syntax for quick record copy == "spread" operator
+//     // aged:function(this:Person, extraYears:number) {
+//     //   return Person.Updaters.aged(extraYears)(this)
+//     // }  
+//   }),
+//   Updaters:{
+//     aged:(extraYears) => (person) => 
+//       Person.Default({ ...person, age:person.age + extraYears })
+//   },
+// }
+
+// // curried
+// const add_c : BasicFun<number, BasicFun<number, number>> = 
+//   x => y => x + y
+
+// // uncurried
+// const add_uc : BasicFun<[number, number], number> =
+//   ([x,y]) => x + y
+
+
+// type Job = { description:string, salary:number }
+// type Employee = Person & Job
+
+// const Employee = {
+//   Default:(person:Person, job:Job) : Employee => ({
+//     ...person, ...job
+//   }),
+//   Updaters:{
+//     person:(_:Updater<Person>) : Updater<Employee> => 
+//       currentEmployee => 
+//         ({...currentEmployee, 
+//           ..._(currentEmployee)}),
+//     job:(_:Updater<Job>) : Updater<Employee> => 
+//       currentEmployee => 
+//         ({...currentEmployee, 
+//           ..._(currentEmployee)}),
+//   },
+// }
+
+// const e = Employee.Updaters.person(Person.Updaters.aged(10))(Employee.Default(Person.Default({ name:"Jim", surname:"Pim", age:20 }), { description:"AH cashier", salary:13.5 }))
+// function prettyPrintPerson(p:Person, cont:BasicFun<string, void>) {
+//   cont(`${p.name}, ${p.surname} is ${p.age} years old`)
+// }
+// function prettyPrintJob(j:Job) {
+//   console.log(`${j.description} pays ${j.salary}euro per hour`)
+// }
+// prettyPrintPerson(e)
+// prettyPrintJob(e)
+
+// type Employee = ({ kind:"manager", reports:number } | { kind:"salesman", target:number }) & Person
+// const mgr:Employee = { kind:"manager", reports:50, name:"Jim", surname:"Pim", age:42 }
+// const smn:Employee = { kind:"salesman", target:10000, name:"Wim", surname:"Kim", age:26 }
+
+// function prettyPrintEmployee(e:Employee, cont:BasicFun<string, void>) {
+//   prettyPrintPerson(e, prefix => {  
+//     if (e.kind == "manager") {
+//       cont(`${prefix} and is a manager with ${e.reports} reports`)
+//     } else {
+//       cont(`${prefix} and is a salesman with ${e.target} yearly target`)
+//     }
+//   })
+// }
+
+// prettyPrintEmployee(mgr, console.log)
+// prettyPrintEmployee(smn, console.log)
+
+type BasicFun<a, b> = (_: a) => b
+type Fun<a, b> = BasicFun<a, b> & {
+  then: <c>(g: BasicFun<b, c>) => Fun<a, c>
 }
-const Person : PersonRepository = {
-  Default:(data) => ({
-    ...data, // "with" syntax for quick record copy == "spread" operator
-    aged:function(this:Person, extraYears:number) {
-      return Person.Updaters.aged(extraYears)(this)
-    }  
+const Fun = <a, b>(f: BasicFun<a, b>): Fun<a, b> =>
+  Object.assign(
+    f,
+    {
+      then: function <c>(this: Fun<a, b>, g: BasicFun<b, c>): Fun<a, c> {
+        return Fun(a => g(this(a)))
+      }
+    }
+  )
+const id = <a>(v:a) => v
+
+type BasicUpdater<s> = BasicFun<s, s>
+type Updater<s> = BasicUpdater<s> & {
+  fun: Fun<s, s>
+  then: (g: BasicUpdater<s>) => Updater<s>
+}
+const Updater = <s>(f: BasicUpdater<s>): Updater<s> =>
+  Object.assign(
+    f,
+    {
+      fun: Fun(f),
+      then: function (this: Updater<s>, g: BasicUpdater<s>): Updater<s> {
+        return Updater(s => g(this(s)))
+      }
+    }
+  )
+
+
+type Parent = {
+  x: number
+  child1: Child
+  child2: Child
+}
+const Parent = {
+  Default: (): Parent => ({
+    x: 0,
+    child1: Child.Default(),
+    child2: Child.Default(),
   }),
-  Updaters:{
-    aged:(extraYears) => (person) => 
-      Person.Default({ ...person, age:person.age + extraYears })
-  },
+  Updaters: {
+    x: (fieldUpdater: BasicUpdater<Parent["x"]>): Updater<Parent> =>
+      Updater(entity => ({ ...entity, x: fieldUpdater(entity.x) })),
+    child1: (fieldUpdater: BasicUpdater<Parent["child1"]>): Updater<Parent> =>
+      Updater(entity => ({ ...entity, child1: fieldUpdater(entity.child1) })),
+    child2: (fieldUpdater: BasicUpdater<Parent["child2"]>): Updater<Parent> =>
+      Updater(entity => ({ ...entity, child2: fieldUpdater(entity.child2) })),
+  }
+}
+type Child = {
+  s: string
+}
+const Child = {
+  Default: (): Child => ({
+    s: ""
+  }),
+  Updaters: {
+    s: (fieldUpdater: BasicUpdater<Child["s"]>): Updater<Child> =>
+      Updater(entity => ({ ...entity, s: fieldUpdater(entity.s) })),
+  }
 }
 
-const jimmy:Person = Person.Default({ 
-  surname:"Malcolm", name:"Lionel", age:21, 
+const incr = Updater<number>(_ => _ + 1)
+const decr = Updater<number>(_ => _ - 1)
+const dobl = Updater<number>(_ => _ * 2)
+const geqz = Fun<number, boolean>(_ => _ >= 0)
+const todr = Updater<string>(_ => "Dr " + _)
+const tomr = Updater<string>(_ => "Mr " + _)
+const toms = Updater<string>(_ => "Ms " + _)
+const excl = Updater<string>(_ => _ + "!")
+
+const replaceWith = <s>(s: s): Updater<s> => Updater(_ => s)
+
+const initialisation =
+  Parent.Updaters.child1(Child.Updaters.s(replaceWith("John Doe"))).then(
+    Parent.Updaters.child2(Child.Updaters.s(replaceWith("Jane Doe")))
+  )
+
+const child1Graduation = Child.Updaters.s(
+  todr
+).then(
+  Child.Updaters.s(
+    excl
+  )
+)
+
+const child2Graduation = Child.Updaters.s(
+  todr.then(toms)
+)
+
+
+const pipeline =
+  initialisation.then(
+    Parent.Updaters.x(incr.then(dobl)).then(
+      Parent.Updaters.child1(
+        child1Graduation
+      ).then(
+        Parent.Updaters.child2(
+          child2Graduation
+        )
+      )
+    )
+  )
+
+console.log(pipeline(Parent.Default()))
+
+
+type Pair<a,b> = [a,b]
+const Pair = <a,b>() => ({
+  Default:(a:a, b:b) : Pair<a,b> => ([a,b]),
+  Map:{
+    left:<c>(f:BasicFun<a,c>) : Fun<Pair<a,b>, Pair<c,b>> => Fun(([a,b]) => ([f(a), b])),
+    right:<c>(f:BasicFun<b,c>) : Fun<Pair<a,b>, Pair<a,c>> => Fun(([a,b]) => ([a, f(b)])),
+    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Pair<a,b>, Pair<c,d>> => Pair<a,b>().Map.left<c>(f).then(Pair<c,b>().Map.right(g))
+  }
 })
+type Either<a,b> = { kind:"left", value:a } | { kind:"right", value:b }
+const Either = <a,b>() => ({
+  Default:{
+    left:(a:a) : Either<a,b> => ({ kind:"left", value:a }),
+    right:(b:b) : Either<a,b> => ({ kind:"right", value:b }),
+  },
+  Map:{
+    left:<c>(f:BasicFun<a,c>) : Fun<Either<a,b>, Either<c,b>> => Either<a,b>().Map.both(f, id<b>),
+    right:<d>(g:BasicFun<b,d>) : Fun<Either<a,b>, Either<a,d>> => Either<a,b>().Map.both(id<a>, g),
+    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Either<a,b>, Either<c,d>> => 
+      Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
+  }
+})
+type Option<a> = Either<a, void>
 
-const jimmyOlder = jimmy.aged(18)
-console.log(jimmy)
-console.log(jimmyOlder)
+const NumStr = Pair<number,string>()
+const pipeline2 = NumStr.Map.left(incr.then(dobl)).then(NumStr.Map.right(excl))
 
-// curried
-const add_c : BasicFun<number, BasicFun<number, number>> = 
-  x => y => x + y
+// const o:Option<Parent> = Either<Parent,void>().Default.left(Parent.Default())
+// if (o.kind == "left") {
+//   o.value.x
+// }
 
-// uncurried
-const add_uc : BasicFun<[number, number], number> =
-  ([x,y]) => x + y
+const Parents = Pair<Parent, Parent>()
+const pipeline3 = Parents.Map.both(initialisation, pipeline)
+console.log(pipeline3(Parents.Default(Parent.Default(), Parent.Default())))
+
+// list
+// map
+// filter
+// fold
+
+type List<a> = { kind:"empty" } | { kind:"full", head:a, tail:List<a> }
+const List = <a>() => ({
+  Default:{
+    empty:() : List<a> => ({ kind:"empty" }),
+    full:(head:a, tail:List<a>) : List<a> => ({ kind:"full", head, tail }),
+  },
+  Map:<b>(f:BasicFun<a,b>) : Fun<List<a>, List<b>> => 
+    Fun(list_a => list_a.kind == "empty" ? List<b>().Default.empty() : 
+      List<b>().Default.full(
+        f(list_a.head), 
+        List<a>().Map(f)(list_a.tail))),
+  Filter:(p:BasicFun<a,boolean>) : Fun<List<a>, List<a>> => 
+    Fun(list_a => list_a.kind == "empty" ? List<a>().Default.empty() : 
+      p(list_a.head) ? 
+        List<a>().Default.full(
+          list_a.head, 
+          List<a>().Filter(p)(list_a.tail))
+      : List<a>().Filter(p)(list_a.tail)
+    ),
+})
+const Nums = List<number>()
+const pipeline4 = Nums.Map(incr.fun.then(geqz))
+
+console.log(JSON.stringify(pipeline4(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))))
+
+const pipeline5 = Nums.Filter(incr.fun.then(_ => _ % 2 == 0))
+console.log(JSON.stringify(pipeline5(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))))
+
+// continue with (unit4) list.fold, curry, uncurry
+
 
 // const threeThings:[number, [string, bigint], boolean] = [1, ["a string", 1000n], true]
 

@@ -1,6 +1,6 @@
 # Unit 3 - Polymorphism in Functional Programming
 
-In Unit 3 we introduced tuples and records in Typescript. In this chapter we focus on showing how polymorphism can be implemented in a functional programming style in Typescript
+In Unit 2 we introduced tuples and records in Typescript. In this chapter we focus on showing how polymorphism can be implemented in a functional programming style in Typescript
 
 ## Inheritance via record nesting
 
