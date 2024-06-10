@@ -123,23 +123,14 @@ The course is tested with an exam consisting of two parts: a theory part and a p
 theory part happens on paper while you can use your laptop in the practical one. Both parts result in a
 single grade. This means that partial grades on each part are not kept.
 
-### 3.1 Theoretical examination INFADP01-D/INFADP21-D
-
-The general shape of an exam forINFADP01-D/INFADP21-Dis made up of a short series of highly struc-
-tured open questions. In each exam the content of the questions will change, but the structure of the
-questions will remain the same. Questions might include (but not limited to): apply the semantics of
-lambda calculus on a small function, determine the type of a functional program, determine the result
-of the execution of a functional program. A sample exam will be provided during the course. The
-theoretical examination mainly covers the lambda calculus topics from unit 1 and 2.
-
-### 3.2 Practical examination INFADP01-D/INFADP21-D
+### 3.1 Practical examination INFADP01-D/INFADP21-D
 
 The practical exam requires to implement a series of functions (described in the exam text) in the
 language typescript. The practical examination contains a question on each learning unit (simple recursion,
 recursion with basic data structures, polymorphism, higher-order design patterns, and advanced data
 structures). During the practical examination you are allowed to use your laptop.
 
-**3.2.1 Important**
+**3.1.1 Important**
 
 For the practical part, you will be provided with a solution template that contains an automatic checker
 as a pre-compiled library. This checker will tell you in any moment which exercises are correct and your
@@ -147,7 +138,7 @@ score. In order to compile and run this template, you need .NET 6.0, so be sure 
 up correctly on your machine before the exam. You can test if everything works in advance by compiling
 and running one of the sample exams.
 
-### 3.3 Note for retakers
+### 3.2 Note for retakers
 
 The retakers of the old INFDEV02-8 (Development 8) and functional programming (INFFPR01-D/21-
 D) must repeat the whole exam because now the system records just a single grade. This means that if
