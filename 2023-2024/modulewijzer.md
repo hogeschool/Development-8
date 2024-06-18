@@ -119,10 +119,7 @@ The course topics are divided in 5 conceptual units, not necessarily in a one-to
 
 ## 3. Assessment
 
-The course is tested with an exam consisting of two parts: a theory part and a practical part. The
-theory part happens on paper while you can use your laptop in the practical one. Both parts result in a
-single grade. This means that partial grades on each part are not kept.
-
+The course is tested with a practice exam you can use your laptop in the practical exam.
 ### 3.1 Practical examination INFADP01-D/INFADP21-D
 
 The practical exam requires to implement a series of functions (described in the exam text) in the
