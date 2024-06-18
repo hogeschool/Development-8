@@ -186,16 +186,27 @@ const pipeline =
 
 console.log(pipeline(Parent.Default()))
 
+const curry = <a,b,c>(f:(a:a, b:b) => c) : BasicFun<a, BasicFun<b,c>> => a => b => f(a,b)
+const flip = <a,b,c>(f:BasicFun<a, BasicFun<b,c>>) : BasicFun<b, BasicFun<a,c>> => b => a => f(a)(b)
+const flip2 = <a,b,c>(f:(a:a, b:b) => c) : ((b:b, a:a) => c) => uncurry(flip(curry(f)))
+const uncurry = <a,b,c>(f:BasicFun<a, BasicFun<b,c>>) : ((a:a, b:b) => c) => (a,b) => f(a)(b)
 
 type Pair<a,b> = [a,b]
 const Pair = <a,b>() => ({
   Default:(a:a, b:b) : Pair<a,b> => ([a,b]),
   Map:{
-    left:<c>(f:BasicFun<a,c>) : Fun<Pair<a,b>, Pair<c,b>> => Fun(([a,b]) => ([f(a), b])),
-    right:<c>(f:BasicFun<b,c>) : Fun<Pair<a,b>, Pair<a,c>> => Fun(([a,b]) => ([a, f(b)])),
-    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Pair<a,b>, Pair<c,d>> => Pair<a,b>().Map.left<c>(f).then(Pair<c,b>().Map.right(g))
+    left:<c>(f:BasicFun<a,c>) : Fun<Pair<a,b>, Pair<c,b>> => Pair<a,b>().Map.both(f, id),
+    right:<c>(f:BasicFun<b,c>) : Fun<Pair<a,b>, Pair<a,c>> => Pair<a,b>().Map.both(id, f),
+    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Pair<a,b>, Pair<c,d>> => Pair<a,b>().fold(a => b => Pair<c,d>().Default(f(a), g(b))),
+  },
+  fold:<c>(f:BasicFun<a,BasicFun<b,c>>) : Fun<Pair<a,b>, c> => Fun(([a,b]) => f(a)(b)),
+  Examples:{
+    sum:() => Pair<number,number>().fold(a => b => a + b),
+    repeat:() : Fun<Pair<string,number>,string> => Pair<string,number>().fold(a => b => b <= 0 ? "" : a + Pair<string,number>().Examples.repeat()([a,b-1])),
+    flip:<a,b>() : Fun<Pair<a,b>,Pair<b,a>> => Pair<a,b>().fold(flip(curry(Pair<b,a>().Default))),
   }
 })
+
 type Either<a,b> = { kind:"left", value:a } | { kind:"right", value:b }
 const Either = <a,b>() => ({
   Default:{
@@ -206,8 +217,13 @@ const Either = <a,b>() => ({
     left:<c>(f:BasicFun<a,c>) : Fun<Either<a,b>, Either<c,b>> => Either<a,b>().Map.both(f, id<b>),
     right:<d>(g:BasicFun<b,d>) : Fun<Either<a,b>, Either<a,d>> => Either<a,b>().Map.both(id<a>, g),
     both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Either<a,b>, Either<c,d>> => 
-      Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
-  }
+      Fun(Either<a,b>().fold<Either<c,d>>(
+        Fun(f).then(Either<c,d>().Default.left), 
+        Fun(g).then(Either<c,d>().Default.right)))
+      // Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
+  },
+  fold:<c>(onLeft:BasicFun<a,c>, onRight:BasicFun<b,c>) : Fun<Either<a,b>, c> => 
+    Fun(e => e.kind == "left" ? onLeft(e.value) : onRight(e.value))
 })
 type Option<a> = Either<a, void>
 
@@ -235,10 +251,12 @@ const List = <a>() => ({
     full:(head:a, tail:List<a>) : List<a> => ({ kind:"full", head, tail }),
   },
   Map:<b>(f:BasicFun<a,b>) : Fun<List<a>, List<b>> => 
-    Fun(list_a => list_a.kind == "empty" ? List<b>().Default.empty() : 
-      List<b>().Default.full(
-        f(list_a.head), 
-        List<a>().Map(f)(list_a.tail))),
+    Fun(list_a => 
+      list_a.kind == "empty" ? 
+        List<b>().Default.empty() : 
+        List<b>().Default.full(
+          f(list_a.head), 
+          List<a>().Map(f)(list_a.tail))),
   Filter:(p:BasicFun<a,boolean>) : Fun<List<a>, List<a>> => 
     Fun(list_a => list_a.kind == "empty" ? List<a>().Default.empty() : 
       p(list_a.head) ? 
@@ -247,7 +265,16 @@ const List = <a>() => ({
           List<a>().Filter(p)(list_a.tail))
       : List<a>().Filter(p)(list_a.tail)
     ),
+  fold:<c>(onEmpty:() => c, onFull:(head:a, tail:c) => c) : Fun<List<a>, c> => Fun(l => 
+    l.kind == "empty" ? 
+      onEmpty() : 
+    onFull(l.head, List<a>().fold(onEmpty, onFull)(l.tail))
+  ),
 })
+
+const addAll = List<number>().fold(() => 0, (a,b) => a + b)
+const mulAll = List<number>().fold(() => 1, (a,b) => a * b)
+const addLengths = List<string>().fold(() => 0, (a,b) => a.length + b)
 const Nums = List<number>()
 const pipeline4 = Nums.Map(incr.fun.then(geqz))
 
@@ -256,8 +283,7 @@ console.log(JSON.stringify(pipeline4(Nums.Default.full(10, Nums.Default.full(9, 
 const pipeline5 = Nums.Filter(incr.fun.then(_ => _ % 2 == 0))
 console.log(JSON.stringify(pipeline5(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))))
 
-// continue with (unit4) list.fold, curry, uncurry
-
+// hierarchical expressions: trees and boolean/arithmetic expressionss
 
 // const threeThings:[number, [string, bigint], boolean] = [1, ["a string", 1000n], true]
 
