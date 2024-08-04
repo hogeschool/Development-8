@@ -47,14 +47,32 @@ const child1Graduation = Child.Updaters.s(todr).then(Child.Updaters.s(excl));
 const child2Graduation = Child.Updaters.s(todr.then(toms));
 const pipeline = initialisation.then(Parent.Updaters.x(incr.then(dobl)).then(Parent.Updaters.child1(child1Graduation).then(Parent.Updaters.child2(child2Graduation))));
 console.log(pipeline(Parent.Default()));
+const curry = (f) => a => b => f(a, b);
+const flip = (f) => b => a => f(a)(b);
+const flip2 = (f) => uncurry(flip(curry(f)));
+const uncurry = (f) => (a, b) => f(a)(b);
 const Pair = () => ({
     Default: (a, b) => ([a, b]),
     Map: {
-        left: (f) => Fun(([a, b]) => ([f(a), b])),
-        right: (f) => Fun(([a, b]) => ([a, f(b)])),
-        both: (f, g) => Pair().Map.left(f).then(Pair().Map.right(g))
+        left: (f) => Pair().Map.both(f, id),
+        right: (f) => Pair().Map.both(id, f),
+        both: (f, g) => Pair().fold(a => b => Pair().Default(f(a), g(b))),
+    },
+    fold: (f) => Fun(([a, b]) => f(a)(b)),
+    Examples: {
+        sum: () => Pair().fold(a => b => a + b),
+        repeat: () => Pair().fold(a => b => b <= 0 ? "" : a + Pair().Examples.repeat()([a, b - 1])),
+        flip: () => Pair().fold(flip(curry(Pair().Default))),
     }
 });
+const plus = Fun(([x, y]) => x + y);
+const minus = Fun(([x, y]) => x - y);
+const times = Fun(([x, y]) => x * y);
+const divBy = Fun(([x, y]) => x / y);
+const and = Fun(([x, y]) => x && y);
+const or = Fun(([x, y]) => x || y);
+const gt = Fun(([x, y]) => x > y);
+const geq = Fun(([x, y]) => x >= y);
 const Either = () => ({
     Default: {
         left: (a) => ({ kind: "left", value: a }),
@@ -63,8 +81,10 @@ const Either = () => ({
     Map: {
         left: (f) => Either().Map.both(f, (id)),
         right: (g) => Either().Map.both((id), g),
-        both: (f, g) => Fun(e => e.kind == "left" ? Either().Default.left(f(e.value)) : Either().Default.right(g(e.value)))
-    }
+        both: (f, g) => Fun(Either().fold(Fun(f).then(Either().Default.left), Fun(g).then(Either().Default.right)))
+        // Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
+    },
+    fold: (onLeft, onRight) => Fun(e => e.kind == "left" ? onLeft(e.value) : onRight(e.value))
 });
 const NumStr = Pair();
 const pipeline2 = NumStr.Map.left(incr.then(dobl)).then(NumStr.Map.right(excl));
@@ -80,19 +100,86 @@ const List = () => ({
         empty: () => ({ kind: "empty" }),
         full: (head, tail) => ({ kind: "full", head, tail }),
     },
-    Map: (f) => Fun(list_a => list_a.kind == "empty" ? List().Default.empty() :
+    Map: (f) => Fun(list_a => list_a.kind == "empty" ?
+        List().Default.empty() :
         List().Default.full(f(list_a.head), List().Map(f)(list_a.tail))),
     Filter: (p) => Fun(list_a => list_a.kind == "empty" ? List().Default.empty() :
         p(list_a.head) ?
             List().Default.full(list_a.head, List().Filter(p)(list_a.tail))
             : List().Filter(p)(list_a.tail)),
+    fold: (onEmpty, onFull) => Fun(l => l.kind == "empty" ?
+        onEmpty() :
+        onFull(l.head, List().fold(onEmpty, onFull)(l.tail))),
 });
+const addAll = List().fold(() => 0, (a, b) => a + b);
+const mulAll = List().fold(() => 1, (a, b) => a * b);
+const addLengths = List().fold(() => 0, (a, b) => a.length + b);
 const Nums = List();
-const pipeline4 = Nums.Map(incr.fun.then(geqz));
+const pipeline4 = Nums.Map(incr.fun.then(incr)).then(addAll.then(geqz));
 console.log(JSON.stringify(pipeline4(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))));
 const pipeline5 = Nums.Filter(incr.fun.then(_ => _ % 2 == 0));
 console.log(JSON.stringify(pipeline5(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))));
-// continue with (unit4) list.fold, curry, uncurry
+const ArithExpr = {
+    Default: {
+        const: (v) => ({ kind: "c", value: v }),
+        plus: (l, r) => ({ kind: "+", l, r }),
+        times: (l, r) => ({ kind: "x", l, r }),
+        minus: (l, r) => ({ kind: "-", l, r }),
+        divBy: (l, r) => ({ kind: "/", l, r }),
+    },
+    Operations: {}
+};
+const MaybeNumber = Either();
+const evalArithExpr = Fun(e => {
+    if (e.kind == "c")
+        return MaybeNumber.Default.left(e.value);
+    const l = evalArithExpr(e.l);
+    const r = evalArithExpr(e.r);
+    if (l.kind == "right" || r.kind == "right" || (e.kind == "/" && r.value == 0))
+        return MaybeNumber.Default.right("division by zero");
+    const op = e.kind == "+" ? plus : e.kind == "-" ? minus : e.kind == "x" ? times : divBy;
+    return MaybeNumber.Default.left(op(Pair().Default(l.value, r.value)));
+});
+const e1 = ArithExpr.Default.plus(ArithExpr.Default.const(1), ArithExpr.Default.const(10));
+const e2 = ArithExpr.Default.divBy(ArithExpr.Default.plus(e1, e1), ArithExpr.Default.const(0));
+console.log(evalArithExpr(e2));
+const BoolExpr = {
+    Default: {
+        const: (v) => ({ kind: "c", value: v }),
+        or: (l, r) => ({ kind: "||", l, r }),
+        and: (l, r) => ({ kind: "&&", l, r }),
+        gt: (l, r) => ({ kind: ">", l, r }),
+        geq: (l, r) => ({ kind: ">=", l, r }),
+    },
+    Operations: {}
+};
+const MaybeBoolean = Either();
+const evalBoolExpr = Fun(e => {
+    if (e.kind == "c")
+        return MaybeBoolean.Default.left(e.value);
+    if (e.kind == "!") {
+        const l = evalBoolExpr(e.l);
+        if (l.kind == "left")
+            return MaybeBoolean.Default.left(!l.value);
+        return MaybeBoolean.Default.right("division by zero");
+    }
+    if (e.kind == "&&" || e.kind == "||") {
+        const l = evalBoolExpr(e.l);
+        const r = evalBoolExpr(e.r);
+        if (l.kind == "right" || r.kind == "right")
+            return MaybeBoolean.Default.right("division by zero");
+        const op = e.kind == "&&" ? and : or;
+        return MaybeBoolean.Default.left(op(Pair().Default(l.value, r.value)));
+    }
+    const l = evalArithExpr(e.l);
+    const r = evalArithExpr(e.r);
+    if (l.kind == "right" || r.kind == "right")
+        return MaybeBoolean.Default.right("division by zero");
+    const op = e.kind == ">" ? gt : geq;
+    return MaybeBoolean.Default.left(op(Pair().Default(l.value, r.value)));
+});
+const be1 = BoolExpr.Default.gt(e2, ArithExpr.Default.const(0));
+console.log(evalBoolExpr(be1));
 // const threeThings:[number, [string, bigint], boolean] = [1, ["a string", 1000n], true]
 // // [t1, t2, ..., tN] where t_i is a type
 // // tuples are known as product types because they contain the Cartesian product of the composed types

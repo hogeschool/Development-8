@@ -90,7 +90,7 @@ const Fun = <a, b>(f: BasicFun<a, b>): Fun<a, b> =>
       }
     }
   )
-const id = <a>(v:a) => v
+const id = <a>(v: a) => v
 
 type BasicUpdater<s> = BasicFun<s, s>
 type Updater<s> = BasicUpdater<s> & {
@@ -186,48 +186,57 @@ const pipeline =
 
 console.log(pipeline(Parent.Default()))
 
-const curry = <a,b,c>(f:(a:a, b:b) => c) : BasicFun<a, BasicFun<b,c>> => a => b => f(a,b)
-const flip = <a,b,c>(f:BasicFun<a, BasicFun<b,c>>) : BasicFun<b, BasicFun<a,c>> => b => a => f(a)(b)
-const flip2 = <a,b,c>(f:(a:a, b:b) => c) : ((b:b, a:a) => c) => uncurry(flip(curry(f)))
-const uncurry = <a,b,c>(f:BasicFun<a, BasicFun<b,c>>) : ((a:a, b:b) => c) => (a,b) => f(a)(b)
+const curry = <a, b, c>(f: (a: a, b: b) => c): BasicFun<a, BasicFun<b, c>> => a => b => f(a, b)
+const flip = <a, b, c>(f: BasicFun<a, BasicFun<b, c>>): BasicFun<b, BasicFun<a, c>> => b => a => f(a)(b)
+const flip2 = <a, b, c>(f: (a: a, b: b) => c): ((b: b, a: a) => c) => uncurry(flip(curry(f)))
+const uncurry = <a, b, c>(f: BasicFun<a, BasicFun<b, c>>): ((a: a, b: b) => c) => (a, b) => f(a)(b)
 
-type Pair<a,b> = [a,b]
-const Pair = <a,b>() => ({
-  Default:(a:a, b:b) : Pair<a,b> => ([a,b]),
-  Map:{
-    left:<c>(f:BasicFun<a,c>) : Fun<Pair<a,b>, Pair<c,b>> => Pair<a,b>().Map.both(f, id),
-    right:<c>(f:BasicFun<b,c>) : Fun<Pair<a,b>, Pair<a,c>> => Pair<a,b>().Map.both(id, f),
-    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Pair<a,b>, Pair<c,d>> => Pair<a,b>().fold(a => b => Pair<c,d>().Default(f(a), g(b))),
+type Pair<a, b> = [a, b]
+const Pair = <a, b>() => ({
+  Default: (a: a, b: b): Pair<a, b> => ([a, b]),
+  Map: {
+    left: <c>(f: BasicFun<a, c>): Fun<Pair<a, b>, Pair<c, b>> => Pair<a, b>().Map.both(f, id),
+    right: <c>(f: BasicFun<b, c>): Fun<Pair<a, b>, Pair<a, c>> => Pair<a, b>().Map.both(id, f),
+    both: <c, d>(f: BasicFun<a, c>, g: BasicFun<b, d>): Fun<Pair<a, b>, Pair<c, d>> => Pair<a, b>().fold(a => b => Pair<c, d>().Default(f(a), g(b))),
   },
-  fold:<c>(f:BasicFun<a,BasicFun<b,c>>) : Fun<Pair<a,b>, c> => Fun(([a,b]) => f(a)(b)),
-  Examples:{
-    sum:() => Pair<number,number>().fold(a => b => a + b),
-    repeat:() : Fun<Pair<string,number>,string> => Pair<string,number>().fold(a => b => b <= 0 ? "" : a + Pair<string,number>().Examples.repeat()([a,b-1])),
-    flip:<a,b>() : Fun<Pair<a,b>,Pair<b,a>> => Pair<a,b>().fold(flip(curry(Pair<b,a>().Default))),
+  fold: <c>(f: BasicFun<a, BasicFun<b, c>>): Fun<Pair<a, b>, c> => Fun(([a, b]) => f(a)(b)),
+  Examples: {
+    sum: () => Pair<number, number>().fold(a => b => a + b),
+    repeat: (): Fun<Pair<string, number>, string> => Pair<string, number>().fold(a => b => b <= 0 ? "" : a + Pair<string, number>().Examples.repeat()([a, b - 1])),
+    flip: <a, b>(): Fun<Pair<a, b>, Pair<b, a>> => Pair<a, b>().fold(flip(curry(Pair<b, a>().Default))),
   }
 })
 
-type Either<a,b> = { kind:"left", value:a } | { kind:"right", value:b }
-const Either = <a,b>() => ({
-  Default:{
-    left:(a:a) : Either<a,b> => ({ kind:"left", value:a }),
-    right:(b:b) : Either<a,b> => ({ kind:"right", value:b }),
+const plus = Fun<Pair<number, number>, number>(([x, y]) => x + y)
+const minus = Fun<Pair<number, number>, number>(([x, y]) => x - y)
+const times = Fun<Pair<number, number>, number>(([x, y]) => x * y)
+const divBy = Fun<Pair<number, number>, number>(([x, y]) => x / y)
+const and = Fun<Pair<boolean, boolean>, boolean>(([x, y]) => x && y)
+const or = Fun<Pair<boolean, boolean>, boolean>(([x, y]) => x || y)
+const gt = Fun<Pair<number, number>, boolean>(([x, y]) => x > y)
+const geq = Fun<Pair<number, number>, boolean>(([x, y]) => x >= y)
+
+type Either<a, b> = { kind: "left", value: a } | { kind: "right", value: b }
+const Either = <a, b>() => ({
+  Default: {
+    left: (a: a): Either<a, b> => ({ kind: "left", value: a }),
+    right: (b: b): Either<a, b> => ({ kind: "right", value: b }),
   },
-  Map:{
-    left:<c>(f:BasicFun<a,c>) : Fun<Either<a,b>, Either<c,b>> => Either<a,b>().Map.both(f, id<b>),
-    right:<d>(g:BasicFun<b,d>) : Fun<Either<a,b>, Either<a,d>> => Either<a,b>().Map.both(id<a>, g),
-    both:<c,d>(f:BasicFun<a,c>, g:BasicFun<b,d>) : Fun<Either<a,b>, Either<c,d>> => 
-      Fun(Either<a,b>().fold<Either<c,d>>(
-        Fun(f).then(Either<c,d>().Default.left), 
-        Fun(g).then(Either<c,d>().Default.right)))
-      // Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
+  Map: {
+    left: <c>(f: BasicFun<a, c>): Fun<Either<a, b>, Either<c, b>> => Either<a, b>().Map.both(f, id<b>),
+    right: <d>(g: BasicFun<b, d>): Fun<Either<a, b>, Either<a, d>> => Either<a, b>().Map.both(id<a>, g),
+    both: <c, d>(f: BasicFun<a, c>, g: BasicFun<b, d>): Fun<Either<a, b>, Either<c, d>> =>
+      Fun(Either<a, b>().fold<Either<c, d>>(
+        Fun(f).then(Either<c, d>().Default.left),
+        Fun(g).then(Either<c, d>().Default.right)))
+    // Fun(e => e.kind == "left" ? Either<c,d>().Default.left(f(e.value)) : Either<c,d>().Default.right(g(e.value)))
   },
-  fold:<c>(onLeft:BasicFun<a,c>, onRight:BasicFun<b,c>) : Fun<Either<a,b>, c> => 
+  fold: <c>(onLeft: BasicFun<a, c>, onRight: BasicFun<b, c>): Fun<Either<a, b>, c> =>
     Fun(e => e.kind == "left" ? onLeft(e.value) : onRight(e.value))
 })
 type Option<a> = Either<a, void>
 
-const NumStr = Pair<number,string>()
+const NumStr = Pair<number, string>()
 const pipeline2 = NumStr.Map.left(incr.then(dobl)).then(NumStr.Map.right(excl))
 
 // const o:Option<Parent> = Either<Parent,void>().Default.left(Parent.Default())
@@ -244,39 +253,39 @@ console.log(pipeline3(Parents.Default(Parent.Default(), Parent.Default())))
 // filter
 // fold
 
-type List<a> = { kind:"empty" } | { kind:"full", head:a, tail:List<a> }
+type List<a> = { kind: "empty" } | { kind: "full", head: a, tail: List<a> }
 const List = <a>() => ({
-  Default:{
-    empty:() : List<a> => ({ kind:"empty" }),
-    full:(head:a, tail:List<a>) : List<a> => ({ kind:"full", head, tail }),
+  Default: {
+    empty: (): List<a> => ({ kind: "empty" }),
+    full: (head: a, tail: List<a>): List<a> => ({ kind: "full", head, tail }),
   },
-  Map:<b>(f:BasicFun<a,b>) : Fun<List<a>, List<b>> => 
-    Fun(list_a => 
-      list_a.kind == "empty" ? 
-        List<b>().Default.empty() : 
+  Map: <b>(f: BasicFun<a, b>): Fun<List<a>, List<b>> =>
+    Fun(list_a =>
+      list_a.kind == "empty" ?
+        List<b>().Default.empty() :
         List<b>().Default.full(
-          f(list_a.head), 
+          f(list_a.head),
           List<a>().Map(f)(list_a.tail))),
-  Filter:(p:BasicFun<a,boolean>) : Fun<List<a>, List<a>> => 
-    Fun(list_a => list_a.kind == "empty" ? List<a>().Default.empty() : 
-      p(list_a.head) ? 
+  Filter: (p: BasicFun<a, boolean>): Fun<List<a>, List<a>> =>
+    Fun(list_a => list_a.kind == "empty" ? List<a>().Default.empty() :
+      p(list_a.head) ?
         List<a>().Default.full(
-          list_a.head, 
+          list_a.head,
           List<a>().Filter(p)(list_a.tail))
-      : List<a>().Filter(p)(list_a.tail)
+        : List<a>().Filter(p)(list_a.tail)
     ),
-  fold:<c>(onEmpty:() => c, onFull:(head:a, tail:c) => c) : Fun<List<a>, c> => Fun(l => 
-    l.kind == "empty" ? 
-      onEmpty() : 
-    onFull(l.head, List<a>().fold(onEmpty, onFull)(l.tail))
+  fold: <c>(onEmpty: () => c, onFull: (head: a, tail: c) => c): Fun<List<a>, c> => Fun(l =>
+    l.kind == "empty" ?
+      onEmpty() :
+      onFull(l.head, List<a>().fold(onEmpty, onFull)(l.tail))
   ),
 })
 
-const addAll = List<number>().fold(() => 0, (a,b) => a + b)
-const mulAll = List<number>().fold(() => 1, (a,b) => a * b)
-const addLengths = List<string>().fold(() => 0, (a,b) => a.length + b)
+const addAll = List<number>().fold(() => 0, (a, b) => a + b)
+const mulAll = List<number>().fold(() => 1, (a, b) => a * b)
+const addLengths = List<string>().fold(() => 0, (a, b) => a.length + b)
 const Nums = List<number>()
-const pipeline4 = Nums.Map(incr.fun.then(geqz))
+const pipeline4: Fun<List<number>, boolean> = Nums.Map(incr.fun.then(incr)).then(addAll.then(geqz))
 
 console.log(JSON.stringify(pipeline4(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))))
 
@@ -284,7 +293,85 @@ const pipeline5 = Nums.Filter(incr.fun.then(_ => _ % 2 == 0))
 console.log(JSON.stringify(pipeline5(Nums.Default.full(10, Nums.Default.full(9, Nums.Default.full(8, Nums.Default.empty()))))))
 
 // hierarchical expressions: trees and boolean/arithmetic expressionss
+type ArithExpr =
+  | { kind: "c", value: number }
+  | { kind: "+", l: ArithExpr, r: ArithExpr }
+  | { kind: "-", l: ArithExpr, r: ArithExpr }
+  | { kind: "x", l: ArithExpr, r: ArithExpr }
+  | { kind: "/", l: ArithExpr, r: ArithExpr }
+const ArithExpr = {
+  Default:
+  {
+    const: (v: number): ArithExpr => ({ kind: "c", value: v }),
+    plus: (l: ArithExpr, r: ArithExpr): ArithExpr => ({ kind: "+", l, r }),
+    times: (l: ArithExpr, r: ArithExpr): ArithExpr => ({ kind: "x", l, r }),
+    minus: (l: ArithExpr, r: ArithExpr): ArithExpr => ({ kind: "-", l, r }),
+    divBy: (l: ArithExpr, r: ArithExpr): ArithExpr => ({ kind: "/", l, r }),
+  },
+  Operations: {
 
+  }
+}
+type MaybeNumber = Either<number, "division by zero">
+const MaybeNumber = Either<number, "division by zero">()
+const evalArithExpr: Fun<ArithExpr, MaybeNumber> = Fun(e => {
+  if (e.kind == "c") return MaybeNumber.Default.left(e.value)
+  const l = evalArithExpr(e.l)
+  const r = evalArithExpr(e.r)
+  if (l.kind == "right" || r.kind == "right" || (e.kind == "/" && r.value == 0)) return MaybeNumber.Default.right("division by zero")
+  const op: Fun<Pair<number, number>, number> = e.kind == "+" ? plus : e.kind == "-" ? minus : e.kind == "x" ? times : divBy
+  return MaybeNumber.Default.left(op(Pair<number, number>().Default(l.value, r.value)))
+})
+
+const e1: ArithExpr = ArithExpr.Default.plus(ArithExpr.Default.const(1), ArithExpr.Default.const(10))
+const e2: ArithExpr = ArithExpr.Default.divBy(ArithExpr.Default.plus(e1, e1), ArithExpr.Default.const(0))
+console.log(evalArithExpr(e2))
+
+type BoolExpr =
+  | { kind: "c", value: boolean }
+  | { kind: "!", l: BoolExpr }
+  | { kind: "||", l: BoolExpr, r: BoolExpr }
+  | { kind: "&&", l: BoolExpr, r: BoolExpr }
+  | { kind: ">", l: ArithExpr, r: ArithExpr }
+  | { kind: ">=", l: ArithExpr, r: ArithExpr }
+const BoolExpr = {
+  Default:
+  {
+    const: (v: boolean): BoolExpr => ({ kind: "c", value: v }),
+    or: (l: BoolExpr, r: BoolExpr): BoolExpr => ({ kind: "||", l, r }),
+    and: (l: BoolExpr, r: BoolExpr): BoolExpr => ({ kind: "&&", l, r }),
+    gt: (l: ArithExpr, r: ArithExpr): BoolExpr => ({ kind: ">", l, r }),
+    geq: (l: ArithExpr, r: ArithExpr): BoolExpr => ({ kind: ">=", l, r }),
+  },
+  Operations: {
+
+  }
+}
+type MaybeBoolean = Either<boolean, "division by zero">
+const MaybeBoolean = Either<boolean, "division by zero">()
+const evalBoolExpr: Fun<BoolExpr, MaybeBoolean> = Fun(e => {
+  if (e.kind == "c") return MaybeBoolean.Default.left(e.value)
+  if (e.kind == "!") {
+    const l = evalBoolExpr(e.l)
+    if (l.kind == "left") return MaybeBoolean.Default.left(!l.value)
+    return MaybeBoolean.Default.right("division by zero")
+  }
+  if (e.kind == "&&" || e.kind == "||") {
+    const l = evalBoolExpr(e.l)
+    const r = evalBoolExpr(e.r)
+    if (l.kind == "right" || r.kind == "right") return MaybeBoolean.Default.right("division by zero")
+    const op: Fun<Pair<boolean, boolean>, boolean> = e.kind == "&&" ? and : or
+    return MaybeBoolean.Default.left(op(Pair<boolean, boolean>().Default(l.value, r.value)))
+  }
+  const l = evalArithExpr(e.l)
+  const r = evalArithExpr(e.r)
+  if (l.kind == "right" || r.kind == "right") return MaybeBoolean.Default.right("division by zero")
+  const op: Fun<Pair<number, number>, boolean> = e.kind == ">" ? gt : geq
+  return MaybeBoolean.Default.left(op(Pair<number, number>().Default(l.value, r.value)))
+})
+
+const be1 = BoolExpr.Default.gt(e2, ArithExpr.Default.const(0))
+console.log(evalBoolExpr(be1))
 // const threeThings:[number, [string, bigint], boolean] = [1, ["a string", 1000n], true]
 
 
